@@ -59,6 +59,7 @@
 		1F1C9F5E215A80FA0026D14A = {
 			isa = PBXGroup;
 			children = (
+				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
 				1F1C9F69215A80FA0026D14A /* NutrientsTracker */,
 				1F1C9F7E215A80FB0026D14A /* NutrientsTrackerTests */,
 				1F1C9F68215A80FA0026D14A /* Products */,
@@ -77,7 +78,6 @@
 		1F1C9F69215A80FA0026D14A /* NutrientsTracker */ = {
 			isa = PBXGroup;
 			children = (
-				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
 				1F1C9F6C215A80FA0026D14A /* ViewController.swift */,
 				1F1C9F6E215A80FA0026D14A /* Main.storyboard */,
 				1F1C9F71215A80FB0026D14A /* Assets.xcassets */,
