@@ -13,6 +13,14 @@
 		1F1C9F72215A80FB0026D14A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F71215A80FB0026D14A /* Assets.xcassets */; };
 		1F1C9F75215A80FB0026D14A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F73215A80FB0026D14A /* LaunchScreen.storyboard */; };
 		1F1C9F80215A80FB0026D14A /* NutrientsTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1C9F7F215A80FB0026D14A /* NutrientsTrackerTests.swift */; };
+		1FD7FC7E2163B4E700025767 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD7FC7D2163B4E700025767 /* ProductViewController.swift */; };
+		1FD7FC8021642F3F00025767 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD7FC7F21642F3E00025767 /* LoginViewController.swift */; };
+		1FD7FC82216432EB00025767 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FD7FC81216432EB00025767 /* GoogleService-Info.plist */; };
+		1FFF4FBC21660CD20083E731 /* DateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBB21660CD20083E731 /* DateViewController.swift */; };
+		1FFF4FBE216613330083E731 /* DaySetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBD216613330083E731 /* DaySetupViewController.swift */; };
+		1FFF4FC021661DD20083E731 /* DayResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */; };
+		54A2F534899384A4823771D9 /* Pods_NutrientsTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF21C68AF0484095E32C26BA /* Pods_NutrientsTracker.framework */; };
+		7189A20645C9445C8CCE123A /* Pods_NutrientsTrackerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AD3F9C097583100024A6274 /* Pods_NutrientsTrackerTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00862A42F21C0B4787B1F6AA /* Pods-NutrientsTracker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutrientsTracker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NutrientsTracker/Pods-NutrientsTracker.debug.xcconfig"; sourceTree = "<group>"; };
 		1F1C9F67215A80FA0026D14A /* NutrientsTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NutrientsTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F1C9F6C215A80FA0026D14A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -36,6 +45,17 @@
 		1F1C9F7B215A80FB0026D14A /* NutrientsTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NutrientsTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C9F7F215A80FB0026D14A /* NutrientsTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientsTrackerTests.swift; sourceTree = "<group>"; };
 		1F1C9F81215A80FB0026D14A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1FD7FC7D2163B4E700025767 /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
+		1FD7FC7F21642F3E00025767 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		1FD7FC81216432EB00025767 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1FFF4FBB21660CD20083E731 /* DateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
+		1FFF4FBD216613330083E731 /* DaySetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySetupViewController.swift; sourceTree = "<group>"; };
+		1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResultViewController.swift; sourceTree = "<group>"; };
+		40FCFD3030B49910C1D350C6 /* Pods-NutrientsTrackerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutrientsTrackerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-NutrientsTrackerTests/Pods-NutrientsTrackerTests.release.xcconfig"; sourceTree = "<group>"; };
+		6AD3F9C097583100024A6274 /* Pods_NutrientsTrackerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NutrientsTrackerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B17BA316F95FADC6C7BA175 /* Pods-NutrientsTracker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutrientsTracker.release.xcconfig"; path = "Pods/Target Support Files/Pods-NutrientsTracker/Pods-NutrientsTracker.release.xcconfig"; sourceTree = "<group>"; };
+		A79A646C89564D586BBEEC8E /* Pods-NutrientsTrackerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutrientsTrackerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NutrientsTrackerTests/Pods-NutrientsTrackerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CF21C68AF0484095E32C26BA /* Pods_NutrientsTracker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NutrientsTracker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54A2F534899384A4823771D9 /* Pods_NutrientsTracker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,19 +71,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7189A20645C9445C8CCE123A /* Pods_NutrientsTrackerTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		055DDE8A06484BFF6D653F3A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CF21C68AF0484095E32C26BA /* Pods_NutrientsTracker.framework */,
+				6AD3F9C097583100024A6274 /* Pods_NutrientsTrackerTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1F1C9F5E215A80FA0026D14A = {
 			isa = PBXGroup;
 			children = (
-				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
 				1F1C9F69215A80FA0026D14A /* NutrientsTracker */,
 				1F1C9F7E215A80FB0026D14A /* NutrientsTrackerTests */,
 				1F1C9F68215A80FA0026D14A /* Products */,
+				489C0B8E18C26B7172E0E8C2 /* Pods */,
+				055DDE8A06484BFF6D653F3A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,11 +110,18 @@
 		1F1C9F69215A80FA0026D14A /* NutrientsTracker */ = {
 			isa = PBXGroup;
 			children = (
+				1FD7FC81216432EB00025767 /* GoogleService-Info.plist */,
+				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
 				1F1C9F6C215A80FA0026D14A /* ViewController.swift */,
-				1F1C9F6E215A80FA0026D14A /* Main.storyboard */,
 				1F1C9F71215A80FB0026D14A /* Assets.xcassets */,
+				1F1C9F6E215A80FA0026D14A /* Main.storyboard */,
 				1F1C9F73215A80FB0026D14A /* LaunchScreen.storyboard */,
 				1F1C9F76215A80FB0026D14A /* Info.plist */,
+				1FD7FC7D2163B4E700025767 /* ProductViewController.swift */,
+				1FD7FC7F21642F3E00025767 /* LoginViewController.swift */,
+				1FFF4FBB21660CD20083E731 /* DateViewController.swift */,
+				1FFF4FBD216613330083E731 /* DaySetupViewController.swift */,
+				1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */,
 			);
 			path = NutrientsTracker;
 			sourceTree = "<group>";
@@ -96,6 +135,17 @@
 			path = NutrientsTrackerTests;
 			sourceTree = "<group>";
 		};
+		489C0B8E18C26B7172E0E8C2 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				00862A42F21C0B4787B1F6AA /* Pods-NutrientsTracker.debug.xcconfig */,
+				8B17BA316F95FADC6C7BA175 /* Pods-NutrientsTracker.release.xcconfig */,
+				A79A646C89564D586BBEEC8E /* Pods-NutrientsTrackerTests.debug.xcconfig */,
+				40FCFD3030B49910C1D350C6 /* Pods-NutrientsTrackerTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -103,9 +153,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F1C9F84215A80FB0026D14A /* Build configuration list for PBXNativeTarget "NutrientsTracker" */;
 			buildPhases = (
+				1759CEE06362A05B9F6028E6 /* [CP] Check Pods Manifest.lock */,
 				1F1C9F63215A80FA0026D14A /* Sources */,
 				1F1C9F64215A80FA0026D14A /* Frameworks */,
 				1F1C9F65215A80FA0026D14A /* Resources */,
+				5D51F35CCBD94F02AD381FA3 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -120,9 +172,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F1C9F87215A80FB0026D14A /* Build configuration list for PBXNativeTarget "NutrientsTrackerTests" */;
 			buildPhases = (
+				F21618536F19D930B163ED57 /* [CP] Check Pods Manifest.lock */,
 				1F1C9F77215A80FB0026D14A /* Sources */,
 				1F1C9F78215A80FB0026D14A /* Frameworks */,
 				1F1C9F79215A80FB0026D14A /* Resources */,
+				F3F316755B5EDDFBCAA5BE0F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -178,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F1C9F75215A80FB0026D14A /* LaunchScreen.storyboard in Resources */,
+				1FD7FC82216432EB00025767 /* GoogleService-Info.plist in Resources */,
 				1F1C9F72215A80FB0026D14A /* Assets.xcassets in Resources */,
 				1F1C9F70215A80FA0026D14A /* Main.storyboard in Resources */,
 			);
@@ -192,12 +247,116 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1759CEE06362A05B9F6028E6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NutrientsTracker-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5D51F35CCBD94F02AD381FA3 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-NutrientsTracker/Pods-NutrientsTracker-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NutrientsTracker/Pods-NutrientsTracker-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F21618536F19D930B163ED57 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NutrientsTrackerTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F3F316755B5EDDFBCAA5BE0F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-NutrientsTrackerTests/Pods-NutrientsTrackerTests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NutrientsTrackerTests/Pods-NutrientsTrackerTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		1F1C9F63215A80FA0026D14A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FFF4FBC21660CD20083E731 /* DateViewController.swift in Sources */,
+				1FFF4FBE216613330083E731 /* DaySetupViewController.swift in Sources */,
+				1FD7FC8021642F3F00025767 /* LoginViewController.swift in Sources */,
+				1FFF4FC021661DD20083E731 /* DayResultViewController.swift in Sources */,
 				1F1C9F6D215A80FA0026D14A /* ViewController.swift in Sources */,
+				1FD7FC7E2163B4E700025767 /* ProductViewController.swift in Sources */,
 				1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -358,11 +517,13 @@
 		};
 		1F1C9F85215A80FB0026D14A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 00862A42F21C0B4787B1F6AA /* Pods-NutrientsTracker.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TP97QGU6F6;
 				INFOPLIST_FILE = NutrientsTracker/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -376,11 +537,13 @@
 		};
 		1F1C9F86215A80FB0026D14A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B17BA316F95FADC6C7BA175 /* Pods-NutrientsTracker.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TP97QGU6F6;
 				INFOPLIST_FILE = NutrientsTracker/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -394,6 +557,7 @@
 		};
 		1F1C9F88215A80FB0026D14A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A79A646C89564D586BBEEC8E /* Pods-NutrientsTrackerTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -415,6 +579,7 @@
 		};
 		1F1C9F89215A80FB0026D14A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 40FCFD3030B49910C1D350C6 /* Pods-NutrientsTrackerTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";

@@ -7,6 +7,8 @@
 //
 
 import XCTest
+import Firebase
+
 @testable import NutrientsTracker
 
 class NutrientsTrackerTests: XCTestCase {
