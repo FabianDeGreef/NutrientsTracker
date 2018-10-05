@@ -61,7 +61,10 @@
                                         <rect key="frame" x="0.0" y="114.33333333333331" width="300" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="GHl-xe-p9h"/>
+                                        </connections>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fg7-Fq-9gS">
                                         <rect key="frame" x="0.0" y="154.33333333333331" width="300" height="26.333333333333343"/>
@@ -76,7 +79,10 @@
                                         </constraints>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" secureTextEntry="YES"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="t0M-rH-5NB"/>
+                                        </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q1E-BE-6Kd">
                                         <rect key="frame" x="0.0" y="230.66666666666669" width="300" height="48"/>
@@ -84,7 +90,6 @@
                                         <state key="normal" title="Login" image="EnterIcon1"/>
                                         <connections>
                                             <action selector="loginButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="KDv-d6-Xk1"/>
-                                            <segue destination="5KH-iL-JUc" kind="show" id="H7U-YA-KSq"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -108,7 +113,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Nutrients Tracker" id="HEy-XE-69X">
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Cq2-eV-bNl"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Cq2-eV-bNl">
+                            <connections>
+                                <segue destination="5KH-iL-JUc" kind="show" id="SyH-Wr-mpv"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="emailTextfield" destination="4Ca-eO-Yro" id="OP5-pm-wvn"/>
@@ -237,7 +246,10 @@
                                                 <rect key="frame" x="0.0" y="25.333333333333329" width="334" height="30"/>
                                                 <nil key="textColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="wDW-xq-LSz" id="nlI-hV-Sai"/>
+                                                </connections>
                                             </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IpU-bO-MnM">
                                                 <rect key="frame" x="0.0" y="60.333333333333343" width="334" height="50"/>
@@ -253,20 +265,17 @@
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PsK-jW-yqF">
+                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Ktj-om-4cP">
                                                 <rect key="frame" x="0.0" y="140.66666666666663" width="334" height="367"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <prototypes>
-                                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ProductCell" id="hyt-tJ-fyM">
+                                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ProductCell" id="TVy-ga-Qeb">
                                                         <rect key="frame" x="0.0" y="28" width="334" height="44"/>
                                                         <autoresizingMask key="autoresizingMask"/>
-                                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hyt-tJ-fyM" id="tuS-se-MXM">
+                                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="TVy-ga-Qeb" id="M7p-La-68a">
                                                             <rect key="frame" x="0.0" y="0.0" width="334" height="43.666666666666664"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                         </tableViewCellContentView>
-                                                        <connections>
-                                                            <segue destination="PNe-hW-Zir" kind="show" identifier="ViewProduct" id="7Qn-xy-qow"/>
-                                                        </connections>
                                                     </tableViewCell>
                                                 </prototypes>
                                             </tableView>
@@ -280,7 +289,10 @@
                                                 <rect key="frame" x="0.0" y="538" width="334" height="30"/>
                                                 <nil key="textColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
+                                                <connections>
+                                                    <outlet property="delegate" destination="wDW-xq-LSz" id="Koz-MT-XQs"/>
+                                                </connections>
                                             </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Jv-XH-4tc">
                                                 <rect key="frame" x="0.0" y="573" width="334" height="24"/>
@@ -295,8 +307,6 @@
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="597" id="KYH-7c-7q1"/>
-                                            <constraint firstItem="ufk-sE-zs4" firstAttribute="width" secondItem="PsK-jW-yqF" secondAttribute="width" id="d1E-SZ-LvY"/>
-                                            <constraint firstItem="PsK-jW-yqF" firstAttribute="width" secondItem="dS5-3U-toW" secondAttribute="width" id="pMH-UD-CEl"/>
                                         </constraints>
                                     </stackView>
                                 </subviews>
@@ -335,7 +345,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="nameTextField" destination="ufk-sE-zs4" id="JHP-y8-acb"/>
-                        <outlet property="productTable" destination="PsK-jW-yqF" id="geg-F7-Ddj"/>
+                        <outlet property="productTable" destination="Ktj-om-4cP" id="GnA-BL-2Ab"/>
                         <outlet property="weightTextfield" destination="dS5-3U-toW" id="pSA-sf-YQJ"/>
                         <segue destination="PNe-hW-Zir" kind="show" identifier="AddProduct" id="rAe-p7-JU4"/>
                         <segue destination="Mvl-Xr-z5u" kind="show" identifier="DayEntrySetup" id="hP5-C3-EdP"/>
@@ -440,7 +450,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vDB-tq-PWO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3802.898550724638" y="1126.6304347826087"/>
+            <point key="canvasLocation" x="3803" y="1124"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Kb4-OF-jhI">
@@ -475,21 +485,21 @@
                                 <rect key="frame" x="20" y="64" width="374" height="652"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="mkI-9A-tkV">
-                                        <rect key="frame" x="20" y="20" width="334" height="582"/>
+                                        <rect key="frame" x="20" y="20" width="334" height="587"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="5" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KcL-rs-g2S">
-                                                <rect key="frame" x="0.0" y="0.0" width="334" height="20.333333333333332"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="334" height="25.333333333333332"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nutrient Values" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Tr-I9-zXG">
-                                                        <rect key="frame" x="104" y="0.0" width="126.33333333333331" height="20.333333333333332"/>
-                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter the values in grams" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Tr-I9-zXG">
+                                                        <rect key="frame" x="43.666666666666686" y="0.0" width="247" height="25.333333333333332"/>
+                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="oqZ-uP-GCX" userLabel="StackViewOne">
-                                                <rect key="frame" x="0.0" y="25.333333333333329" width="334" height="70.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="30.333333333333336" width="334" height="70.333333333333314"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="2aU-ao-7zc">
                                                         <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="70.333333333333329"/>
@@ -504,7 +514,10 @@
                                                                 <rect key="frame" x="0.0" y="40.333333333333329" width="164.66666666666666" height="30"/>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="8cW-KY-1eo"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
@@ -521,14 +534,17 @@
                                                                 <rect key="frame" x="0.0" y="40.333333333333329" width="164.33333333333334" height="30"/>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="AtH-VX-x06"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="alN-12-LrV" userLabel="StackViewTwo">
-                                                <rect key="frame" x="0.0" y="100.66666666666666" width="334" height="70.333333333333343"/>
+                                                <rect key="frame" x="0.0" y="105.66666666666666" width="334" height="70.333333333333343"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="QCQ-Et-3xw">
                                                         <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="70.333333333333329"/>
@@ -543,7 +559,10 @@
                                                                 <rect key="frame" x="0.0" y="40.333333333333343" width="164.66666666666666" height="30"/>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="le9-y9-yHp"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
@@ -560,14 +579,17 @@
                                                                 <rect key="frame" x="0.0" y="40.333333333333343" width="164.33333333333334" height="30"/>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="pJs-JI-VcP"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="9Gy-mY-CIP" userLabel="StackViewThree">
-                                                <rect key="frame" x="0.0" y="176" width="334" height="70.333333333333314"/>
+                                                <rect key="frame" x="0.0" y="181" width="334" height="70.333333333333314"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="TQu-DG-iGt">
                                                         <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="70.333333333333329"/>
@@ -582,7 +604,10 @@
                                                                 <rect key="frame" x="0.0" y="40.333333333333314" width="164.66666666666666" height="30"/>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="pkI-hQ-0Es"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
@@ -599,14 +624,17 @@
                                                                 <rect key="frame" x="0.0" y="40.333333333333314" width="164.33333333333334" height="30"/>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="zXh-AX-E8D"/>
+                                                                </connections>
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ZCl-G6-o3P" userLabel="StackViewFour">
-                                                <rect key="frame" x="0.0" y="251.33333333333329" width="334" height="330.66666666666674"/>
+                                                <rect key="frame" x="0.0" y="256.33333333333326" width="334" height="330.66666666666674"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="8tA-Am-0si">
                                                         <rect key="frame" x="0.0" y="0.0" width="334" height="330.66666666666669"/>
@@ -624,7 +652,10 @@
                                                                 </constraints>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits"/>
+                                                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                                <connections>
+                                                                    <outlet property="delegate" destination="PNe-hW-Zir" id="pDW-wr-b5R"/>
+                                                                </connections>
                                                             </textField>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Product image" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7ID-8E-wbu">
                                                                 <rect key="frame" x="107.33333333333334" y="90.333333333333371" width="119.33333333333334" height="20.333333333333329"/>
@@ -673,11 +704,18 @@
                         <viewLayoutGuide key="safeArea" id="RMK-He-xLp"/>
                     </view>
                     <navigationItem key="navigationItem" title="Product" id="yZt-8P-gyz">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Stb-fY-Wwc">
-                            <connections>
-                                <action selector="cancelChanges:" destination="PNe-hW-Zir" id="i2C-nF-9kh"/>
-                            </connections>
-                        </barButtonItem>
+                        <leftBarButtonItems>
+                            <barButtonItem systemItem="stop" id="Stb-fY-Wwc">
+                                <connections>
+                                    <action selector="cancelChanges:" destination="PNe-hW-Zir" id="i2C-nF-9kh"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="refresh" id="UfR-cC-RsT">
+                                <connections>
+                                    <action selector="clearForm:" destination="PNe-hW-Zir" id="U9g-ve-6j7"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="y2G-rj-J30">
                             <connections>
                                 <action selector="saveProduct:" destination="PNe-hW-Zir" id="6Xx-oU-FrN"/>
@@ -685,6 +723,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="cancelButton" destination="Stb-fY-Wwc" id="Jxa-6w-cBp"/>
                         <outlet property="carbohydratesTextfield" destination="NdQ-1B-KXq" id="a9f-hH-57V"/>
                         <outlet property="cholesterolTextfield" destination="oNi-13-YMU" id="w00-Mf-mA3"/>
                         <outlet property="fatTextfield" destination="Rco-j9-5RE" id="5pM-A5-gMV"/>
@@ -692,6 +731,7 @@
                         <outlet property="kilocalorieTextfield" destination="sQm-UX-GGc" id="RMm-Ml-4av"/>
                         <outlet property="nameTextfield" destination="P2b-PO-xEv" id="Efg-Tg-q0d"/>
                         <outlet property="saltTextfield" destination="1iH-du-Vmk" id="GpP-Dx-NHY"/>
+                        <outlet property="saveButton" destination="y2G-rj-J30" id="kPa-XI-J0I"/>
                         <outlet property="sugarTextfield" destination="Gwk-pt-6RX" id="mHU-vr-Jak"/>
                     </connections>
                 </viewController>
@@ -717,7 +757,6 @@
         <image name="SearchIcon" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="rAe-p7-JU4"/>
         <segue reference="e2C-70-gBA"/>
     </inferredMetricsTieBreakers>
 </document>

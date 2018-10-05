@@ -13,6 +13,7 @@
 		1F1C9F72215A80FB0026D14A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F71215A80FB0026D14A /* Assets.xcassets */; };
 		1F1C9F75215A80FB0026D14A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F73215A80FB0026D14A /* LaunchScreen.storyboard */; };
 		1F1C9F80215A80FB0026D14A /* NutrientsTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1C9F7F215A80FB0026D14A /* NutrientsTrackerTests.swift */; };
+		1FAC41EB216624B000123C86 /* NutrientsTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */; };
 		1FD7FC7E2163B4E700025767 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD7FC7D2163B4E700025767 /* ProductViewController.swift */; };
 		1FD7FC8021642F3F00025767 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD7FC7F21642F3E00025767 /* LoginViewController.swift */; };
 		1FD7FC82216432EB00025767 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FD7FC81216432EB00025767 /* GoogleService-Info.plist */; };
@@ -45,6 +46,7 @@
 		1F1C9F7B215A80FB0026D14A /* NutrientsTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NutrientsTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C9F7F215A80FB0026D14A /* NutrientsTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientsTrackerTests.swift; sourceTree = "<group>"; };
 		1F1C9F81215A80FB0026D14A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1FAC41EA216624B000123C86 /* NutrientsTrackerModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NutrientsTrackerModel.xcdatamodel; sourceTree = "<group>"; };
 		1FD7FC7D2163B4E700025767 /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
 		1FD7FC7F21642F3E00025767 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		1FD7FC81216432EB00025767 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				1FFF4FBB21660CD20083E731 /* DateViewController.swift */,
 				1FFF4FBD216613330083E731 /* DaySetupViewController.swift */,
 				1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */,
+				1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */,
 			);
 			path = NutrientsTracker;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 				1F1C9F6D215A80FA0026D14A /* ViewController.swift in Sources */,
 				1FD7FC7E2163B4E700025767 /* ProductViewController.swift in Sources */,
 				1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */,
+				1FAC41EB216624B000123C86 /* NutrientsTracker.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -630,6 +634,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				1FAC41EA216624B000123C86 /* NutrientsTrackerModel.xcdatamodel */,
+			);
+			currentVersion = 1FAC41EA216624B000123C86 /* NutrientsTrackerModel.xcdatamodel */;
+			path = NutrientsTracker.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 1F1C9F5F215A80FA0026D14A /* Project object */;
 }

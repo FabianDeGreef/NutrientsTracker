@@ -51,7 +51,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 Auth.auth().createUser(withEmail: email, password: password) { (userData, error) in
                     //guard (userData?.user) != nil else {return}
                     if (userData?.user) != nil {
-                        self.segmentControl.selectedSegmentIndex = 0
                         self.resetTextFields()
                         self.showAlertAction(title: "Registration Complete", message: "Please enter  email and password to login")
                     }else{
@@ -118,6 +117,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         passwordTextfield.text = ""
     }
     
+    //MARK: UITextfield Delegates
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case emailTextfield:
+            passwordTextfield.becomeFirstResponder()
+        default:
+            passwordTextfield.resignFirstResponder()
+        }
+        return true
+    }
 
     //MARK:  Navigation
 
@@ -126,5 +135,4 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
     }
-
 }
