@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "icons8-recurring_appointment.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Background6.png",
       "scale" : "2x"
     },
     {

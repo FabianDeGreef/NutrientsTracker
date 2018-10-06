@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "icons8-logout_rounded_up_filled.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Background6.png",
       "scale" : "2x"
     },
     {

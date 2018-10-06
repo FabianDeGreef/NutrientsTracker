@@ -141,10 +141,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Background2" translatesAutoresizingMaskIntoConstraints="NO" id="jhd-nf-uad">
-                                <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="628"/>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="3NK-It-O3B">
-                                <rect key="frame" x="5" y="69" width="404" height="662"/>
+                                <rect key="frame" x="5" y="69" width="404" height="618"/>
                                 <subviews>
                                     <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="wnH-RQ-sxB">
                                         <rect key="frame" x="42" y="0.0" width="320" height="130"/>
@@ -165,7 +165,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="LsB-9I-liX">
-                                        <rect key="frame" x="15" y="166.33333333333334" width="374" height="495.66666666666663"/>
+                                        <rect key="frame" x="15" y="166.33333333333334" width="374" height="451.66666666666663"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="DateCell" id="NMa-Df-ko8">
@@ -177,6 +177,9 @@
                                                 </tableViewCellContentView>
                                             </tableViewCell>
                                         </prototypes>
+                                        <connections>
+                                            <outlet property="dataSource" destination="5KH-iL-JUc" id="6HW-iY-N1X"/>
+                                        </connections>
                                     </tableView>
                                 </subviews>
                                 <constraints>
@@ -201,15 +204,25 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="MdC-59-yTL"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Select New Date" id="oZC-00-kq5">
-                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="ROy-BS-hu8"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="LXw-pZ-fyR">
-                            <connections>
-                                <action selector="addNewEntry:" destination="5KH-iL-JUc" id="IDa-iS-KjP"/>
-                            </connections>
-                        </barButtonItem>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Select Date" id="oZC-00-kq5">
+                        <barButtonItem key="leftBarButtonItem" title="Calendar" image="CalendarIcon" id="cQz-GY-oYp"/>
+                        <rightBarButtonItems>
+                            <barButtonItem title="Add" image="AddIcon2" id="LXw-pZ-fyR">
+                                <connections>
+                                    <action selector="addNewEntry:" destination="5KH-iL-JUc" id="IDa-iS-KjP"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="SignOff" image="LogoutIcon" id="we4-Xw-KxW">
+                                <connections>
+                                    <action selector="signOffUser:" destination="5KH-iL-JUc" id="j4f-Pf-pNM"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="addButton" destination="LXw-pZ-fyR" id="BAs-me-wP0"/>
                         <outlet property="datePicker" destination="wnH-RQ-sxB" id="vEq-4L-RbP"/>
                         <outlet property="entryTable" destination="LsB-9I-liX" id="6Ox-kv-ixP"/>
                         <segue destination="wDW-xq-LSz" kind="show" identifier="DayEntrySetup" id="3BH-WD-YJ1"/>
@@ -228,10 +241,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Background3" translatesAutoresizingMaskIntoConstraints="NO" id="A6G-S5-kXm">
-                                <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="628"/>
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lAF-Re-J7l">
-                                <rect key="frame" x="20" y="59" width="374" height="637"/>
+                                <rect key="frame" x="20" y="59" width="374" height="593"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="c7M-3p-La1">
                                         <rect key="frame" x="20" y="30" width="334" height="597"/>
@@ -334,13 +347,16 @@
                     </view>
                     <navigationItem key="navigationItem" title="Products" id="E9M-xW-4Mu">
                         <rightBarButtonItems>
-                            <barButtonItem systemItem="add" id="zdh-iW-gjD">
+                            <barButtonItem title="Add" image="AddIcon2" id="zdh-iW-gjD">
                                 <connections>
                                     <action selector="addNewProduct:" destination="wDW-xq-LSz" id="bTh-Cd-6eO"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="trash" id="VSK-Hr-yK1"/>
-                            <barButtonItem systemItem="edit" id="HGC-XA-K1o"/>
+                            <barButtonItem title="SingOff" image="LogoutIcon" id="gKd-YY-viP">
+                                <connections>
+                                    <action selector="signOffUser:" destination="wDW-xq-LSz" id="kRx-LJ-ua5"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
@@ -364,10 +380,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Background5" translatesAutoresizingMaskIntoConstraints="NO" id="0Wx-lJ-Gm7">
-                                <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="628"/>
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lAV-Dz-jpF">
-                                <rect key="frame" x="20" y="59" width="374" height="593"/>
+                                <rect key="frame" x="20" y="59" width="374" height="549"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="ygi-4N-mWG">
                                         <rect key="frame" x="0.0" y="40" width="374" height="553"/>
@@ -444,9 +460,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="18I-Vx-U7A"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Day Total" id="jfW-Dn-LF8">
-                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="Sex-Ww-xDr"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Day Total" id="jfW-Dn-LF8"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vDB-tq-PWO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -479,7 +493,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Background4" translatesAutoresizingMaskIntoConstraints="NO" id="yrT-kn-8da">
-                                <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="628"/>
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tum-nZ-6oA">
                                 <rect key="frame" x="20" y="64" width="374" height="652"/>
@@ -652,7 +666,7 @@
                                                                 </constraints>
                                                                 <nil key="textColor"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done"/>
                                                                 <connections>
                                                                     <outlet property="delegate" destination="PNe-hW-Zir" id="pDW-wr-b5R"/>
                                                                 </connections>
@@ -705,18 +719,18 @@
                     </view>
                     <navigationItem key="navigationItem" title="Product" id="yZt-8P-gyz">
                         <leftBarButtonItems>
-                            <barButtonItem systemItem="stop" id="Stb-fY-Wwc">
+                            <barButtonItem title="Cancel" image="CancelIcon" id="Stb-fY-Wwc">
                                 <connections>
                                     <action selector="cancelChanges:" destination="PNe-hW-Zir" id="i2C-nF-9kh"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="refresh" id="UfR-cC-RsT">
+                            <barButtonItem title="Reset" image="ResetIcon" id="UfR-cC-RsT">
                                 <connections>
                                     <action selector="clearForm:" destination="PNe-hW-Zir" id="U9g-ve-6j7"/>
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="y2G-rj-J30">
+                        <barButtonItem key="rightBarButtonItem" title="Save" image="SaveIcon" id="y2G-rj-J30">
                             <connections>
                                 <action selector="saveProduct:" destination="PNe-hW-Zir" id="6Xx-oU-FrN"/>
                             </connections>
@@ -747,13 +761,19 @@
     </scenes>
     <resources>
         <image name="AddIcon1" width="24" height="24"/>
+        <image name="AddIcon2" width="25" height="25"/>
         <image name="Background1" width="109" height="192"/>
         <image name="Background2" width="375" height="667"/>
         <image name="Background3" width="375" height="774"/>
         <image name="Background4" width="562" height="1218"/>
-        <image name="Background5" width="403" height="872"/>
+        <image name="Background5" width="320" height="568"/>
+        <image name="CalendarIcon" width="25" height="25"/>
+        <image name="CancelIcon" width="26" height="26"/>
         <image name="DefaultImage2" width="360" height="202"/>
         <image name="EnterIcon1" width="48" height="48"/>
+        <image name="LogoutIcon" width="25" height="25"/>
+        <image name="ResetIcon" width="26" height="26"/>
+        <image name="SaveIcon" width="25" height="25"/>
         <image name="SearchIcon" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>

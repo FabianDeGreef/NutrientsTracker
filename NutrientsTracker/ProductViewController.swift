@@ -12,14 +12,14 @@ import CoreData
 class ProductViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate {
 
     //MARK: Properties
-    var context:NSManagedObjectContext?
-    var sugarValue:String?
-    var fatValue:String?
-    var cholesterolValue:String?
-    var saltValue:String?
-    var carbohydratesValue:String?
-    var kilocalorieValue:String?
-    var nameValue:String?
+    //var context:NSManagedObjectContext?
+    var sugarValue:Double = 0.0
+    var fatValue:Double = 0.0
+    var cholesterolValue:Double = 0.0
+    var saltValue:Double = 0.0
+    var carbohydratesValue:Double = 0.0
+    var kilocalorieValue:Double = 0.0
+    var nameValue:String = ""
     
     //MARK: IBOutlets
     @IBOutlet weak var imageView: UIImageView!
@@ -41,7 +41,10 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Sets the context value when the viewcontroller will display
-        accessContext()
+        //accessContext()
+        if nameValue.count < 1 {
+            saveButton.isEnabled = false
+        }
     }
     
     //MARK: IBActions
@@ -88,9 +91,18 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     
     @IBAction func saveProduct(_ sender: UIBarButtonItem) {
         // Save product to database
-        createProduct()
-        // Change the cancel buttons name to return because the save was succesfull
-        cancelButton.title = "Return"
+        //let product = Product(context: context!)
+        let product = Product(context: PersistenceService.context)
+        product.name = nameValue
+        product.kilocalories = kilocalorieValue
+        product.carbohydrates = carbohydratesValue
+        product.cholesterol = cholesterolValue
+        product.fat = fatValue
+        product.salt = saltValue
+        product.sugar = sugarValue
+        resetView()
+        PersistenceService.saveContext()
+        //saveContext()
     }
     
     @IBAction func cancelChanges(_ sender: UIBarButtonItem) {
@@ -99,116 +111,110 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     @IBAction func clearForm(_ sender: UIBarButtonItem) {
-        // Clear button to clear all the textfields with empty strings
-        sugarTextfield.text = ""
-        fatTextfield.text = ""
-        cholesterolTextfield.text = ""
-        carbohydratesTextfield.text = ""
-        saltTextfield.text = ""
-        kilocalorieTextfield.text = ""
-        nameTextfield.text = ""
+        resetView()
     }
     
     //MARK: UITextfield Delegates
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Use the return keyboard button to jump between textfields
+    func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField {
         case sugarTextfield:
             // Checks the textfield text value inside the checkForDecimalInput method to validate the text contains only numbers and or coma. This switch case checks every textfield inside this ViewController
             if checkForDecimalInput(value: sugarTextfield.text!){
-                // Set the propertie value with the validated one form the textfield
-                sugarValue = sugarTextfield.text
-                // Make the next textfield first responder
-                fatTextfield.becomeFirstResponder()
+                // Set the propertie value with the validated one form the textfield and convert it to a double with a comma
+                sugarValue = decimal(string: sugarTextfield.text!)
+                print(sugarValue)
+            }else {
+                sugarValue = 0.0
+                sugarTextfield.text = String("0,0")
             }
         case fatTextfield:
             if checkForDecimalInput(value: fatTextfield.text!){
-                fatValue = fatTextfield.text
-                cholesterolTextfield.becomeFirstResponder()
+                fatValue = decimal(string: fatTextfield.text!)
+                print(fatValue)
+            }else {
+                fatValue = 0.0
+                fatTextfield.text = String("0,0")
             }
         case cholesterolTextfield:
             if checkForDecimalInput(value: cholesterolTextfield.text!){
-                cholesterolValue = cholesterolTextfield.text
-                saltTextfield.becomeFirstResponder()
+                cholesterolValue = decimal(string: cholesterolTextfield.text!)
+                print(cholesterolValue)
+            }else {
+                cholesterolValue = 0.0
+                cholesterolTextfield.text = String("0,0")
             }
         case saltTextfield:
             if checkForDecimalInput(value: saltTextfield.text!){
-                saltValue = saltTextfield.text
-                carbohydratesTextfield.becomeFirstResponder()
+                saltValue = decimal(string: saltTextfield.text!)
+                print(saltValue)
+            }else {
+                saltValue = 0.0
+                saltTextfield.text = String("0,0")
             }
         case carbohydratesTextfield:
             if checkForDecimalInput(value: carbohydratesTextfield.text!){
-                carbohydratesValue = carbohydratesTextfield.text
-                kilocalorieTextfield.becomeFirstResponder()
+                carbohydratesValue = decimal(string: carbohydratesTextfield.text!)
+                print(carbohydratesValue)
+            }else {
+                carbohydratesValue = 0.0
+                carbohydratesTextfield.text = String("0,0")
             }
         case kilocalorieTextfield:
             if checkForDecimalInput(value: kilocalorieTextfield.text!){
-                kilocalorieValue = kilocalorieTextfield.text
-                nameTextfield.becomeFirstResponder()
+                kilocalorieValue = decimal(string: kilocalorieTextfield.text!)
+                print(kilocalorieValue)
+            }else {
+                kilocalorieValue = 0.0
+                kilocalorieTextfield.text = String("0,0")
             }
         default:
             // Checks the name value from the nametextfield with an other validator functions so it contains only alpabetical input
-            if checkForAlphabeticalInput(value: nameTextfield.text!){
+            if checkForAlphabeticalInput(value: nameTextfield.text ?? ""){
                 // Set the propertie value with the validated one form the textfield
-                nameValue = nameTextfield.text
+                nameValue = nameTextfield.text!
                 // Dissmis the keyboard be resinging the first responder now because the name textfield was the last one
                 nameTextfield.resignFirstResponder()
+                saveButton.isEnabled = true
+            }else {
+                // Show UIAlert message when name textfield is empty
+                let alert = UIAlertController(title: "Choose a name", message: "Product must have a name and must be greater than 1 character", preferredStyle: .alert)
+                // Create an action with a Ok button that after pressing dismisses the alert screen
+                let action = UIAlertAction(title: "Ok", style: .default) { (UIAlertAction) in
+                }
+                // Add the action with the ok button to the UIAlertContoller
+                alert.addAction(action)
+                // Show the UIAlert Message to the user that the product name must have a value
+                present(alert, animated: true, completion: nil)
+                saveButton.isEnabled = false
             }
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Use the return keyboard button to jump between textfields
+        switch textField {
+        case sugarTextfield:
+        // Make the next textfield first responder
+                fatTextfield.becomeFirstResponder()
+        case fatTextfield:
+                cholesterolTextfield.becomeFirstResponder()
+        case cholesterolTextfield:
+                saltTextfield.becomeFirstResponder()
+        case saltTextfield:
+                carbohydratesTextfield.becomeFirstResponder()
+        case carbohydratesTextfield:
+                kilocalorieTextfield.becomeFirstResponder()
+        case kilocalorieTextfield:
+                nameTextfield.becomeFirstResponder()
+        default:
+        // Dissmis the keyboard be resinging the first responder now because the name textfield was the last one
+                nameTextfield.resignFirstResponder()
         }
         return true
     }
-    
-    //MARK: Core Date Functions
-    func createProduct(){
-        // Create an entity constant from the type product
-        let entity = NSEntityDescription.entity(forEntityName: "Product", in: context!)!
-        // Create a product object to insert the values inside the context
-        let product = NSManagedObject(entity: entity, insertInto: context)
-        // Check the properties with the values from the textfields are not nill
-        if (nameValue != nil) {
-            // Sets the key for the value that wil be inserted in the product object that now will be created inside the context
-            product.setValue(nameValue, forKey: "name")
-        }
-        if (kilocalorieValue != nil) {
-            product.setValue(kilocalorieValue, forKey: "kilocalories")
-        }
-        if (carbohydratesValue != nil) {
-            product.setValue(carbohydratesValue, forKey: "carbohydrates")
-        }
-        if (saltValue != nil) {
-            product.setValue(saltValue, forKey: "salt")
-        }
-        if (cholesterolValue != nil) {
-            product.setValue(cholesterolValue, forKey: "cholesterol")
-        }
-        if (fatValue != nil) {
-            product.setValue(fatValue, forKey: "fat")
-        }
-        if (sugarValue != nil) {
-            product.setValue(sugarValue, forKey: "sugar")
-        }
-        // Call the saveContext function to save the inserted object in the context
-        saveContext()
-    }
-    
-    func saveContext(){
-        do {
-            // Save all the changes made to the context
-            try context!.save()
-        }catch let error as NSError {
-            print("Could not save \(error)")
-        }
-    }
-    
-    func accessContext(){
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        context = appDelegate.persistentContainer.viewContext
-    }
 
     //MARK: UIImagePickerController Delegates
-    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         // Get the value form the infokey and thake the Orginal image
         if let image = info[UIImagePickerController.InfoKey.originalImage] {
             // Place the value from the orginal image inside the ImageView to display the image
@@ -219,9 +225,39 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     //MARK: Helper functions
+    func resetView() {
+        // Clear the variable
+        sugarValue = 0.0
+        fatValue = 0.0
+        cholesterolValue = 0.0
+        carbohydratesValue = 0.0
+        saltValue = 0.0
+        kilocalorieValue = 0.0
+        nameValue = ""
+        // Clear button to clear all the textfields with empty strings
+        sugarTextfield.text = ""
+        fatTextfield.text = ""
+        cholesterolTextfield.text = ""
+        carbohydratesTextfield.text = ""
+        saltTextfield.text = ""
+        kilocalorieTextfield.text = ""
+        nameTextfield.text = ""
+        // Set default image
+        imageView.image = UIImage(named: "DefaultImage2")
+        // Disable the save button
+        saveButton.isEnabled = false
+    }
+    
+    func decimal(string: String) -> Double {
+        let formatter = NumberFormatter()
+        formatter.generatesDecimalNumbers = true
+        formatter.decimalSeparator = ","
+        return formatter.number(from: string) as? Double ?? 0
+    }
+    
     private func checkForDecimalInput(value:String) -> Bool{
         // Check the incomming string if it is a decimal value and return true or false
-        if !value.isEmpty && value.rangeOfCharacter(from: CharacterSet.decimalDigits) != nil {
+        if !value.isEmpty && value.rangeOfCharacter(from: CharacterSet.decimalDigits) != nil{
             return true
         }else {
             return false
@@ -230,8 +266,14 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     
     private func checkForAlphabeticalInput(value:String) -> Bool {
         // Check the incomming string if it is an alphabetical value and return true or false
-        if !value.isEmpty && value.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil {
-            return true
+        if !value.isEmpty && value.count > 1 {
+            let letters = NSCharacterSet.letters
+            let range = value.rangeOfCharacter(from: letters)
+            if  range != nil {
+               return true
+            }else {
+                return false
+            }
         }else {
             return false
         }

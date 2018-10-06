@@ -13,6 +13,8 @@
 		1F1C9F72215A80FB0026D14A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F71215A80FB0026D14A /* Assets.xcassets */; };
 		1F1C9F75215A80FB0026D14A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F73215A80FB0026D14A /* LaunchScreen.storyboard */; };
 		1F1C9F80215A80FB0026D14A /* NutrientsTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1C9F7F215A80FB0026D14A /* NutrientsTrackerTests.swift */; };
+		1F5DBFDB2169149A009F0D6C /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5DBFDA2169149A009F0D6C /* PersistenceService.swift */; };
+		1F5DBFDD21691501009F0D6C /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5DBFDC21691501009F0D6C /* AuthenticationService.swift */; };
 		1FAC41EB216624B000123C86 /* NutrientsTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */; };
 		1FD7FC7E2163B4E700025767 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD7FC7D2163B4E700025767 /* ProductViewController.swift */; };
 		1FD7FC8021642F3F00025767 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FD7FC7F21642F3E00025767 /* LoginViewController.swift */; };
@@ -46,6 +48,8 @@
 		1F1C9F7B215A80FB0026D14A /* NutrientsTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NutrientsTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C9F7F215A80FB0026D14A /* NutrientsTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientsTrackerTests.swift; sourceTree = "<group>"; };
 		1F1C9F81215A80FB0026D14A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F5DBFDA2169149A009F0D6C /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
+		1F5DBFDC21691501009F0D6C /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
 		1FAC41EA216624B000123C86 /* NutrientsTrackerModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NutrientsTrackerModel.xcdatamodel; sourceTree = "<group>"; };
 		1FD7FC7D2163B4E700025767 /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
 		1FD7FC7F21642F3E00025767 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -112,18 +116,20 @@
 		1F1C9F69215A80FA0026D14A /* NutrientsTracker */ = {
 			isa = PBXGroup;
 			children = (
-				1FD7FC81216432EB00025767 /* GoogleService-Info.plist */,
-				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
-				1F1C9F6C215A80FA0026D14A /* ViewController.swift */,
 				1F1C9F71215A80FB0026D14A /* Assets.xcassets */,
 				1F1C9F6E215A80FA0026D14A /* Main.storyboard */,
 				1F1C9F73215A80FB0026D14A /* LaunchScreen.storyboard */,
 				1F1C9F76215A80FB0026D14A /* Info.plist */,
+				1FD7FC81216432EB00025767 /* GoogleService-Info.plist */,
+				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
+				1F1C9F6C215A80FA0026D14A /* ViewController.swift */,
 				1FD7FC7D2163B4E700025767 /* ProductViewController.swift */,
 				1FD7FC7F21642F3E00025767 /* LoginViewController.swift */,
 				1FFF4FBB21660CD20083E731 /* DateViewController.swift */,
 				1FFF4FBD216613330083E731 /* DaySetupViewController.swift */,
 				1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */,
+				1F5DBFDA2169149A009F0D6C /* PersistenceService.swift */,
+				1F5DBFDC21691501009F0D6C /* AuthenticationService.swift */,
 				1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */,
 			);
 			path = NutrientsTracker;
@@ -361,7 +367,9 @@
 				1F1C9F6D215A80FA0026D14A /* ViewController.swift in Sources */,
 				1FD7FC7E2163B4E700025767 /* ProductViewController.swift in Sources */,
 				1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */,
+				1F5DBFDB2169149A009F0D6C /* PersistenceService.swift in Sources */,
 				1FAC41EB216624B000123C86 /* NutrientsTracker.xcdatamodeld in Sources */,
+				1F5DBFDD21691501009F0D6C /* AuthenticationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

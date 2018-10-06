@@ -14,8 +14,8 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     //MARK: Properties
     var productName:String?
     var weight:Decimal?
-    var products:[NSManagedObject] = []
-    var context:NSManagedObjectContext?
+    var products:[Product] = []
+    //var context:NSManagedObjectContext?
     var selectedProduct:NSManagedObject?
     
     //MARK: ViewController Functions
@@ -32,9 +32,17 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var productTable: UITableView!
     
     //MARK:  IBActions
+    @IBAction func signOffUser(_ sender: UIBarButtonItem) {
+        if AuthenticationService.signOffUser() {
+            _ = navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
     @IBAction func searchProduct(_ sender: UIButton) {
         // Check textfield for empty value
         if !(nameTextField.text?.isEmpty)!{
+            // Closses the keyboard if the user didn't use the return button
+            nameTextField.resignFirstResponder()
             // Store the textfields value
             productName = nameTextField.text
             // Load the stored data form Core Data
@@ -61,33 +69,19 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     
     //MARK: Helper Functions
     func fetchDataFromContext(){
+        // Make the product array empty for every query
+        products.removeAll()
         // Initialize the context
-        accessContext()
+    //    accessContext()
         // Create the fetchRequest for the type of product
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Product")
         // Initialize a predicate to use with the fetchRequest (Fetch product name must contain the user input name)
-        fetchRequest.predicate = NSPredicate(format:"name == %@%", productName!)
+        fetchRequest.predicate = NSPredicate(format:"name contains[c] %@", productName!)
         do {
             // Access the store to retrieve the product
-            products = try (context?.fetch(fetchRequest))!
+            products = try (PersistenceService.context.fetch(fetchRequest)) as! [Product]
         }catch let error as NSError{
             print("Could not fetch. \(error)")
-        }
-    }
-    
-    func accessContext(){
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        context = appDelegate.persistentContainer.viewContext
-    }
-    
-    func saveContext(){
-        do {
-            // Save changes made in the current context
-            try context!.save()
-        }catch let error as NSError {
-            print("Could not save \(error)")
         }
     }
     
@@ -106,9 +100,13 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         // Add the third action (Remove) to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Remove", style: .default, handler: { (UIAlertAction) in
             // Acces the current context with the delete method and pass the selected product to delete through
-            self.context?.delete(selection)
+            //self.context?.delete(selection)
+            PersistenceService.context.delete(selection)
             // Call the saveContext method to save all changes made in the context
-            self.saveContext()
+            PersistenceService.saveContext()
+            //self.saveContext()
+            // Repopulate the product array with valid products from the database
+            self.fetchDataFromContext()
             // Reload the viewTable so the removed product won't be displayed anymore
             self.productTable.reloadData()
         }))
@@ -127,9 +125,10 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
             // Select the product on the current selected index inside the table
             let selection = products[indexPath.row]
             // Delete the selected product inside the context
-            self.context?.delete(selection)
+            PersistenceService.context.delete(selection)
+            //self.context?.delete(selection)
             // Save all the changes inside the context
-            self.saveContext()
+            PersistenceService.saveContext()
             // Delete the selected product form the current found products array
             self.products.remove(at: indexPath.row)
             // Delete the product from the UITableView with the fade animation
@@ -148,7 +147,8 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         // Create a cell that is reusable for every index
         let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath)
         // Give the cell textlabel a value
-        cell.textLabel!.text = product.value(forKeyPath: "name") as? String
+        //cell.textLabel!.text = product.value(forKeyPath: "name") as? String
+        cell.textLabel!.text = product.name
         // return the cell
         return cell
     }

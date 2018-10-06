@@ -41,6 +41,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             if segmentIsLogin {
                 Auth.auth().signIn(withEmail: email, password: password) { (userData, error) in
                     if (userData?.user) != nil {
+                        self.resetTextFields()
                         self.performSegue(withIdentifier: "DateSelection", sender: self)
                     }else {
                         //Error
@@ -95,13 +96,24 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         present(alert, animated: true, completion: nil)
     }
     
+    //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
     
-    //MARK: Private Methods
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        checkSingedInUser()
+    }
     
+    private func checkSingedInUser(){
+        if Auth.auth().currentUser != nil {
+            self.performSegue(withIdentifier: "DateSelection", sender: self)
+        }
+    }
+    
+    //MARK: Helper Functions
     private func resetUIToRegister() {
         loginLabel.text = "Please Register"
         loginButton.setTitle("Register", for: .normal)
@@ -128,8 +140,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         return true
     }
 
-    //MARK:  Navigation
-
+    //MARK: Segue Prepare
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
