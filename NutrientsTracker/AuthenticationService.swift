@@ -19,4 +19,12 @@ class AuthenticationService{
             return false
         }
     }
+    
+    static func checkSingedInUser() -> Bool{
+        if Auth.auth().currentUser != nil {
+                return true
+        }else {
+            return false
+        }
+    }
 }

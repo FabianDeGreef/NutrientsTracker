@@ -64,14 +64,18 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     //MARK: Helper Functions
     private func checkForExistingDates() {
-        for value in dayTotals{
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .short
-            if dateFormatter.string(from: value.date!) == dateFormatter.string(from: date)  {
-                addButton.isEnabled = false
-                return
-            }else {
-                addButton.isEnabled = true
+        if dayTotals.count == 0 {
+            addButton.isEnabled = true
+        }else {
+            for value in dayTotals{
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateStyle = .short
+                if dateFormatter.string(from: value.date!) == dateFormatter.string(from: date)  {
+                    addButton.isEnabled = false
+                    return
+                }else {
+                    addButton.isEnabled = true
+                }
             }
         }
     }
@@ -150,6 +154,8 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.dayTotals.remove(at: indexPath.row)
             // Delete the product from the UITableView with the fade animation
             self.entryTable.deleteRows(at: [indexPath], with: .fade)
+            // Check if the removed date can be accesed again
+            self.checkForExistingDates()
         }
     }
     
