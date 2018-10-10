@@ -1,7 +1,7 @@
-# NutrientsTracker
-Mobile Development Project
 
 ## NutrientsTracker wiki!
+Mobile Development Project for iOs 12
+Made with swift 4.2 and Xcode 10
 
 ## The App Features
 
