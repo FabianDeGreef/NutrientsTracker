@@ -17,175 +17,212 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet weak var entryTable: UITableView!
     @IBOutlet weak var addButton: UIBarButtonItem!
     
-    
     //MARK: Properties
-    var date:Date!
-    var userEmail:String = ""
+    var dateFromPicker:Date!
+    var emailFromUser:String = ""
     var currentUser:User?
     var users:[User] = []
     var dayTotals:[DayTotal] = []
+    var selectedDayTotal:DayTotal?
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        // Sets the table delegate to the current ViewController
+        entryTable.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        date = datePicker.date
+        // Take the datePicker value and store it inside the dateFromPicker variable
+        dateFromPicker = datePicker.date
+        // Check if there is a signed in user
         checkSingedInUser()
+        // Check if the signed in user was found inside the database
         checkDatabaseForUser()
+        // Check if the signed in user has DayTotal objects
         checkForExistingUserDayTotals()
-        checkForExistingDates()
+        // Check which dates are available to create a DayTotal
+        checkForAvailableDates()
     }
     
     //MARK: IBActions
     @IBAction func datePickerValueChanged(_ sender: UIDatePicker) {
-        date = sender.date
-        checkForExistingDates()
+        dateFromPicker = sender.date
+        // Check if the picked date isn't used by an existing DayTotal
+        checkForAvailableDates()
     }
     
     @IBAction func addNewEntry(_ sender: UIBarButtonItem) {
-        if date != nil {
-            let dayTotal = DayTotal(context: PersistenceService.context)
-            dayTotal.date = date
-            currentUser?.addToDayTotals(dayTotal)
+        // Create new DayTotal object
+        let dayTotal = DayTotal(context: PersistenceService.context)
+        // Sets the new DayTotal date value with the property value
+        dayTotal.date = dateFromPicker
+        if currentUser != nil {
+            // Add the DayTotal object tot the currentUser
+            currentUser!.addToDayTotals(dayTotal)
+            // Save context changes
             PersistenceService.saveContext()
-            performSegue(withIdentifier: "DayEntrySetup", sender: self)
+            // Store the new DayTotal object inside the selectedDayTotal property
+            selectedDayTotal = dayTotal
+            // Display the DayTotalSetupViewController using the DayTotalSetup segue identifier
+            performSegue(withIdentifier: "DayTotalSetup", sender: self)
         }
     }
     
     @IBAction func signOffUser(_ sender: UIBarButtonItem) {
+        // Sign out the current user
         if AuthenticationService.signOffUser() {
+            // Return back to the LoginViewController by popping the other views
             _ = navigationController?.popToRootViewController(animated: true)
         }
     }
     
     //MARK: Helper Functions
-    private func checkForExistingDates() {
-        if dayTotals.count == 0 {
-            addButton.isEnabled = true
-        }else {
-            for value in dayTotals{
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateStyle = .short
-                if dateFormatter.string(from: value.date!) == dateFormatter.string(from: date)  {
-                    addButton.isEnabled = false
-                    return
-                }else {
-                    addButton.isEnabled = true
-                }
+    // When the datePicker change event triggers check if the changed date has been already used by the DayTotals
+    private func checkForAvailableDates() {
+        // Loop through the DayTotals array to check which date isn't used
+        for dayTotal in dayTotals{
+            // Convert every DayTotal date to the string value
+            let stringDate = formatDateToString(dateValue: dayTotal.date!)
+            // Check if the string values are equal witht the string value from the dateFromPicker
+            if stringDate == formatDateToString(dateValue: dateFromPicker){
+                // If a match was found disable the add button
+                addButton.isEnabled = false
+                return
+            }else {
+                // if no match was found enable the add button
+                addButton.isEnabled = true
             }
         }
     }
     
     private func checkForExistingUserDayTotals() {
-        if currentUser?.dayTotals?.count != 0 {
-            let nsSetData:NSSet = (currentUser?.dayTotals)!
-            dayTotals = nsSetData.allObjects as! [DayTotal]
-            dayTotals.sort { (dayTotalOne, dayTotal2) -> Bool in
-                return dayTotalOne.date?.compare(dayTotal2.date!) == ComparisonResult.orderedAscending
-            }
-            entryTable.reloadData()
+        // Check if the current user has DayTotals
+        if currentUser != nil && currentUser?.dayTotals?.count != 0 {
+            // Covert the NSSet DayTotals to an array with DayTotals
+            convertNSDayTotalsSetToDayTotalArray()
         }else{
-            print("no dates found")
+            print("No dayTotals found in current user")
         }
     }
     
-    private func printDate() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yy"
-        let stringDate = dateFormatter.string(from: date)
-        print(stringDate)
+    private func convertNSDayTotalsSetToDayTotalArray(){
+        // Store the CurrentUser DayTotals inside a NSSet variable
+        let nsSet:NSSet = (currentUser?.dayTotals)!
+        // Convert the NSSet objects to a DayTotal array
+        dayTotals = nsSet.allObjects as! [DayTotal]
+        // Sort the array by date descending
+        dayTotals.sort { (dayTotalOne, dayTotal2) -> Bool in
+            return dayTotalOne.date?.compare(dayTotal2.date!) == ComparisonResult.orderedDescending
+        }
+        // Reload the table
+        entryTable.reloadData()
+
     }
     
     private func checkSingedInUser(){
+        // Check if there is already a signed in user
         if Auth.auth().currentUser != nil {
             if let user =  Auth.auth().currentUser?.email{
-                self.userEmail = user
-                print("user \(userEmail) is singed in")
+                // When a signed in user is found store the user email inside a variable
+                self.emailFromUser = user
+                print("User \(emailFromUser) is singed in")
             }
         }else {
-            print("No users are singed in")
+            print("No users are singed in now ")
         }
     }
     
+    func formatDateToString(dateValue:Date) -> String{
+        // Create a datefromatter
+        let dateFormatter = DateFormatter()
+        // Setting the dateformat
+        dateFormatter.dateFormat = "MM/dd/yy"
+        dateFormatter.dateStyle = .short
+        // Convert the DayTotal dates to a string value using the datefromatter
+        let stringDate = dateFormatter.string(from: dateValue)
+        return stringDate
+    }
+    
     private func checkDatabaseForUser() {
-        // Create the fetchRequest to find the user that matches with the email
+        // Create a fetchRequest to find a matching user with the signed in email
         let userFetch = NSFetchRequest<User>(entityName: "User")
-        // Initialize a predicate to use with the fetchRequest (Fetch user email must be equal with logged in email)
-        userFetch.predicate = NSPredicate(format:"email == %@", userEmail)
+        // Initialize a predicate email must match with user email
+        userFetch.predicate = NSPredicate(format:"email == %@", emailFromUser)
         do {
-            // Access the store to retrieve the matching user
-            if let userData = try (PersistenceService.context.fetch(userFetch).first){
-                currentUser = userData
-                //currentUser?.dayTotals?.adding(DayTotal(context: PersistenceService.context))
-                print(currentUser?.email ?? "")
-                print(currentUser?.dayTotals?.count ?? "")
+            // Access the database and retrieve the matching user
+            if let matchingUser = try (PersistenceService.context.fetch(userFetch).first){
+                currentUser = matchingUser
+                // DEBUG MESSAGE
+                print("User found with email: \(currentUser?.email ?? "")")
+                print("User has \(currentUser?.dayTotals?.count ?? 0) daytotals")
             }else {
-                // First time setup when a new user is registerd the email will be added to the datbase
-                print("Adding new user")
-                // Save user to database
-                // Create User object
+                // When no match was found add the new user to the database
                 let newUser = User(context: PersistenceService.context)
-                // Add the stored email to the user object
-                newUser.email = userEmail
-                // save the changes made inside the context
+                // Add the signed in email to the new user object
+                newUser.email = emailFromUser
+                // Save context changes
                 PersistenceService.saveContext()
+                // Store the new user value inside the currentUser property
+                currentUser = newUser
+                // DEBUG MESSAGE
+                print("Added new user with email \(emailFromUser)")
             }
         }catch{
-            print("Could not fetch. \(error)")
+            print("Could not fetch \(error)")
         }
     }
     
     //MARK: UITableView Delegates
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        // Add an editing style function to the table (Delete)
-        // When delete gesture is made call style delete
+        // Add an editing style function to the table
+        // When delete gesture is made call delete style
         if editingStyle == .delete {
-            // Select the product on the current selected index inside the table
+            // Select the dayTotal with the row index from the table
             let selection = dayTotals[indexPath.row]
-            // Delete the selected product inside the context
+            // Delete the selected dayTotal inside the context
             PersistenceService.context.delete(selection)
-            // Save all the changes inside the context
+            // Save context changes
             PersistenceService.saveContext()
-            // Delete the selected product form the current found products array
+            // Delete the selected dayTotal from the dayTotals array
             self.dayTotals.remove(at: indexPath.row)
-            // Delete the product from the UITableView with the fade animation
+            // Delete the dayTotal from the table with a fade animation
             self.entryTable.deleteRows(at: [indexPath], with: .fade)
-            // Check if the removed date can be accesed again
-            self.checkForExistingDates()
+            // Recalculate the available dates to choose from
+            self.checkForAvailableDates()
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Returns the total size from the products array to calculate the numbers of rows needed
+        // Returns the DayTotals array size to calculate the numbers of rows needed
         return dayTotals.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Thake the product from every index value inside the prodcuts array
+        // Take the DayTotal from every index value inside the DayTotals array
         let dayTotal = dayTotals[indexPath.row]
-        // Create a cell that is reusable for every index
+        // Create a cell that is reusable with the identified cell name
         let cell = entryTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath)
-        // Give the cell textlabel a value
-        //cell.textLabel!.text = product.value(forKeyPath: "name") as? String
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yy"
-        let stringDate = dateFormatter.string(from: dayTotal.date!)
-        cell.textLabel!.text = stringDate
-        // return the cell
+        // Add the date string value to the cell label
+        cell.textLabel!.text = formatDateToString(dateValue: dayTotal.date!)
+        cell.detailTextLabel?.text = "Consumed prodcuts: \(dayTotal.produtcs?.count ?? 0)"
+        // returning the cell
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // When a user select an index form the table the UIAlertView opens with the 4 options and gets access to the selected value at the moment
+        //  set the selectedDayTotal variable to the selected value form the table
+        selectedDayTotal = dayTotals[indexPath.row]
+        performSegue(withIdentifier: "DayTotalSetup", sender: self)
     }
     
     //MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        // Pass the currentDayTotal to the DaySetupViewController
+        if segue.destination is DaySetupViewController {
+            let daySetupVc = segue.destination as? DaySetupViewController
+            daySetupVc?.currentDayTotal = selectedDayTotal
+        }
     }
 }

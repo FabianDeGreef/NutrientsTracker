@@ -12,18 +12,28 @@ import CoreData
 class DaySetupViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
     //MARK: Properties
-    var productName:String?
-    var weight:Decimal?
+    var weight:Double = 0.0
+    var selectedProduct:Product?
+    var viewProduct:Product?
+    var productName:String = ""
+    var currentDayTotal:DayTotal?
     var products:[Product] = []
-    //var context:NSManagedObjectContext?
-    var selectedProduct:NSManagedObject?
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Give the viewcontroller delegate acces from the used tableview
+        // Sets the table delegate to the current ViewController
         productTable.delegate = self
+        // Sets the table datasource to the current ViewController
         productTable.dataSource = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Reset the form and varibales to default when the view will appear
+        resetForm()
+        // DEBUG MESSAGE
+        print("Consumed products in Daysetup: \(currentDayTotal?.produtcs?.count ?? 0)")
     }
     
     //MARK: IBOutlets
@@ -33,148 +43,288 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     
     //MARK:  IBActions
     @IBAction func signOffUser(_ sender: UIBarButtonItem) {
+        // Sign out the current user
         if AuthenticationService.signOffUser() {
+            // Return back to the LoginViewController by popping the other views
             _ = navigationController?.popToRootViewController(animated: true)
         }
     }
     
     @IBAction func searchProduct(_ sender: UIButton) {
-        // Check textfield for empty value
-        if !(nameTextField.text?.isEmpty)!{
-            // Closses the keyboard if the user didn't use the return button
-            nameTextField.resignFirstResponder()
-            // Store the textfields value
-            productName = nameTextField.text
+        // Dismisses the keyboard
+        nameTextField.resignFirstResponder()
+        // Check if the textfield is empty
+        if !(productName.isEmpty) {
             // Load the stored data form Core Data
             fetchDataFromContext()
             // Reload the product table to view the fetched products
             productTable.reloadData()
+        }else {
+            // DEBUG MESSAGE
+            print("No valid product name")
         }
     }
     
     @IBAction func addToDayTotal(_ sender: UIButton) {
-        // Check textfield for empty value
-        if !(weightTextfield.text?.isEmpty)!{
-            // Convert and store the textfield value
-            weight = Decimal(string: weightTextfield.text!)
-            // Load the DayResultViewController to add the selected product with the weight to the DayTotal
-            performSegue(withIdentifier: "DayEntrySetup", sender: self)
+        // Dismisses the keyboard
+        weightTextfield.resignFirstResponder()
+        // Check if the selected product and the weight are not nil
+        if weight > 0 {
+            if selectedProduct != nil {
+                // Create a new consumedProduct and calculate the dayTotal nutrient result
+                createConsumedProduct()
+                // Save context changes
+                PersistenceService.saveContext()
+                // Reset the form and varibales to default after completion
+                resetForm()
+                // Show an alert view when the consumed product is added to the dayTotal
+                showAlert(title: "Added to daytotal", message: "The consumed product was added to the dayTotal")
+
+            }else {
+                // DEBUG MESSAGE
+                print("No product was selected")
+                // Show an alert view when there is no product selected
+                showAlert(title: "No product", message: "There was no product selected")
+            }
+        }else {
+            // DEBUG MESSAGE
+            print("Weight was zero")
+            // Show an alert view when the weight value isn't valid
+            showAlert(title: "Weight was zero", message: "Please enter a new weight value")
         }
     }
     
     @IBAction func addNewProduct(_ sender: UIBarButtonItem) {
-        // Load the ProductViewController to create a new product
+        // Display the ProductViewController using the AddProduct segue identifier
         performSegue(withIdentifier: "AddProduct", sender: self)
     }
     
     //MARK: Helper Functions
-    func fetchDataFromContext(){
-        // Make the product array empty for every query
+    
+    // Creates custom AlertAction to alert the user
+    func showAlert(title: String, message: String){
+        // Create the UIAlertController with the incoming parameters
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        // Create the UIAlertAction to display an OK button and dismisses the alert after it is pressed
+        let action = UIAlertAction(title: "Ok", style: .default) { (UIAlertAction) in
+        }
+        // Adding the UIAlertAction to the UIAlertController
+        alert.addAction(action)
+        // Displaying the Alert
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func resetForm() {
+        nameTextField.text = ""
+        weightTextfield.text = ""
+        weight = 0.0
+        productName = ""
+        selectedProduct = nil
         products.removeAll()
-        // Initialize the context
-    //    accessContext()
-        // Create the fetchRequest for the type of product
+        productTable.reloadData()
+        viewProduct = nil
+    }
+    
+    func createConsumedProduct() {
+        // Create and calculate a new consumedProduct with the weight value
+        let consumedProduct = ConsumedProduct(context: PersistenceService.context)
+        consumedProduct.carbohydrates = ((selectedProduct?.carbohydrates)! / 100) * weight
+        consumedProduct.salt = ((selectedProduct?.salt)! / 100) * weight
+        consumedProduct.fat = ((selectedProduct?.fat)! / 100) * weight
+        consumedProduct.fiber = ((selectedProduct?.sugar)! / 100) * weight
+        consumedProduct.kilocalories = ((selectedProduct?.kilocalories)! / 100) * weight
+        consumedProduct.protein = ((selectedProduct?.cholesterol)! / 100) * weight
+        consumedProduct.name = selectedProduct?.name
+        consumedProduct.weight = weight
+        // Adds the new consumedProduct to the CurrentDayTotal consumedProducts set
+        currentDayTotal?.addToProdutcs(consumedProduct)
+        // Calculate the dayTotal results
+        updateDayTotalWithConsumedProduct(consumedProduct: consumedProduct)
+    }
+    
+    func updateDayTotalWithConsumedProduct(consumedProduct: ConsumedProduct){
+        // DEBUG MESSAGE
+        print("Carbohydrate total first: " + String(format: "%.2f" ,currentDayTotal?.carbohydratesTotal ?? "0.0"))
+        // Calculate the nutrient values for the dayTotal by adding the nutrient values from the new consumedProduct to the dayTotal
+        currentDayTotal?.carbohydratesTotal = (currentDayTotal?.carbohydratesTotal)! + consumedProduct.carbohydrates
+        currentDayTotal?.cholesterolTotal = (currentDayTotal?.cholesterolTotal)! + consumedProduct.protein
+        currentDayTotal?.saltTotal = (currentDayTotal?.saltTotal)! + consumedProduct.salt
+        currentDayTotal?.sugarTotal = (currentDayTotal?.sugarTotal)! + consumedProduct.fiber
+        currentDayTotal?.fatTotal = (currentDayTotal?.fatTotal)! + consumedProduct.fat
+        currentDayTotal?.kilocaloriesTotal = (currentDayTotal?.cholesterolTotal)! + consumedProduct.kilocalories
+        // DEBUG MESSAGE
+        print("Carbohydrate total leter: " + String(format: "%.2f" ,currentDayTotal?.carbohydratesTotal ?? "0.0"))
+    }
+    
+    func fetchDataFromContext(){
+        // Before fetching data from the database clear the prodcuts array
+        products.removeAll()
+        // Create a fetchRequest to find the matching products with the search value
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Product")
-        // Initialize a predicate to use with the fetchRequest (Fetch product name must contain the user input name)
-        fetchRequest.predicate = NSPredicate(format:"name contains[c] %@", productName!)
+        // Initialize a predicate product name must contain the search value
+        fetchRequest.predicate = NSPredicate(format:"name contains[c] %@", productName)
         do {
-            // Access the store to retrieve the product
+            // Access the database and retrieve the matching products
             products = try (PersistenceService.context.fetch(fetchRequest)) as! [Product]
-        }catch let error as NSError{
-            print("Could not fetch. \(error)")
+        }catch {
+            // DEBUG MESSAGE
+            print("Error fetching request")
+        }
+        if products.count == 0 {
+            // Show an alert view when there was no product found with the search value
+            showAlert(title: "No product found", message: "The search result didn't match with a product")
         }
     }
     
-    func showSelectionMenu(selection: NSManagedObject){
-        // Create an actionSheet with 4 user options
+    func showSelectionMenu(){
+        // Creates an actionSheet that contains 4 options
         let actionSheet = UIAlertController(title: "Choose an option", message: "Select, View or Remove product", preferredStyle: .actionSheet)
-        // Add the first action (Select) to the actionSheet
+        // Add the select action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Select", style: .default, handler: { (action: UIAlertAction) in
-            // Make the selectedProduct variable the current selected product from the table
-            self.selectedProduct = selection
+            // The product is selected and stored inside the selectedProduct variable do nothing more
         }))
-        // Add the second action (View) to the actionSheet
+        // Add the detail view action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "View", style: .default, handler: { (UIAlertAction) in
-            // Display a detail view for the selected product
+            // Display the ProductViewController using the ViewProduct segue identifier
+            // When option view is choosen store the selectedProduct value inside the viewProduct
+            self.viewProduct = self.selectedProduct
+            self.performSegue(withIdentifier: "ViewProduct", sender: self)
+
         }))
-        // Add the third action (Remove) to the actionSheet
+        // Add the remove action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Remove", style: .default, handler: { (UIAlertAction) in
-            // Acces the current context with the delete method and pass the selected product to delete through
-            //self.context?.delete(selection)
-            PersistenceService.context.delete(selection)
-            // Call the saveContext method to save all changes made in the context
+            // Delete the selected product inside the context
+            PersistenceService.context.delete(self.selectedProduct!)
+            // Save context changes
             PersistenceService.saveContext()
-            //self.saveContext()
-            // Repopulate the product array with valid products from the database
-            self.fetchDataFromContext()
+            // Get the index from the selected table row
+            if let index = self.productTable.indexPathForSelectedRow {
+                // Delete the product from the array with the row index
+                self.products.remove(at: index.row)
+            }
             // Reload the viewTable so the removed product won't be displayed anymore
             self.productTable.reloadData()
+            // set the selectedProduct variable  to nil
+            self.selectedProduct = nil
+            // Set the weighTextField to default
+            self.weightTextfield.text = ""
+            // Set the weight property to default
+            self.weight = 0.0
         }))
-        // Add the fourth action (Cancel) to the actionSheet
+        // Add the cancel action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        // Dissmis the UIAlertController
+        // Dismisses the UIAlertController
         present(actionSheet,animated: true, completion: nil)
     }
     
-
     //MARK: UITableView Delegates
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        // Add an editing style function to the table (Delete)
-        // When delete gesture is made call style delete
+        // Add an editing style function to the table
+        // When delete gesture is made call delete style
         if editingStyle == .delete {
-            // Select the product on the current selected index inside the table
+            // Select the prodcut with the row index from the table
             let selection = products[indexPath.row]
-            // Delete the selected product inside the context
+            // Delete the selected dayTotal inside the context
             PersistenceService.context.delete(selection)
-            //self.context?.delete(selection)
-            // Save all the changes inside the context
+            // Save context changes
             PersistenceService.saveContext()
-            // Delete the selected product form the current found products array
+            // Delete the selected dayTotal from the dayTotals array
             self.products.remove(at: indexPath.row)
-            // Delete the product from the UITableView with the fade animation
+            // Delete the dayTotal from the table with a fade animation
             self.productTable.deleteRows(at: [indexPath], with: .fade)
+            // Set the weighTextField to default
+            weightTextfield.text = ""
+            // Set the weight property to default
+            weight = 0.0
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Returns the total size from the products array to calculate the numbers of rows needed
+        // Returns the Products array size to calculate the numbers of rows needed
         return products.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Thake the product from every index value inside the prodcuts array
+        // Take the Prodcut from every index value inside the Products array
         let product = products[indexPath.row]
-        // Create a cell that is reusable for every index
+        // Create a cell that is reusable with the identified cell name
         let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath)
-        // Give the cell textlabel a value
-        //cell.textLabel!.text = product.value(forKeyPath: "name") as? String
+        // Sets the cell textLabel value with the product name
         cell.textLabel!.text = product.name
-        // return the cell
+        cell.detailTextLabel?.text = "KCAL: " + ConverterService.convertDoubleToString(double: product.kilocalories)
+        // Return the cell
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // When a user select an index form the table the UIAlertView opens with the 4 options and gets access to the selected value at the moment
-        showSelectionMenu(selection: products[indexPath.row])
+        // Store the selected item from the table inside a variable
+        selectedProduct = products[indexPath.row]
+        // Show the UIAlert selection menu
+        showSelectionMenu()
     }
     
     //MARK: UITextfield Delegates
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // When inside a textfield the retun keyboard button is pressed the keyboard first responder changes
         switch textField {
         case nameTextField:
-            // Closses the keyboard after return
+            // Dismisses the keyboard after the return button was pressed on the keyboard
             nameTextField.resignFirstResponder()
         default:
-            // Clossed the keyboard after return
+            // Dismisses the keyboard after the return button was pressed on the keyboard
             weightTextfield.resignFirstResponder()
         }
         return true
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        switch textField {
+        case weightTextfield:
+            // Validate the user input
+            if ValidationService.decimalValidator(value: weightTextfield.text!){
+                // Convert the validated value from string to double and store it inside the property
+                weight = ConverterService.convertStringToDouble(string: weightTextfield.text!)
+                // Display the converted value inside the textField with 2 decimals
+                weightTextfield.text = ConverterService.convertDoubleToString(double: weight)
+            }else {
+                // If validation was failed set the property and textField with a default value
+                weight = 0.0
+                weightTextfield.text = ""
+                weightTextfield.placeholder = "Enter valid weight"
+            }
+        default:
+            // Validate the user input
+            if ValidationService.alphabeticalValidator(value: nameTextField.text ?? ""){
+                // Set the property with the value
+                productName = nameTextField.text!
+                nameTextField.resignFirstResponder()
+
+            }else {
+                // If validation was failed set the productName property with a default value
+                productName = ""
+                // Set the textField with a default value
+                nameTextField.text = ""
+                // Set the textField place holder to inform the user
+                nameTextField.placeholder = "Enter valid name"
+                // Show an alert view when the search value isn't valid
+                showAlert(title: "Enter valid value", message: "Enter a valid search value")
+            }
+        }
+    }
+    
     // MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        // If the segue destination is the ProductViewController
+        if viewProduct != nil && segue.destination is ProductViewController{
+            // Pass the selectedProduct to the ProductViewController
+            let productVc = segue.destination as? ProductViewController
+            productVc?.viewProduct = viewProduct
+        }
+        
+        // If the segue destination is the DayResultViewController
+        if currentDayTotal != nil && segue.destination is DayResultViewController {
+            // Pass the currentDayTotal to the DayResultViewController
+            let dayResultVc = segue.destination as? DayResultViewController
+            dayResultVc?.currentDayTotal = currentDayTotal
+        }
     }
 }

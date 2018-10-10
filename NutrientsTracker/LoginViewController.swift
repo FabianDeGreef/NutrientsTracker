@@ -20,24 +20,27 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: Properties
     var segmentIsLogin:Bool = true
+    var userEmail:String = ""
+    var userPassword:String = ""
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // When the view will appear check first if a user is already singed in
-        checkSingedInUser()
+        // Check first if a user is already signed in
+        checkSignedInUser()
+        userEmail = ""
+        userPassword = ""
     }
     
     //MARK: IBActions
     @IBAction func segmentControlChanged(_ sender: UISegmentedControl) {
-        // When the segmentControl is switched , switch the segmentContol values
+        // When segmentControl is changed switch property values
         segmentIsLogin = !segmentIsLogin
-        // When the segmentControl values are changed check the state and reset the UI to the correct action
+        // When property values are changed reset the UI to the correct state
         if segmentIsLogin {
             resetUIToLogin()
         }else {
@@ -46,108 +49,49 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func loginButtonPressed(_ sender: UIButton) {
-        // Validate email and password
-        if validateLogin() {
-            let email = emailTextfield.text!
-            let password = passwordTextfield.text!
-            // If login is selected
+        // Dismisses the keyboard
+        passwordTextfield.resignFirstResponder()
+        // Check if userPassword and userEmail are not empty
+        if userPassword.count > 0 && userEmail.count > 0 {
+            // When login was selected
             if segmentIsLogin {
                 // Sign in an existing user
-                Auth.auth().signIn(withEmail: email, password: password) { (userData, error) in
-                    // Check if the user exists
+                Auth.auth().signIn(withEmail: userEmail, password: userPassword) { (userData, error) in
+                    // Check if the userData doesn't return nil
                     if (userData?.user) != nil {
-                        // Reset the textfields with default values
+                        // Reset the textFields
                         self.resetTextFields()
-                        // Display the next view afer the succesful sign in
+                        // When signed in perfrom segue to the DateViewController
                         self.performSegue(withIdentifier: "DateSelection", sender: self)
                     }else {
-                        // Show custom alert message when login was failed
-                        self.showAlertAction(title: "No User Found", message: "No user found with this email and password")
+                        // Show alert message when login was failed
+                        self.showAlertAction(title: "No user found", message: "No user found matching with email or password")
                     }
                 }
+                // When register was selected
             }else{
                 // Create a new user
-                Auth.auth().createUser(withEmail: email, password: password) { (userData, error) in
-                    // Check if the creaded user was succesfull added to the api
+                Auth.auth().createUser(withEmail: userEmail, password: userPassword) { (userData, error) in
+                    // Check if the creaded userDate doesn't return nil
                     if (userData?.user) != nil {
-                        // Reset the textfields with default values
+                        // Reset the textFields
                         self.resetTextFields()
-                        // Show custom alert message when the registration is succesfull
-                        self.showAlertAction(title: "Registration Complete", message: "Please enter  email and password to login")
+                        // Show alert message when the registration was succesfull
+                        self.showAlertAction(title: "Registration complete", message: "Please enter  email and password to login")
                     }else{
-                        // Show custom alert message when registration was failed
-                        self.showAlertAction(title: "Could Not Register", message: "Please try again")
+                        // Show alert message when registration failed
+                        self.showAlertAction(title: "Could not register", message: "Please try again")
                     }
                 }
             }
-        }
-    }
-    
-    //MARK: Helper Functions
-    private func checkSingedInUser(){
-    // Check if there is stil a singed in user tracked by the web API if not this function will return nil and nothing more will happen
-        if AuthenticationService.checkSingedInUser() {
-            // If a user is already signed in, pass the login screen and give access to the app because this user is currently signed in display the next screen after the login view
-            self.performSegue(withIdentifier: "DateSelection", sender: self)
-        }
-    }
-    
-    // Validate email and password by checking for empty values, @ value for email and password length
-    func validateLogin() -> Bool {
-        let email = emailTextfield.text!
-        let password = passwordTextfield.text!
-        
-        if !email.isEmpty {
-            if !password.isEmpty {
-                if email.contains("@") && password.count > 3{
-                    return true
-                }else {
-                    showAlertAction(title: "Unvalid Values", message: "Please enter correct email and password")
-                    return false
-                }
-            }else {
-                showAlertAction(title: "Unvalid Password", message: "Please enter a valid password")
-                return false
-            }
         }else {
-            showAlertAction(title: "Unvalid Email", message: "Please enter a valid email")
-            return false
+            showAlertAction(title: "Unvalid values", message: "Please enter a valid email and password")
         }
-    }
-    
-    // Creates custom AlertActions to alert the user
-    func showAlertAction(title: String, message: String){
-        // Create the UIAlertController with the given values
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        // Create the UIAlertAction to display a Ok button and dismisses the alert after it is pressed
-        let action = UIAlertAction(title: "Ok", style: .default) { (UIAlertAction) in
-        }
-        // Adding the UIAlertAction to the UIAlertController
-        alert.addAction(action)
-        // Displaying the alert view
-        present(alert, animated: true, completion: nil)
-    }
-    
-    // Reset the UI matching to a registration form
-    private func resetUIToRegister() {
-        loginLabel.text = "Please Register"
-        loginButton.setTitle("Register", for: .normal)
-    }
-    
-    // Reset the UI matching to a login form
-    private func resetUIToLogin() {
-        loginLabel.text = "Please Login"
-        loginButton.setTitle("Login", for: .normal)
-    }
-    
-    // Reset the 2 textfields to an empty string
-    private func resetTextFields() {
-        emailTextfield.text = ""
-        passwordTextfield.text = ""
     }
     
     //MARK: UITextfield Delegates
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        // Jump from the email textField to the password textField when pressing return button from the keyboard
         switch textField {
         case emailTextfield:
             passwordTextfield.becomeFirstResponder()
@@ -156,11 +100,79 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         return true
     }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        switch textField {
+        case emailTextfield:
+            if ValidationService.validateEmail(email: emailTextfield.text!){
+                userEmail = emailTextfield.text!
+            }else {
+                userEmail = ""
+                emailTextfield.text = ""
+                emailTextfield.placeholder = "Enter valid email"
+                showAlertAction(title: "Unvalid email", message: "Please enter a valid email")
+            }
+        default:
+            if ValidationService.validatePassword(password: passwordTextfield.text!){
+                userPassword = passwordTextfield.text!
+
+            }else {
+                userPassword = ""
+                passwordTextfield.text = ""
+                passwordTextfield.placeholder = "Enter valid password"
+                showAlertAction(title: "Unvalid password", message: "Please enter a valid password")
+            }
+        }
+    }
+    
+    //MARK: Helper Functions
+    private func checkSignedInUser(){
+    // Check if a user is still signed in if so go directly to the next view
+        if AuthenticationService.checkSingedInUser() {
+            // If the user is signed in perform segue to the DateViewController
+            self.performSegue(withIdentifier: "DateSelection", sender: self)
+        }
+    }
+    
+    // Creates custom AlertAction to alert the user
+    func showAlertAction(title: String, message: String){
+        // Create the UIAlertController with the incoming parameters
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        // Create the UIAlertAction to display an OK button and dismisses the alert after it is pressed
+        let action = UIAlertAction(title: "Ok", style: .default) { (UIAlertAction) in
+        }
+        // Adding the UIAlertAction to the UIAlertController
+        alert.addAction(action)
+        // Displaying the Alert
+        present(alert, animated: true, completion: nil)
+    }
+    
+    // Reset UI to registration form
+    private func resetUIToRegister() {
+        loginLabel.text = "Please Register"
+        loginButton.setTitle("Register", for: .normal)
+        resetProperties()
+    }
+    
+    // Reset UI to login form
+    private func resetUIToLogin() {
+        loginLabel.text = "Please Login"
+        loginButton.setTitle("Login", for: .normal)
+        resetProperties()
+    }
+    
+    // Reset the textfields to empty string
+    private func resetTextFields() {
+        emailTextfield.text = ""
+        passwordTextfield.text = ""
+    }
+    
+    private func resetProperties() {
+        userPassword = ""
+        userEmail = ""
+    }
 
     //MARK: Segue Prepare
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
+    //override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    //}
 }

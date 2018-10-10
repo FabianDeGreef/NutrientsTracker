@@ -18,6 +18,7 @@ class PersistenceService {
     
     // Accesable static context variable to return the presisentContainer
     static var context: NSManagedObjectContext {
+        // Return the persistentContainer.viewContext
         return persistentContainer.viewContext
     }
     
@@ -36,6 +37,7 @@ class PersistenceService {
     static func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
+            // Save when context has changes
             do {
                 try context.save()
             } catch {

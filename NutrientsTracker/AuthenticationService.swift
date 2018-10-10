@@ -10,6 +10,8 @@ import UIKit
 import FirebaseAuth
 
 class AuthenticationService{
+    
+    // Sign out the current user and return true or false
     static func signOffUser() -> Bool {
         do {
             try Auth.auth().signOut()
@@ -19,7 +21,7 @@ class AuthenticationService{
             return false
         }
     }
-    
+    // Check if user is singed in and return true or false
     static func checkSingedInUser() -> Bool{
         if Auth.auth().currentUser != nil {
                 return true

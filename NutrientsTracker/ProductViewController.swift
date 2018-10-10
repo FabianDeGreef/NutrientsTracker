@@ -12,7 +12,6 @@ import CoreData
 class ProductViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate {
 
     //MARK: Properties
-    //var context:NSManagedObjectContext?
     var sugarValue:Double = 0.0
     var fatValue:Double = 0.0
     var cholesterolValue:Double = 0.0
@@ -20,6 +19,8 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     var carbohydratesValue:Double = 0.0
     var kilocalorieValue:Double = 0.0
     var nameValue:String = ""
+    var viewProduct:Product?
+    var viewConsumedProduct:ConsumedProduct?
     
     //MARK: IBOutlets
     @IBOutlet weak var imageView: UIImageView!
@@ -32,6 +33,8 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     @IBOutlet weak var nameTextfield: UITextField!
     @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var cancelButton: UIBarButtonItem!
+    @IBOutlet weak var resetButton: UIBarButtonItem!
+    @IBOutlet weak var titleLabel: UILabel!
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
@@ -40,58 +43,67 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Sets the context value when the viewcontroller will display
-        //accessContext()
-        if nameValue.count < 1 {
+        // Disable the save button when the view will appear
+        if nameValue.isEmpty{
             saveButton.isEnabled = false
         }
+        // Check if the user wants to view a product or consumed product
+        checkDisplayMode()
     }
     
     //MARK: IBActions
     @IBAction func imageClicked(_ sender: UITapGestureRecognizer) {
         // Create an ImagePickerController
         let imagePickerController = UIImagePickerController()
-        // Make the current ViewController delegate over ImagePickerController actions
+        // Sets the ImagePickerController delegate to the current ViewController
         imagePickerController.delegate = self
-        // Create an UIAlertController actionSheet with 3 user options
-        let actionSheet = UIAlertController(title: "Choose an option", message: "Thake a picure or select one", preferredStyle: .actionSheet)
-        // Add the first actionSheet (Use Camera)
+        // Creates an actionSheet that contains 3 options
+        let actionSheet = UIAlertController(title: "Choose an option", message: "Take a picure or select one", preferredStyle: .actionSheet)
+        // Add the use camera action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Use Camera", style: .default, handler: { (action: UIAlertAction) in
-            // Check if the device has a camera source
+            // Check if the current device has a camera source
             if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera){
                 // Get the device camera
                 imagePickerController.sourceType = UIImagePickerController.SourceType.camera
-                // Display the camera
+                // Display the camera view
                 self.present(imagePickerController, animated: true, completion: nil)
             }else {
-                // If no camera was found on the device an new UIAlertController will be displayed with the message and the photo library wil be choosen
+                // If the device has no camera display message and open library instead
                 let alert = UIAlertController(title: "No Camera Was Found", message: "Please use your library instead", preferredStyle: .alert)
                 let alertAction = UIAlertAction(title: "Ok", style: .default, handler: { (UIAlertAction) in
                     // Get the photoLibrary
                     imagePickerController.sourceType = .photoLibrary
-                    // Display the photoLibrary
+                    // Display the photoLibrary view
                     self.present(imagePickerController, animated: true, completion: nil)
                 })
                 alert.addAction(alertAction)
                 self.present(alert, animated: true, completion: nil)
             }
         }))
-        // Add the second actionSheet (Library)
+        // Add the use library action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Choose From Library", style: .default, handler: { (UIAlertAction) in
             // Get the photoLibrary
             imagePickerController.sourceType = .photoLibrary
-            // Display the photoLibrary
+            // Display the photoLibrary view
             self.present(imagePickerController, animated: true, completion: nil)
         }))
-        // Add the third actionSheet (cancel)
+        // Add the cancel action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        // Dismiss the UIAlertController view
+        // Dismisses the UIAlertController view
         present(actionSheet,animated: true, completion: nil)
     }
     
     @IBAction func saveProduct(_ sender: UIBarButtonItem) {
-        // Save product to database
-        //let product = Product(context: context!)
+        // Creates and save the new product
+        createProduct()
+        // Save context changes
+        PersistenceService.saveContext()
+        // Reset the form
+        resetForm()
+    }
+    
+    func createProduct(){
+        // Create a new product with the values form values
         let product = Product(context: PersistenceService.context)
         product.name = nameValue
         product.kilocalories = kilocalorieValue
@@ -100,92 +112,94 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         product.fat = fatValue
         product.salt = saltValue
         product.sugar = sugarValue
-        resetView()
-        PersistenceService.saveContext()
-        //saveContext()
-    }
-    
-    @IBAction func cancelChanges(_ sender: UIBarButtonItem) {
-        // Return to the other view by pop this view form the view stack
-        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func clearForm(_ sender: UIBarButtonItem) {
-        resetView()
+        // Resets the form
+        resetForm()
     }
     
     //MARK: UITextfield Delegates
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField {
         case sugarTextfield:
-            // Checks the textfield text value inside the checkForDecimalInput method to validate the text contains only numbers and or coma. This switch case checks every textfield inside this ViewController
-            if checkForDecimalInput(value: sugarTextfield.text!){
-                // Set the propertie value with the validated one form the textfield and convert it to a double with a comma
-                sugarValue = decimal(string: sugarTextfield.text!)
-                print(sugarValue)
+            // Validate the user input
+            if ValidationService.decimalValidator(value: sugarTextfield.text!){
+                // Convert the validated value from string to double and store it inside the property
+                sugarValue = ConverterService.convertStringToDouble(string: sugarTextfield.text!)
+                // Display the converted value inside the textField with 2 decimals
+                sugarTextfield.text = ConverterService.convertDoubleToString(double: sugarValue)
+                
             }else {
+                // If validation was failed set the property and textField with a default value
                 sugarValue = 0.0
-                sugarTextfield.text = String("0,0")
+                sugarTextfield.text = String("0,00")
             }
         case fatTextfield:
-            if checkForDecimalInput(value: fatTextfield.text!){
-                fatValue = decimal(string: fatTextfield.text!)
-                print(fatValue)
+            if ValidationService.decimalValidator(value: fatTextfield.text!){
+                fatValue = ConverterService.convertStringToDouble(string: fatTextfield.text!)
+                fatTextfield.text = ConverterService.convertDoubleToString(double: fatValue)
             }else {
                 fatValue = 0.0
-                fatTextfield.text = String("0,0")
+                fatTextfield.text = String("0,00")
             }
         case cholesterolTextfield:
-            if checkForDecimalInput(value: cholesterolTextfield.text!){
-                cholesterolValue = decimal(string: cholesterolTextfield.text!)
-                print(cholesterolValue)
+            if ValidationService.decimalValidator(value: cholesterolTextfield.text!){
+                cholesterolValue = ConverterService.convertStringToDouble(string: cholesterolTextfield.text!)
+                cholesterolTextfield.text = ConverterService.convertDoubleToString(double: cholesterolValue)
             }else {
                 cholesterolValue = 0.0
-                cholesterolTextfield.text = String("0,0")
+                cholesterolTextfield.text = String("0,00")
             }
         case saltTextfield:
-            if checkForDecimalInput(value: saltTextfield.text!){
-                saltValue = decimal(string: saltTextfield.text!)
-                print(saltValue)
+            if ValidationService.decimalValidator(value: saltTextfield.text!){
+                saltValue = ConverterService.convertStringToDouble(string: saltTextfield.text!)
+                saltTextfield.text = ConverterService.convertDoubleToString(double: saltValue)
             }else {
                 saltValue = 0.0
-                saltTextfield.text = String("0,0")
+                saltTextfield.text = String("0,00")
             }
         case carbohydratesTextfield:
-            if checkForDecimalInput(value: carbohydratesTextfield.text!){
-                carbohydratesValue = decimal(string: carbohydratesTextfield.text!)
-                print(carbohydratesValue)
+            if ValidationService.decimalValidator(value: carbohydratesTextfield.text!){
+                carbohydratesValue = ConverterService.convertStringToDouble(string: carbohydratesTextfield.text!)
+                carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)
             }else {
                 carbohydratesValue = 0.0
-                carbohydratesTextfield.text = String("0,0")
+                carbohydratesTextfield.text = String("0,00")
             }
         case kilocalorieTextfield:
-            if checkForDecimalInput(value: kilocalorieTextfield.text!){
-                kilocalorieValue = decimal(string: kilocalorieTextfield.text!)
-                print(kilocalorieValue)
+            if ValidationService.decimalValidator(value: kilocalorieTextfield.text!){
+                kilocalorieValue = ConverterService.convertStringToDouble(string: kilocalorieTextfield.text!)
+                kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: kilocalorieValue)
             }else {
                 kilocalorieValue = 0.0
-                kilocalorieTextfield.text = String("0,0")
+                kilocalorieTextfield.text = String("0,00")
             }
         default:
-            // Checks the name value from the nametextfield with an other validator functions so it contains only alpabetical input
-            if checkForAlphabeticalInput(value: nameTextfield.text ?? ""){
-                // Set the propertie value with the validated one form the textfield
+            // Validate the user input
+            if ValidationService.alphabeticalValidator(value: nameTextfield.text ?? ""){
+                // Set the property with the value
                 nameValue = nameTextfield.text!
-                // Dissmis the keyboard be resinging the first responder now because the name textfield was the last one
+                // Dismisses the keyboard
                 nameTextfield.resignFirstResponder()
+                // Enable the save button
                 saveButton.isEnabled = true
             }else {
-                // Show UIAlert message when name textfield is empty
+                // Show UIAlert message when name validation failed
                 let alert = UIAlertController(title: "Choose a name", message: "Product must have a name and must be greater than 1 character", preferredStyle: .alert)
-                // Create an action with a Ok button that after pressing dismisses the alert screen
+                // Create an action with a OK button and dismisses the alert screen
                 let action = UIAlertAction(title: "Ok", style: .default) { (UIAlertAction) in
                 }
-                // Add the action with the ok button to the UIAlertContoller
+                // Add the action to the UIAlertController
                 alert.addAction(action)
-                // Show the UIAlert Message to the user that the product name must have a value
+                // Display the UIAlert message
                 present(alert, animated: true, completion: nil)
+                // Disable the save button
                 saveButton.isEnabled = false
+                // Sets the nameTextField value to default
+                nameTextfield.text = ""
+                // Reopen the keyboard
+                nameTextfield.becomeFirstResponder()
             }
         }
     }
@@ -194,38 +208,91 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         // Use the return keyboard button to jump between textfields
         switch textField {
         case sugarTextfield:
-        // Make the next textfield first responder
+            // Make the next textfield first responder
                 fatTextfield.becomeFirstResponder()
         case fatTextfield:
+            // Make the next textfield first responder
                 cholesterolTextfield.becomeFirstResponder()
         case cholesterolTextfield:
+            // Make the next textfield first responder
                 saltTextfield.becomeFirstResponder()
         case saltTextfield:
+            // Make the next textfield first responder
                 carbohydratesTextfield.becomeFirstResponder()
         case carbohydratesTextfield:
+            // Make the next textfield first responder
                 kilocalorieTextfield.becomeFirstResponder()
         case kilocalorieTextfield:
+            // Make the next textfield first responder
                 nameTextfield.becomeFirstResponder()
         default:
-        // Dissmis the keyboard be resinging the first responder now because the name textfield was the last one
-                nameTextfield.resignFirstResponder()
+        // Dismisses the keyboard
+            nameTextfield.resignFirstResponder()
+
         }
         return true
     }
 
     //MARK: UIImagePickerController Delegates
      func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        // Get the value form the infokey and thake the Orginal image
+        // take the original image value from the info when the image picker did finish
         if let image = info[UIImagePickerController.InfoKey.originalImage] {
-            // Place the value from the orginal image inside the ImageView to display the image
+            // Store the orginal image inside the imageView
             imageView.image = image as? UIImage
-            // Dismisses the image picker controller screen
+            // Dismisses the image picker viewController
             picker.dismiss(animated: true, completion: nil)
         }
     }
     
     //MARK: Helper functions
-    func resetView() {
+    private func checkDisplayMode() {
+        // If the viewProduct is not nill prepare the view to display the product details
+        if viewProduct != nil {
+            displayTheViewProduct()
+            // If the viewConsumedProduct is not nill prepare the view to display the viewConsumedProduct details
+        } else if viewConsumedProduct != nil {
+            displayTheViewConsumedProduct()
+        }
+    }
+    
+    private func disableTextfields() {
+        sugarTextfield.isEnabled = false
+        fatTextfield.isEnabled = false
+        cholesterolTextfield.isEnabled = false
+        saltTextfield.isEnabled = false
+        carbohydratesTextfield.isEnabled = false
+        kilocalorieTextfield.isEnabled = false
+        nameTextfield.isEnabled = false
+    }
+    
+    private func displayTheViewProduct() {
+        titleLabel.text = "Nutrient values for 100 gram"
+        resetButton.isEnabled = false
+        sugarTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.sugar ?? 0.00)
+        fatTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fat ?? 0.00)
+        cholesterolTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.cholesterol ?? 0.00)
+        saltTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.salt ?? 0.00)
+        carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.carbohydrates ?? 0.00)
+        kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.kilocalories ?? 0.00)
+        nameTextfield.text = viewProduct?.name
+        disableTextfields()
+    }
+    
+    private func displayTheViewConsumedProduct() {
+        let stringWeight = ConverterService.convertDoubleToString(double:viewConsumedProduct?.weight ?? 0.00)
+        titleLabel.text = "Nutrient values for " + stringWeight + " gram"
+        sugarTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)
+        fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)
+        cholesterolTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)
+        saltTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.salt ?? 0.00)
+        carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.carbohydrates ?? 0.00)
+        kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.kilocalories ?? 0.00)
+        nameTextfield.text = viewConsumedProduct?.name
+        resetButton.isEnabled = false
+        disableTextfields()
+    }
+    
+    func resetForm() {
         // Clear the variable
         sugarValue = 0.0
         fatValue = 0.0
@@ -248,41 +315,7 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         saveButton.isEnabled = false
     }
     
-    func decimal(string: String) -> Double {
-        let formatter = NumberFormatter()
-        formatter.generatesDecimalNumbers = true
-        formatter.decimalSeparator = ","
-        return formatter.number(from: string) as? Double ?? 0
-    }
-    
-    private func checkForDecimalInput(value:String) -> Bool{
-        // Check the incomming string if it is a decimal value and return true or false
-        if !value.isEmpty && value.rangeOfCharacter(from: CharacterSet.decimalDigits) != nil{
-            return true
-        }else {
-            return false
-        }
-    }
-    
-    private func checkForAlphabeticalInput(value:String) -> Bool {
-        // Check the incomming string if it is an alphabetical value and return true or false
-        if !value.isEmpty && value.count > 1 {
-            let letters = NSCharacterSet.letters
-            let range = value.rangeOfCharacter(from: letters)
-            if  range != nil {
-               return true
-            }else {
-                return false
-            }
-        }else {
-            return false
-        }
-    }
-    
     // MARK: Segue Prepare
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
+    //override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    //}
 }
