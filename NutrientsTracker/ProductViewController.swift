@@ -289,6 +289,7 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     private func displayTheViewConsumedProduct() {
         let stringWeight = ConverterService.convertDoubleToString(double:viewConsumedProduct?.weight ?? 0.00)
         titleLabel.text = "Nutrient values for " + stringWeight + " gram"
+        resetButton.isEnabled = false
         proteinTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)
         fiberTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)
@@ -299,7 +300,6 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         if let img = viewConsumedProduct?.image as Data? {
             imageView.image = UIImage(data:img)
         }
-        //resetButton.isEnabled = false
         disableTextfields()
     }
     
