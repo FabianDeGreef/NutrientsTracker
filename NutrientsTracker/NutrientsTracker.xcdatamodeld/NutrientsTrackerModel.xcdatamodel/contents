@@ -4,6 +4,7 @@
         <attribute name="carbohydrates" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="fat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="fiber" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="kilocalories" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="protein" optional="YES" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
@@ -13,32 +14,33 @@
     </entity>
     <entity name="DayTotal" representedClassName="DayTotal" syncable="YES" codeGenerationType="class">
         <attribute name="carbohydratesTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="cholesterolTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="fatTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="fiberTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="kilocaloriesTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="proteinTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="saltTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="sugarTotal" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="produtcs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ConsumedProduct" inverseName="dayTotal" inverseEntity="ConsumedProduct" syncable="YES"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="dayTotals" inverseEntity="User" syncable="YES"/>
     </entity>
     <entity name="Product" representedClassName="Product" syncable="YES" codeGenerationType="class">
         <attribute name="carbohydrates" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="cholesterol" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="fat" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="fiber" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="kilocalories" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="protein" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="salt" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="sugar" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName="User" syncable="YES" codeGenerationType="class">
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="dayTotals" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DayTotal" inverseName="user" inverseEntity="DayTotal" syncable="YES"/>
     </entity>
     <elements>
+        <element name="ConsumedProduct" positionX="-356.91015625" positionY="-26.19921875" width="128" height="195"/>
         <element name="DayTotal" positionX="-184.4765625" positionY="164.91015625" width="128" height="180"/>
-        <element name="Product" positionX="-223.86328125" positionY="-25.60546875" width="128" height="150"/>
+        <element name="Product" positionX="-223.86328125" positionY="-25.60546875" width="128" height="165"/>
         <element name="User" positionX="-424.984375" positionY="165.3359375" width="128" height="75"/>
-        <element name="ConsumedProduct" positionX="-356.91015625" positionY="-26.19921875" width="128" height="180"/>
     </elements>
 </model>

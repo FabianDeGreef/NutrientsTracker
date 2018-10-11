@@ -553,7 +553,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="2aU-ao-7zc">
                                                         <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="70.333333333333329"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sugar" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dt5-ZS-P1K">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Protein" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dt5-ZS-P1K">
                                                                 <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="20.333333333333332"/>
                                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -598,7 +598,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="QCQ-Et-3xw">
                                                         <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="70.333333333333329"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cholesterol" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Lt-NH-Org">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fiber" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Lt-NH-Org">
                                                                 <rect key="frame" x="0.0" y="0.0" width="164.66666666666666" height="20.333333333333332"/>
                                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -768,15 +768,15 @@
                     </navigationItem>
                     <connections>
                         <outlet property="carbohydratesTextfield" destination="NdQ-1B-KXq" id="a9f-hH-57V"/>
-                        <outlet property="cholesterolTextfield" destination="oNi-13-YMU" id="w00-Mf-mA3"/>
                         <outlet property="fatTextfield" destination="Rco-j9-5RE" id="5pM-A5-gMV"/>
+                        <outlet property="fiberTextfield" destination="oNi-13-YMU" id="3oO-NC-Efp"/>
                         <outlet property="imageView" destination="U4g-Lk-oXB" id="UXn-vQ-NmY"/>
                         <outlet property="kilocalorieTextfield" destination="sQm-UX-GGc" id="RMm-Ml-4av"/>
                         <outlet property="nameTextfield" destination="P2b-PO-xEv" id="Efg-Tg-q0d"/>
+                        <outlet property="proteinTextfield" destination="Gwk-pt-6RX" id="Ztr-IF-89q"/>
                         <outlet property="resetButton" destination="UfR-cC-RsT" id="ThE-I2-jBE"/>
                         <outlet property="saltTextfield" destination="1iH-du-Vmk" id="GpP-Dx-NHY"/>
                         <outlet property="saveButton" destination="y2G-rj-J30" id="kPa-XI-J0I"/>
-                        <outlet property="sugarTextfield" destination="Gwk-pt-6RX" id="mHU-vr-Jak"/>
                         <outlet property="titleLabel" destination="1Tr-I9-zXG" id="e2R-Ig-3fu"/>
                     </connections>
                 </viewController>

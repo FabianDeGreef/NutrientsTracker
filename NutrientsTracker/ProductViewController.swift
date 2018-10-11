@@ -12,27 +12,27 @@ import CoreData
 class ProductViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate {
 
     //MARK: Properties
-    var sugarValue:Double = 0.0
+    var fiberValue:Double = 0.0
     var fatValue:Double = 0.0
-    var cholesterolValue:Double = 0.0
+    var proteinValue:Double = 0.0
     var saltValue:Double = 0.0
     var carbohydratesValue:Double = 0.0
     var kilocalorieValue:Double = 0.0
     var nameValue:String = ""
     var viewProduct:Product?
     var viewConsumedProduct:ConsumedProduct?
+    var imageData:NSData?
     
     //MARK: IBOutlets
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var sugarTextfield: UITextField!
+    @IBOutlet weak var proteinTextfield: UITextField!
     @IBOutlet weak var fatTextfield: UITextField!
-    @IBOutlet weak var cholesterolTextfield: UITextField!
+    @IBOutlet weak var fiberTextfield: UITextField!
     @IBOutlet weak var saltTextfield: UITextField!
     @IBOutlet weak var carbohydratesTextfield: UITextField!
     @IBOutlet weak var kilocalorieTextfield: UITextField!
     @IBOutlet weak var nameTextfield: UITextField!
     @IBOutlet weak var saveButton: UIBarButtonItem!
-    @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var resetButton: UIBarButtonItem!
     @IBOutlet weak var titleLabel: UILabel!
     
@@ -108,10 +108,13 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         product.name = nameValue
         product.kilocalories = kilocalorieValue
         product.carbohydrates = carbohydratesValue
-        product.cholesterol = cholesterolValue
+        product.protein = proteinValue
         product.fat = fatValue
         product.salt = saltValue
-        product.sugar = sugarValue
+        product.fiber = fiberValue
+        if imageData != nil {
+            product.image = imageData! as Data
+        }
     }
     
     @IBAction func clearForm(_ sender: UIBarButtonItem) {
@@ -122,18 +125,18 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     //MARK: UITextfield Delegates
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField {
-        case sugarTextfield:
+        case proteinTextfield:
             // Validate the user input
-            if ValidationService.decimalValidator(value: sugarTextfield.text!){
+            if ValidationService.decimalValidator(value: proteinTextfield.text!){
                 // Convert the validated value from string to double and store it inside the property
-                sugarValue = ConverterService.convertStringToDouble(string: sugarTextfield.text!)
+                proteinValue = ConverterService.convertStringToDouble(string: proteinTextfield.text!)
                 // Display the converted value inside the textField with 2 decimals
-                sugarTextfield.text = ConverterService.convertDoubleToString(double: sugarValue)
+                proteinTextfield.text = ConverterService.convertDoubleToString(double: proteinValue)
                 
             }else {
                 // If validation was failed set the property and textField with a default value
-                sugarValue = 0.0
-                sugarTextfield.text = String("0,00")
+                proteinValue = 0.0
+                proteinTextfield.text = String("0,00")
             }
         case fatTextfield:
             if ValidationService.decimalValidator(value: fatTextfield.text!){
@@ -143,13 +146,13 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
                 fatValue = 0.0
                 fatTextfield.text = String("0,00")
             }
-        case cholesterolTextfield:
-            if ValidationService.decimalValidator(value: cholesterolTextfield.text!){
-                cholesterolValue = ConverterService.convertStringToDouble(string: cholesterolTextfield.text!)
-                cholesterolTextfield.text = ConverterService.convertDoubleToString(double: cholesterolValue)
+        case fiberTextfield:
+            if ValidationService.decimalValidator(value: fiberTextfield.text!){
+                fiberValue = ConverterService.convertStringToDouble(string: fiberTextfield.text!)
+                fiberTextfield.text = ConverterService.convertDoubleToString(double: fiberValue)
             }else {
-                cholesterolValue = 0.0
-                cholesterolTextfield.text = String("0,00")
+                fiberValue = 0.0
+                fiberTextfield.text = String("0,00")
             }
         case saltTextfield:
             if ValidationService.decimalValidator(value: saltTextfield.text!){
@@ -207,13 +210,13 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Use the return keyboard button to jump between textfields
         switch textField {
-        case sugarTextfield:
+        case proteinTextfield:
             // Make the next textfield first responder
                 fatTextfield.becomeFirstResponder()
         case fatTextfield:
             // Make the next textfield first responder
-                cholesterolTextfield.becomeFirstResponder()
-        case cholesterolTextfield:
+                fiberTextfield.becomeFirstResponder()
+        case fiberTextfield:
             // Make the next textfield first responder
                 saltTextfield.becomeFirstResponder()
         case saltTextfield:
@@ -239,6 +242,8 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         if let image = info[UIImagePickerController.InfoKey.originalImage] {
             // Store the orginal image inside the imageView
             imageView.image = image as? UIImage
+            // Convert image to NSData to store inside the database
+            imageData = (image as! UIImage).pngData() as NSData?
             // Dismisses the image picker viewController
             picker.dismiss(animated: true, completion: nil)
         }
@@ -256,9 +261,9 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     private func disableTextfields() {
-        sugarTextfield.isEnabled = false
+        proteinTextfield.isEnabled = false
         fatTextfield.isEnabled = false
-        cholesterolTextfield.isEnabled = false
+        fiberTextfield.isEnabled = false
         saltTextfield.isEnabled = false
         carbohydratesTextfield.isEnabled = false
         kilocalorieTextfield.isEnabled = false
@@ -268,43 +273,49 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     private func displayTheViewProduct() {
         titleLabel.text = "Nutrient values for 100 gram"
         resetButton.isEnabled = false
-        sugarTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.sugar ?? 0.00)
+        proteinTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.protein ?? 0.00)
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fat ?? 0.00)
-        cholesterolTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.cholesterol ?? 0.00)
+        fiberTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fiber ?? 0.00)
         saltTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.salt ?? 0.00)
         carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.carbohydrates ?? 0.00)
         kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.kilocalories ?? 0.00)
         nameTextfield.text = viewProduct?.name
+        if let img = viewProduct?.image as Data? {
+            imageView.image = UIImage(data:img)
+        }
         disableTextfields()
     }
     
     private func displayTheViewConsumedProduct() {
         let stringWeight = ConverterService.convertDoubleToString(double:viewConsumedProduct?.weight ?? 0.00)
         titleLabel.text = "Nutrient values for " + stringWeight + " gram"
-        sugarTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)
+        proteinTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)
-        cholesterolTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)
+        fiberTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)
         saltTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.salt ?? 0.00)
         carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.carbohydrates ?? 0.00)
         kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.kilocalories ?? 0.00)
         nameTextfield.text = viewConsumedProduct?.name
-        resetButton.isEnabled = false
+        if let img = viewConsumedProduct?.image as Data? {
+            imageView.image = UIImage(data:img)
+        }
+        //resetButton.isEnabled = false
         disableTextfields()
     }
     
     func resetForm() {
         // Clear the variable
-        sugarValue = 0.0
+        proteinValue = 0.0
         fatValue = 0.0
-        cholesterolValue = 0.0
+        fiberValue = 0.0
         carbohydratesValue = 0.0
         saltValue = 0.0
         kilocalorieValue = 0.0
         nameValue = ""
         // Clear button to clear all the textfields with empty strings
-        sugarTextfield.text = ""
+        proteinTextfield.text = ""
         fatTextfield.text = ""
-        cholesterolTextfield.text = ""
+        fiberTextfield.text = ""
         carbohydratesTextfield.text = ""
         saltTextfield.text = ""
         kilocalorieTextfield.text = ""

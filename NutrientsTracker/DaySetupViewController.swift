@@ -131,10 +131,11 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         consumedProduct.carbohydrates = ((selectedProduct?.carbohydrates)! / 100) * weight
         consumedProduct.salt = ((selectedProduct?.salt)! / 100) * weight
         consumedProduct.fat = ((selectedProduct?.fat)! / 100) * weight
-        consumedProduct.fiber = ((selectedProduct?.sugar)! / 100) * weight
+        consumedProduct.fiber = ((selectedProduct?.fiber)! / 100) * weight
         consumedProduct.kilocalories = ((selectedProduct?.kilocalories)! / 100) * weight
-        consumedProduct.protein = ((selectedProduct?.cholesterol)! / 100) * weight
+        consumedProduct.protein = ((selectedProduct?.protein)! / 100) * weight
         consumedProduct.name = selectedProduct?.name
+        consumedProduct.image = selectedProduct?.image
         consumedProduct.weight = weight
         // Adds the new consumedProduct to the CurrentDayTotal consumedProducts set
         currentDayTotal?.addToProdutcs(consumedProduct)
@@ -147,11 +148,11 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         print("Carbohydrate total first: " + String(format: "%.2f" ,currentDayTotal?.carbohydratesTotal ?? "0.0"))
         // Calculate the nutrient values for the dayTotal by adding the nutrient values from the new consumedProduct to the dayTotal
         currentDayTotal?.carbohydratesTotal = (currentDayTotal?.carbohydratesTotal)! + consumedProduct.carbohydrates
-        currentDayTotal?.cholesterolTotal = (currentDayTotal?.cholesterolTotal)! + consumedProduct.protein
+        currentDayTotal?.fiberTotal = (currentDayTotal?.fiberTotal)! + consumedProduct.fiber
         currentDayTotal?.saltTotal = (currentDayTotal?.saltTotal)! + consumedProduct.salt
-        currentDayTotal?.sugarTotal = (currentDayTotal?.sugarTotal)! + consumedProduct.fiber
+        currentDayTotal?.proteinTotal = (currentDayTotal?.proteinTotal)! + consumedProduct.protein
         currentDayTotal?.fatTotal = (currentDayTotal?.fatTotal)! + consumedProduct.fat
-        currentDayTotal?.kilocaloriesTotal = (currentDayTotal?.cholesterolTotal)! + consumedProduct.kilocalories
+        currentDayTotal?.kilocaloriesTotal = (currentDayTotal?.kilocaloriesTotal)! + consumedProduct.kilocalories
         // DEBUG MESSAGE
         print("Carbohydrate total leter: " + String(format: "%.2f" ,currentDayTotal?.carbohydratesTotal ?? "0.0"))
     }

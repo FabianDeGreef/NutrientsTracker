@@ -90,9 +90,9 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: Helper Functions
     private func recalculateDayTotal(product:ConsumedProduct){
         currentDayTotal?.carbohydratesTotal = (currentDayTotal?.carbohydratesTotal)! - product.carbohydrates
-        currentDayTotal?.cholesterolTotal = (currentDayTotal?.cholesterolTotal)! - product.fiber
+        currentDayTotal?.fiberTotal = (currentDayTotal?.fiberTotal)! - product.fiber
         currentDayTotal?.fatTotal = (currentDayTotal?.fatTotal)! - product.fat
-        currentDayTotal?.sugarTotal = (currentDayTotal?.sugarTotal)! - product.protein
+        currentDayTotal?.proteinTotal = (currentDayTotal?.proteinTotal)! - product.protein
         currentDayTotal?.kilocaloriesTotal = (currentDayTotal?.kilocaloriesTotal)! - product.kilocalories
         currentDayTotal?.saltTotal = (currentDayTotal?.saltTotal)! - product.salt
     }
