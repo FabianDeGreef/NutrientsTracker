@@ -47,6 +47,9 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: IBActions
+    
+    @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) {}
+    
     @IBAction func datePickerValueChanged(_ sender: UIDatePicker) {
         dateFromPicker = sender.date
         // Check if the picked date isn't used by an existing DayTotal
@@ -223,6 +226,14 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         if segue.destination is DaySetupViewController {
             let daySetupVc = segue.destination as? DaySetupViewController
             daySetupVc?.currentDayTotal = selectedDayTotal
+        }
+        
+        // If the segue destination is the ProductViewController
+        if dayTotals.count > 0 && segue.destination is CalendarViewController{
+            // Pass the selectedProduct to the ProductViewController
+            let calendarVc = segue.destination as? CalendarViewController
+            calendarVc?.currentUser = currentUser
+            calendarVc?.dayTotals = dayTotals
         }
     }
 }

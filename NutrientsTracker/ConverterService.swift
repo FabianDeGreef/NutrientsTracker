@@ -28,4 +28,15 @@ class ConverterService {
         // Return the doubleString
         return doubleString
     }
+    
+    static func formatDateToString(dateValue:Date) -> String{
+        // Create a datefromatter
+        let dateFormatter = DateFormatter()
+        // Setting the dateformat
+        dateFormatter.dateFormat = "MM/dd/yy"
+        dateFormatter.dateStyle = .short
+        // Convert the DayTotal dates to a string value using the datefromatter
+        let stringDate = dateFormatter.string(from: dateValue)
+        return stringDate
+    }
 }

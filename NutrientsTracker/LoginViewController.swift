@@ -150,14 +150,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // Reset UI to registration form
     private func resetUIToRegister() {
         loginLabel.text = "Please Register"
-        loginButton.setTitle("Register", for: .normal)
         resetProperties()
     }
     
     // Reset UI to login form
     private func resetUIToLogin() {
         loginLabel.text = "Please Login"
-        loginButton.setTitle("Login", for: .normal)
         resetProperties()
     }
     
