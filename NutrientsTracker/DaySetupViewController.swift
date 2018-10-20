@@ -9,39 +9,51 @@
 import UIKit
 import CoreData
 
-class DaySetupViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+class DaySetupViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     //MARK: Properties
     var weight:Double = 0.0
     var selectedProduct:Product?
     var viewProduct:Product?
-    var productName:String = ""
     var currentDayTotal:DayTotal?
     var products:[Product] = []
+    var productsSearchList:[Product] = []
+    var searching:Bool = false
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Sets the table delegate to the current ViewController
-        productTable.delegate = self
-        // Sets the table datasource to the current ViewController
-        productTable.dataSource = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Reset the form and varibales to default when the view will appear
         resetForm()
+        // Populate table with products from the database
+        fetchDataFromContext()
         // DEBUG MESSAGE
         print("Consumed products in Daysetup: \(currentDayTotal?.produtcs?.count ?? 0)")
     }
     
     //MARK: IBOutlets
-    @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var weightTextfield: UITextField!
     @IBOutlet weak var productTable: UITableView!
+    @IBOutlet weak var searchField: UISearchBar!
+    @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var weightLabel: UILabel!
+    @IBOutlet weak var productCountLabel: UILabel!
+    
     
     //MARK:  IBActions
+    @IBAction func unwindToDaySetup(_ sender:UIStoryboardSegue) {
+        guard let weightVc = sender.source as? WeightViewController else { return }
+        weight = weightVc.weight
+        if weight > 0.0 {
+            addButton.isEnabled = true
+            addButton.setTitleColor(UIColor.white,for: UIControl.State.normal)
+            weightLabel.text = "Weight: \(ConverterService.convertDoubleToString(double: weight))g"
+        }
+    }
+
     @IBAction func signOffUser(_ sender: UIBarButtonItem) {
         // Sign out the current user
         if AuthenticationService.signOffUser() {
@@ -50,24 +62,7 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    @IBAction func searchProduct(_ sender: UIButton) {
-        // Dismisses the keyboard
-        nameTextField.resignFirstResponder()
-        // Check if the textfield is empty
-        if !(productName.isEmpty) {
-            // Load the stored data form Core Data
-            fetchDataFromContext()
-            // Reload the product table to view the fetched products
-            productTable.reloadData()
-        }else {
-            // DEBUG MESSAGE
-            print("No valid product name")
-        }
-    }
-    
     @IBAction func addToDayTotal(_ sender: UIButton) {
-        // Dismisses the keyboard
-        weightTextfield.resignFirstResponder()
         // Check if the selected product and the weight are not nil
         if weight > 0 {
             if selectedProduct != nil {
@@ -79,7 +74,6 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
                 resetForm()
                 // Show an alert view when the consumed product is added to the dayTotal
                 showAlert(title: "Added to daytotal", message: "The consumed product was added to the dayTotal")
-
             }else {
                 // DEBUG MESSAGE
                 print("No product was selected")
@@ -100,7 +94,6 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //MARK: Helper Functions
-    
     // Creates custom AlertAction to alert the user
     func showAlert(title: String, message: String){
         // Create the UIAlertController with the incoming parameters
@@ -115,17 +108,20 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func resetForm() {
-        nameTextField.text = ""
-        weightTextfield.text = ""
+        weightLabel.text = "Weight: 0.00g"
+        searchField.text = ""
         weight = 0.0
-        productName = ""
-        selectedProduct = nil
-        products.removeAll()
+        productsSearchList.removeAll()
         productTable.reloadData()
+        addButton.isEnabled = false
+        addButton.setTitleColor(UIColor.black,for: UIControl.State.normal)
+        selectedProduct = nil
         viewProduct = nil
+        searching = false
     }
     
     func createConsumedProduct() {
+        print(weight)
         // Create and calculate a new consumedProduct with the weight value
         let consumedProduct = ConsumedProduct(context: PersistenceService.context)
         consumedProduct.carbohydrates = ((selectedProduct?.carbohydrates)! / 100) * weight
@@ -163,10 +159,16 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         // Create a fetchRequest to find the matching products with the search value
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Product")
         // Initialize a predicate product name must contain the search value
-        fetchRequest.predicate = NSPredicate(format:"name contains[c] %@", productName)
+        //fetchRequest.predicate = NSPredicate(format:"name contains[c] %@", productName)
         do {
             // Access the database and retrieve the matching products
             products = try (PersistenceService.context.fetch(fetchRequest)) as! [Product]
+            productCountLabel.text = "Products: \(products.count)"
+            products.sort { (productOne, productTwo) -> Bool in
+                return productOne.name?.compare(productTwo.name!) == ComparisonResult.orderedAscending
+            }
+            productTable.reloadData()
+
         }catch {
             // DEBUG MESSAGE
             print("Error fetching request")
@@ -181,11 +183,13 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         // Creates an actionSheet that contains 4 options
         let actionSheet = UIAlertController(title: "Choose an option", message: "Select, View or Remove product", preferredStyle: .actionSheet)
         // Add the select action to the actionSheet
-        actionSheet.addAction(UIAlertAction(title: "Select", style: .default, handler: { (action: UIAlertAction) in
+        actionSheet.addAction(UIAlertAction(title: "Select Product", style: .default, handler: { (action: UIAlertAction) in
             // The product is selected and stored inside the selectedProduct variable do nothing more
+            self.performSegue(withIdentifier: "AddWeight", sender: self)
+
         }))
         // Add the detail view action to the actionSheet
-        actionSheet.addAction(UIAlertAction(title: "View", style: .default, handler: { (UIAlertAction) in
+        actionSheet.addAction(UIAlertAction(title: "View Product", style: .default, handler: { (UIAlertAction) in
             // Display the ProductViewController using the ViewProduct segue identifier
             // When option view is choosen store the selectedProduct value inside the viewProduct
             self.viewProduct = self.selectedProduct
@@ -193,7 +197,7 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
 
         }))
         // Add the remove action to the actionSheet
-        actionSheet.addAction(UIAlertAction(title: "Remove", style: .default, handler: { (UIAlertAction) in
+        actionSheet.addAction(UIAlertAction(title: "Remove Product", style: .default, handler: { (UIAlertAction) in
             // Delete the selected product inside the context
             PersistenceService.context.delete(self.selectedProduct!)
             // Save context changes
@@ -207,8 +211,6 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
             self.productTable.reloadData()
             // set the selectedProduct variable  to nil
             self.selectedProduct = nil
-            // Set the weighTextField to default
-            self.weightTextfield.text = ""
             // Set the weight property to default
             self.weight = 0.0
         }))
@@ -233,8 +235,6 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
             self.products.remove(at: indexPath.row)
             // Delete the dayTotal from the table with a fade animation
             self.productTable.deleteRows(at: [indexPath], with: .fade)
-            // Set the weighTextField to default
-            weightTextfield.text = ""
             // Set the weight property to default
             weight = 0.0
         }
@@ -242,15 +242,25 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Returns the Products array size to calculate the numbers of rows needed
-        return products.count
+        if searching {
+            return productsSearchList.count
+        }else {
+            return products.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Take the Prodcut from every index value inside the Products array
-        let product = products[indexPath.row]
+        var product: Product
+        if searching {
+            product = productsSearchList[indexPath.row]
+        }else {
+            product = products[indexPath.row]
+        }
         // Create a cell that is reusable with the identified cell name
         let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath)
         // Sets the cell textLabel value with the product name
+        
         cell.textLabel!.text = product.name
         cell.detailTextLabel?.text = "KCAL: " + ConverterService.convertDoubleToString(double: product.kilocalories)
         // Return the cell
@@ -259,65 +269,38 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Store the selected item from the table inside a variable
-        selectedProduct = products[indexPath.row]
+        if searching {
+            selectedProduct = productsSearchList[indexPath.row]
+        }else {
+            selectedProduct = products[indexPath.row]
+        }
         // Show the UIAlert selection menu
         showSelectionMenu()
     }
     
-    //MARK: UITextfield Delegates
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        switch textField {
-        case nameTextField:
-            // Dismisses the keyboard after the return button was pressed on the keyboard
-            nameTextField.resignFirstResponder()
-        default:
-            // Dismisses the keyboard after the return button was pressed on the keyboard
-            weightTextfield.resignFirstResponder()
-        }
-        return true
+    //MARK: UISearchBar Delegates
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        productsSearchList = products.filter({($0.name?.prefix(searchText.count))! == searchText })
+        searching = true
+        productTable.reloadData()
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        switch textField {
-        case weightTextfield:
-            // Validate the user input
-            if ValidationService.decimalValidator(value: weightTextfield.text!){
-                // Convert the validated value from string to double and store it inside the property
-                weight = ConverterService.convertStringToDouble(string: weightTextfield.text!)
-                // Display the converted value inside the textField with 2 decimals
-                weightTextfield.text = ConverterService.convertDoubleToString(double: weight)
-            }else {
-                // If validation was failed set the property and textField with a default value
-                weight = 0.0
-                weightTextfield.text = ""
-                weightTextfield.placeholder = "Enter valid weight"
-            }
-        default:
-            // Validate the user input
-            if ValidationService.alphabeticalValidator(value: nameTextField.text ?? ""){
-                // Set the property with the value
-                productName = nameTextField.text!
-                nameTextField.resignFirstResponder()
-
-            }else {
-                // If validation was failed set the productName property with a default value
-                productName = ""
-                // Set the textField with a default value
-                nameTextField.text = ""
-                // Set the textField place holder to inform the user
-                nameTextField.placeholder = "Enter valid name"
-                // Show an alert view when the search value isn't valid
-                showAlert(title: "Enter valid value", message: "Enter a valid search value")
-            }
-        }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searching = false
+        searchField.text = ""
+        productTable.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchField.resignFirstResponder()
     }
     
     // MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // If the segue destination is the ProductViewController
-        if viewProduct != nil && segue.destination is ProductViewController{
-            // Pass the selectedProduct to the ProductViewController
-            let productVc = segue.destination as? ProductViewController
+        if viewProduct != nil && segue.destination is ProductTableViewController{
+            // Pass the selectedProduct to the ProductTableViewController
+            let productVc = segue.destination as? ProductTableViewController
             productVc?.viewProduct = viewProduct
         }
         

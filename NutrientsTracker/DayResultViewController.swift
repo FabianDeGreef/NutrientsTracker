@@ -111,8 +111,8 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // MARK: Prepare Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if selectedProduct != nil && segue.destination is ProductViewController {
-            let productVc = segue.destination as? ProductViewController
+        if selectedProduct != nil && segue.destination is ProductTableViewController {
+            let productVc = segue.destination as? ProductTableViewController
             productVc?.viewConsumedProduct = selectedProduct
         }
     }

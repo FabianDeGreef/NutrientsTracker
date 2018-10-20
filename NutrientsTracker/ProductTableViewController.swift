@@ -1,16 +1,15 @@
 //
-//  ProductViewController.swift
+//  ProductTableViewController.swift
 //  NutrientsTracker
 //
-//  Created by Fabian De Greef on 02/10/2018.
+//  Created by Fabian De Greef on 16/10/2018.
 //  Copyright © 2018 Fabian De Greef. All rights reserved.
 //
 
 import UIKit
-import CoreData
 
-class ProductViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate {
-
+class ProductTableViewController: UITableViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    
     //MARK: Properties
     var fiberValue:Double = 0.0
     var fatValue:Double = 0.0
@@ -24,19 +23,19 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     var imageData:NSData?
     
     //MARK: IBOutlets
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var resetButton: UIBarButtonItem!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var scanButton: UIBarButtonItem!
+    @IBOutlet weak var nameTextfield: UITextField!
     @IBOutlet weak var proteinTextfield: UITextField!
     @IBOutlet weak var fatTextfield: UITextField!
     @IBOutlet weak var fiberTextfield: UITextField!
     @IBOutlet weak var saltTextfield: UITextField!
     @IBOutlet weak var carbohydratesTextfield: UITextField!
     @IBOutlet weak var kilocalorieTextfield: UITextField!
-    @IBOutlet weak var nameTextfield: UITextField!
-    @IBOutlet weak var saveButton: UIBarButtonItem!
-    @IBOutlet weak var resetButton: UIBarButtonItem!
-    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var imageView: UIImageView!
     
-    //MARK: ViewController Functions
+    //MARK: View Functions
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -52,7 +51,16 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     //MARK: IBActions
-    @IBAction func imageClicked(_ sender: UITapGestureRecognizer) {
+    @IBAction func resetAction(_ sender: UIBarButtonItem) {
+        // Resets the form
+        resetForm()
+    }
+    
+    @IBAction func scanAction(_ sender: UIBarButtonItem) {
+        
+    }
+    
+    @IBAction func selectImageAction(_ sender: UITapGestureRecognizer) {
         // Create an ImagePickerController
         let imagePickerController = UIImagePickerController()
         // Sets the ImagePickerController delegate to the current ViewController
@@ -93,32 +101,12 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
         present(actionSheet,animated: true, completion: nil)
     }
     
-    @IBAction func saveProduct(_ sender: UIBarButtonItem) {
+    @IBAction func saveAction(_ sender: UIBarButtonItem) {
         // Creates and save the new product
         createProduct()
         // Save context changes
         PersistenceService.saveContext()
         // Reset the form
-        resetForm()
-    }
-    
-    func createProduct(){
-        // Create a new product with the values form values
-        let product = Product(context: PersistenceService.context)
-        product.name = nameValue
-        product.kilocalories = kilocalorieValue
-        product.carbohydrates = carbohydratesValue
-        product.protein = proteinValue
-        product.fat = fatValue
-        product.salt = saltValue
-        product.fiber = fiberValue
-        if imageData != nil {
-            product.image = imageData! as Data
-        }
-    }
-    
-    @IBAction func clearForm(_ sender: UIBarButtonItem) {
-        // Resets the form
         resetForm()
     }
     
@@ -201,6 +189,8 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
                 saveButton.isEnabled = false
                 // Sets the nameTextField value to default
                 nameTextfield.text = ""
+                // Set placeholder
+                nameTextfield.placeholder = "No valid value"
                 // Reopen the keyboard
                 nameTextfield.becomeFirstResponder()
             }
@@ -210,34 +200,33 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Use the return keyboard button to jump between textfields
         switch textField {
+        case nameTextfield:
+            nameTextfield.resignFirstResponder()
         case proteinTextfield:
             // Make the next textfield first responder
-                fatTextfield.becomeFirstResponder()
+            fatTextfield.becomeFirstResponder()
         case fatTextfield:
             // Make the next textfield first responder
-                fiberTextfield.becomeFirstResponder()
+            fiberTextfield.becomeFirstResponder()
         case fiberTextfield:
             // Make the next textfield first responder
-                saltTextfield.becomeFirstResponder()
+            saltTextfield.becomeFirstResponder()
         case saltTextfield:
             // Make the next textfield first responder
-                carbohydratesTextfield.becomeFirstResponder()
+            carbohydratesTextfield.becomeFirstResponder()
         case carbohydratesTextfield:
             // Make the next textfield first responder
-                kilocalorieTextfield.becomeFirstResponder()
-        case kilocalorieTextfield:
-            // Make the next textfield first responder
-                nameTextfield.becomeFirstResponder()
+            kilocalorieTextfield.becomeFirstResponder()
         default:
-        // Dismisses the keyboard
-            nameTextfield.resignFirstResponder()
-
+            // Dismisses the keyboard
+            kilocalorieTextfield.resignFirstResponder()
+            
         }
         return true
     }
-
+    
     //MARK: UIImagePickerController Delegates
-     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         // take the original image value from the info when the image picker did finish
         if let image = info[UIImagePickerController.InfoKey.originalImage] {
             // Store the orginal image inside the imageView
@@ -250,6 +239,21 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     //MARK: Helper functions
+    func createProduct(){
+        // Create a new product with the values form values
+        let product = Product(context: PersistenceService.context)
+        product.name = nameValue
+        product.kilocalories = kilocalorieValue
+        product.carbohydrates = carbohydratesValue
+        product.protein = proteinValue
+        product.fat = fatValue
+        product.salt = saltValue
+        product.fiber = fiberValue
+        if imageData != nil {
+            product.image = imageData! as Data
+        }
+    }
+    
     private func checkDisplayMode() {
         // If the viewProduct is not nill prepare the view to display the product details
         if viewProduct != nil {
@@ -271,7 +275,7 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     private func displayTheViewProduct() {
-        titleLabel.text = "Nutrient values for 100 gram"
+//        titleLabel.text = "Nutrient values for 100 gram"
         resetButton.isEnabled = false
         proteinTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.protein ?? 0.00)
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fat ?? 0.00)
@@ -287,8 +291,8 @@ class ProductViewController: UIViewController, UINavigationControllerDelegate, U
     }
     
     private func displayTheViewConsumedProduct() {
-        let stringWeight = ConverterService.convertDoubleToString(double:viewConsumedProduct?.weight ?? 0.00)
-        titleLabel.text = "Nutrient values for " + stringWeight + " gram"
+//        let stringWeight = ConverterService.convertDoubleToString(double:viewConsumedProduct?.weight ?? 0.00)
+//        titleLabel.text = "Nutrient values for " + stringWeight + " gram"
         resetButton.isEnabled = false
         proteinTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)

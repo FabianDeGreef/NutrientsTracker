@@ -48,13 +48,15 @@ class ValidationService {
         // Check the string value if it is alphabetical and has more as one letter
         var isTrue = true
         // Check if the value is empty or smaller than 1 character
-        if (!value.isEmpty && value.count > 1) {
+        if (!value.isEmpty && value.count > 1 && !value.hasPrefix(" ") && !value.hasSuffix(" ")) {
             // Create a NSCharacterSet with letters
             let letters = NSCharacterSet.letters as NSCharacterSet
+            let space = NSCharacterSet.whitespaces as NSCharacterSet
+
             // Iterate through the characters and check if they match to the NSCharacterSet
             for char in value.unicodeScalars {
                 // If a character matches with the NSCharacterSet do nothing
-                if  letters.longCharacterIsMember(char.value) {
+                if  letters.longCharacterIsMember(char.value) || space.longCharacterIsMember(char.value) {
                 }else {
                     // If a character doesn't matches with the NSCharacterSet set the boolean to false
                     isTrue = false

@@ -13,65 +13,31 @@ import CoreData
 class DateViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     //MARK: IBOutlet
-    @IBOutlet weak var datePicker: UIDatePicker!
     @IBOutlet weak var entryTable: UITableView!
-    @IBOutlet weak var addButton: UIBarButtonItem!
     
     //MARK: Properties
-    var dateFromPicker:Date!
     var emailFromUser:String = ""
     var currentUser:User?
-    var users:[User] = []
     var dayTotals:[DayTotal] = []
     var selectedDayTotal:DayTotal?
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Sets the table delegate to the current ViewController
-        entryTable.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Take the datePicker value and store it inside the dateFromPicker variable
-        dateFromPicker = datePicker.date
         // Check if there is a signed in user
         checkSingedInUser()
         // Check if the signed in user was found inside the database
         checkDatabaseForUser()
         // Check if the signed in user has DayTotal objects
         checkForExistingUserDayTotals()
-        // Check which dates are available to create a DayTotal
-        checkForAvailableDates()
     }
     
     //MARK: IBActions
-    
     @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) {}
-    
-    @IBAction func datePickerValueChanged(_ sender: UIDatePicker) {
-        dateFromPicker = sender.date
-        // Check if the picked date isn't used by an existing DayTotal
-        checkForAvailableDates()
-    }
-    
-    @IBAction func addNewEntry(_ sender: UIBarButtonItem) {
-        // Create new DayTotal object
-        let dayTotal = DayTotal(context: PersistenceService.context)
-        // Sets the new DayTotal date value with the property value
-        dayTotal.date = dateFromPicker
-        if currentUser != nil {
-            // Add the DayTotal object tot the currentUser
-            currentUser!.addToDayTotals(dayTotal)
-            // Save context changes
-            PersistenceService.saveContext()
-            // Store the new DayTotal object inside the selectedDayTotal property
-            selectedDayTotal = dayTotal
-            // Display the DayTotalSetupViewController using the DayTotalSetup segue identifier
-            performSegue(withIdentifier: "DayTotalSetup", sender: self)
-        }
-    }
     
     @IBAction func signOffUser(_ sender: UIBarButtonItem) {
         // Sign out the current user
@@ -82,24 +48,6 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     //MARK: Helper Functions
-    // When the datePicker change event triggers check if the changed date has been already used by the DayTotals
-    private func checkForAvailableDates() {
-        // Loop through the DayTotals array to check which date isn't used
-        for dayTotal in dayTotals{
-            // Convert every DayTotal date to the string value
-            let stringDate = formatDateToString(dateValue: dayTotal.date!)
-            // Check if the string values are equal witht the string value from the dateFromPicker
-            if stringDate == formatDateToString(dateValue: dateFromPicker){
-                // If a match was found disable the add button
-                addButton.isEnabled = false
-                return
-            }else {
-                // if no match was found enable the add button
-                addButton.isEnabled = true
-            }
-        }
-    }
-    
     private func checkForExistingUserDayTotals() {
         // Check if the current user has DayTotals
         if currentUser != nil && currentUser?.dayTotals?.count != 0 {
@@ -116,8 +64,8 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Convert the NSSet objects to a DayTotal array
         dayTotals = nsSet.allObjects as! [DayTotal]
         // Sort the array by date descending
-        dayTotals.sort { (dayTotalOne, dayTotal2) -> Bool in
-            return dayTotalOne.date?.compare(dayTotal2.date!) == ComparisonResult.orderedDescending
+        dayTotals.sort { (dayTotalOne, dayTotalTwo) -> Bool in
+            return dayTotalOne.date?.compare(dayTotalTwo.date!) == ComparisonResult.orderedDescending
         }
         // Reload the table
         entryTable.reloadData()
@@ -136,18 +84,6 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
             print("No users are singed in now ")
         }
     }
-    
-    func formatDateToString(dateValue:Date) -> String{
-        // Create a datefromatter
-        let dateFormatter = DateFormatter()
-        // Setting the dateformat
-        dateFormatter.dateFormat = "MM/dd/yy"
-        dateFormatter.dateStyle = .short
-        // Convert the DayTotal dates to a string value using the datefromatter
-        let stringDate = dateFormatter.string(from: dateValue)
-        return stringDate
-    }
-    
     private func checkDatabaseForUser() {
         // Create a fetchRequest to find a matching user with the signed in email
         let userFetch = NSFetchRequest<User>(entityName: "User")
@@ -192,8 +128,6 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.dayTotals.remove(at: indexPath.row)
             // Delete the dayTotal from the table with a fade animation
             self.entryTable.deleteRows(at: [indexPath], with: .fade)
-            // Recalculate the available dates to choose from
-            self.checkForAvailableDates()
         }
     }
     
@@ -208,7 +142,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Create a cell that is reusable with the identified cell name
         let cell = entryTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath)
         // Add the date string value to the cell label
-        cell.textLabel!.text = formatDateToString(dateValue: dayTotal.date!)
+        cell.textLabel!.text = ConverterService.formatDateToString(dateValue: dayTotal.date!)
         cell.detailTextLabel?.text = "Consumed prodcuts: \(dayTotal.produtcs?.count ?? 0)"
         // returning the cell
         return cell
