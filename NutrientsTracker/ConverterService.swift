@@ -39,4 +39,15 @@ class ConverterService {
         let stringDate = dateFormatter.string(from: dateValue)
         return stringDate
     }
+    
+    static func formatDateToFullString(dateValue:Date) -> String{
+        // Create a datefromatter
+        let dateFormatter = DateFormatter()
+        // Setting the dateformat
+        dateFormatter.dateFormat = "dd,MM,yy"
+        dateFormatter.dateStyle = .medium
+        // Convert the DayTotal dates to a string value using the datefromatter
+        let stringDate = dateFormatter.string(from: dateValue)
+        return stringDate
+    }
 }

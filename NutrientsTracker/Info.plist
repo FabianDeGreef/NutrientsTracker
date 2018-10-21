@@ -29,9 +29,9 @@
 		<string>armv7</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App can use library</string>
+	<string>App can use user image library</string>
 	<key>NSCameraUsageDescription</key>
-	<string>App can use hardware camera</string>
+	<string>App can use hardware camera to create product photos and scan QR codes</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Photo library</string>
 	<key>UISupportedInterfaceOrientations</key>

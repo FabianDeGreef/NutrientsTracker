@@ -23,6 +23,7 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        productTable.separatorColor = UIColor.white
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -258,13 +259,27 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
             product = products[indexPath.row]
         }
         // Create a cell that is reusable with the identified cell name
-        let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath)
+        guard let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath) as? ProductTableViewCell else { return UITableViewCell() }
         // Sets the cell textLabel value with the product name
-        
-        cell.textLabel!.text = product.name
-        cell.detailTextLabel?.text = "KCAL: " + ConverterService.convertDoubleToString(double: product.kilocalories)
+        cell.productNameLabel.text = product.name!
+        cell.carbohydratesLabel.text = ConverterService.convertDoubleToString(double: product.carbohydrates)
+        cell.fatLabel.text = ConverterService.convertDoubleToString(double: product.fat)
+        cell.saltLabel.text = ConverterService.convertDoubleToString(double: product.salt)
+        cell.kilocalorieLabel.text = ConverterService.convertDoubleToString(double: product.kilocalories)
+        cell.fiberLabel.text = ConverterService.convertDoubleToString(double: product.fiber)
+        cell.proteinLabel.text = ConverterService.convertDoubleToString(double: product.protein)
+        if let img = product.image as Data? {
+            cell.productImage.image = UIImage(data:img)
+        }else {
+            print("img error")
+        }
+
         // Return the cell
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

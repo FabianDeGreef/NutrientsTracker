@@ -66,15 +66,22 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         return products.count
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Take the Prodcut from every index value inside the Products array
         let product = products[indexPath.row]
         // Create a cell that is reusable with the identified cell name
-        let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath)
+        guard let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath) as? ConsumedProductTableViewCell else { return UITableViewCell() }
         // Sets the cell textLabel value with the product name
-        cell.textLabel!.text = product.name
-        cell.detailTextLabel?.text = "Consumed weight: " + ConverterService.convertDoubleToString(double: product.weight) + "g"
-
+        cell.productNameLabel.text = product.name
+        cell.productWeightLabel.text = "Weight: \(ConverterService.convertDoubleToString(double: product.weight))g"
+        cell.productKilocalorieLabel.text = "Kcal: \(ConverterService.convertDoubleToString(double: product.kilocalories))"
+        if let img = product.image as Data? {
+            cell.productImage.image = UIImage(data:img)
+        }
         // return the cell
         return cell
     }

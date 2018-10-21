@@ -21,6 +21,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     var viewProduct:Product?
     var viewConsumedProduct:ConsumedProduct?
     var imageData:NSData?
+    var qrStringProduct:String?
     
     //MARK: IBOutlets
     @IBOutlet weak var resetButton: UIBarButtonItem!
@@ -38,6 +39,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     //MARK: View Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.separatorStyle = .none
     }
     
     override func viewWillAppear(_ animated: Bool) {

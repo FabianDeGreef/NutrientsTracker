@@ -140,10 +140,10 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Take the DayTotal from every index value inside the DayTotals array
         let dayTotal = dayTotals[indexPath.row]
         // Create a cell that is reusable with the identified cell name
-        let cell = entryTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath)
+        guard let cell = entryTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath) as? DateTableViewCell else { return UITableViewCell() }
         // Add the date string value to the cell label
-        cell.textLabel!.text = ConverterService.formatDateToString(dateValue: dayTotal.date!)
-        cell.detailTextLabel?.text = "Consumed prodcuts: \(dayTotal.produtcs?.count ?? 0)"
+        cell.dateLabel.text = ConverterService.formatDateToFullString(dateValue: dayTotal.date!)
+        cell.dayTotalCountLabel.text = "\(dayTotal.produtcs?.count ?? 0)"
         // returning the cell
         return cell
     }
@@ -163,7 +163,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
         // If the segue destination is the ProductViewController
-        if dayTotals.count > 0 && segue.destination is CalendarViewController{
+        if currentUser != nil && segue.destination is CalendarViewController{
             // Pass the selectedProduct to the ProductViewController
             let calendarVc = segue.destination as? CalendarViewController
             calendarVc?.currentUser = currentUser
