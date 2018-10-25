@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F0ECE902180B90000385103 /* OverViewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0ECE8F2180B90000385103 /* OverViewTableViewController.swift */; };
 		1F13EC0C2175FD6600EB27AD /* ProductTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F13EC0B2175FD6600EB27AD /* ProductTableViewController.swift */; };
 		1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */; };
 		1F1C9F70215A80FA0026D14A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C9F6E215A80FA0026D14A /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 		1F264F86217A1E2900A2B9A7 /* WeightViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F264F85217A1E2900A2B9A7 /* WeightViewController.swift */; };
 		1F353E8B216E2A60002184F5 /* ValidationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F353E8A216E2A60002184F5 /* ValidationService.swift */; };
 		1F353E8D216E2A7B002184F5 /* ConverterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F353E8C216E2A7B002184F5 /* ConverterService.swift */; };
+		1F3AAF21217F312A00942346 /* AppSettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3AAF20217F312A00942346 /* AppSettingTableViewController.swift */; };
 		1F4DC4BD21721AEC00B6F481 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4DC4BC21721AEC00B6F481 /* CalendarViewController.swift */; };
 		1F4DC4BF21721BAE00B6F481 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4DC4BE21721BAE00B6F481 /* CustomCell.swift */; };
 		1F5DBFDB2169149A009F0D6C /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5DBFDA2169149A009F0D6C /* PersistenceService.swift */; };
@@ -46,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		00862A42F21C0B4787B1F6AA /* Pods-NutrientsTracker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NutrientsTracker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NutrientsTracker/Pods-NutrientsTracker.debug.xcconfig"; sourceTree = "<group>"; };
+		1F0ECE8F2180B90000385103 /* OverViewTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverViewTableViewController.swift; sourceTree = "<group>"; };
 		1F13EC0B2175FD6600EB27AD /* ProductTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTableViewController.swift; sourceTree = "<group>"; };
 		1F1C9F67215A80FA0026D14A /* NutrientsTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NutrientsTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +62,7 @@
 		1F264F85217A1E2900A2B9A7 /* WeightViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightViewController.swift; sourceTree = "<group>"; };
 		1F353E8A216E2A60002184F5 /* ValidationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationService.swift; sourceTree = "<group>"; };
 		1F353E8C216E2A7B002184F5 /* ConverterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConverterService.swift; sourceTree = "<group>"; };
+		1F3AAF20217F312A00942346 /* AppSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingTableViewController.swift; sourceTree = "<group>"; };
 		1F4DC4BC21721AEC00B6F481 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		1F4DC4BE21721BAE00B6F481 /* CustomCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		1F5DBFDA2169149A009F0D6C /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
@@ -134,23 +138,25 @@
 			children = (
 				1F1C9F71215A80FB0026D14A /* Assets.xcassets */,
 				1F1C9F6E215A80FA0026D14A /* Main.storyboard */,
-				1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */,
-				1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */,
-				1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */,
 				1F1C9F73215A80FB0026D14A /* LaunchScreen.storyboard */,
 				1F1C9F76215A80FB0026D14A /* Info.plist */,
 				1FD7FC81216432EB00025767 /* GoogleService-Info.plist */,
 				1F1C9F6A215A80FA0026D14A /* AppDelegate.swift */,
+				1F0ECE8F2180B90000385103 /* OverViewTableViewController.swift */,
 				1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */,
+				1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */,
 				1F88E9412175131E00D0A0C7 /* QRScannerViewController.swift */,
 				1F13EC0B2175FD6600EB27AD /* ProductTableViewController.swift */,
 				1F264F85217A1E2900A2B9A7 /* WeightViewController.swift */,
 				1FFF4FBD216613330083E731 /* DaySetupViewController.swift */,
+				1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */,
 				1F4DC4BC21721AEC00B6F481 /* CalendarViewController.swift */,
+				1F4DC4BE21721BAE00B6F481 /* CustomCell.swift */,
+				1F3AAF20217F312A00942346 /* AppSettingTableViewController.swift */,
 				1FFF4FBB21660CD20083E731 /* DateViewController.swift */,
+				1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */,
 				1FD7FC7F21642F3E00025767 /* LoginViewController.swift */,
 				1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */,
-				1F4DC4BE21721BAE00B6F481 /* CustomCell.swift */,
 				1F5DBFDA2169149A009F0D6C /* PersistenceService.swift */,
 				1F5DBFDC21691501009F0D6C /* AuthenticationService.swift */,
 				1F353E8A216E2A60002184F5 /* ValidationService.swift */,
@@ -312,20 +318,24 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-NutrientsTracker/Pods-NutrientsTracker-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/JTAppleCalendar/JTAppleCalendar.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManagerSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JTAppleCalendar.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -391,6 +401,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F4DC4BD21721AEC00B6F481 /* CalendarViewController.swift in Sources */,
+				1F0ECE902180B90000385103 /* OverViewTableViewController.swift in Sources */,
 				1F4DC4BF21721BAE00B6F481 /* CustomCell.swift in Sources */,
 				1FDF6310217CDE0800AEB884 /* DateTableViewCell.swift in Sources */,
 				1FFF4FBC21660CD20083E731 /* DateViewController.swift in Sources */,
@@ -399,6 +410,7 @@
 				1FD7FC8021642F3F00025767 /* LoginViewController.swift in Sources */,
 				1FFF4FC021661DD20083E731 /* DayResultViewController.swift in Sources */,
 				1F88E9422175131E00D0A0C7 /* QRScannerViewController.swift in Sources */,
+				1F3AAF21217F312A00942346 /* AppSettingTableViewController.swift in Sources */,
 				1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */,
 				1FEC3035217CC65600B0DEB5 /* ProductTableViewCell.swift in Sources */,
 				1F353E8B216E2A60002184F5 /* ValidationService.swift in Sources */,

@@ -39,13 +39,13 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: IBActions
     @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) {}
     
-    @IBAction func signOffUser(_ sender: UIBarButtonItem) {
-        // Sign out the current user
-        if AuthenticationService.signOffUser() {
-            // Return back to the LoginViewController by popping the other views
-            _ = navigationController?.popToRootViewController(animated: true)
-        }
-    }
+//    @IBAction func signOffUser(_ sender: UIBarButtonItem) {
+//        // Sign out the current user
+//        if AuthenticationService.signOffUser() {
+//            // Return back to the LoginViewController by popping the other views
+//            _ = navigationController?.popToRootViewController(animated: true)
+//        }
+//    }
     
     //MARK: Helper Functions
     private func checkForExistingUserDayTotals() {
@@ -142,7 +142,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Create a cell that is reusable with the identified cell name
         guard let cell = entryTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath) as? DateTableViewCell else { return UITableViewCell() }
         // Add the date string value to the cell label
-        cell.dateLabel.text = ConverterService.formatDateToFullString(dateValue: dayTotal.date!)
+        cell.dateLabel.text = ConverterService.formatDateToString(dateValue: dayTotal.date!)
         cell.dayTotalCountLabel.text = "\(dayTotal.produtcs?.count ?? 0)"
         // returning the cell
         return cell

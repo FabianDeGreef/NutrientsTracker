@@ -12,7 +12,6 @@ class DateTableViewCell: UITableViewCell {
     
     // MARK: IBOutlets
     @IBOutlet weak var dayTotalCountLabel: UILabel!
-    
     @IBOutlet weak var dateLabel: UILabel!
     
     override func awakeFromNib() {
@@ -22,5 +21,4 @@ class DateTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-
 }

@@ -130,7 +130,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // Check if a user is still signed in if so go directly to the next view
         if AuthenticationService.checkSingedInUser() {
             // If the user is signed in perform segue to the DateViewController
-            self.performSegue(withIdentifier: "DateSelection", sender: self)
+            self.performSegue(withIdentifier: "DateSelectionDirect", sender: self)
+
         }
     }
     

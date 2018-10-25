@@ -41,8 +41,9 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var searchField: UISearchBar!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var weightLabel: UILabel!
-    @IBOutlet weak var productCountLabel: UILabel!
-    
+    @IBOutlet weak var productCountLabel: UILabel!    
+    @IBOutlet weak var dayTotalButton: UIBarButtonItem!
+    @IBOutlet weak var addProductButton: UIBarButtonItem!
     
     //MARK:  IBActions
     @IBAction func unwindToDaySetup(_ sender:UIStoryboardSegue) {
@@ -55,13 +56,13 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
 
-    @IBAction func signOffUser(_ sender: UIBarButtonItem) {
-        // Sign out the current user
-        if AuthenticationService.signOffUser() {
-            // Return back to the LoginViewController by popping the other views
-            _ = navigationController?.popToRootViewController(animated: true)
-        }
-    }
+//    @IBAction func signOffUser(_ sender: UIBarButtonItem) {
+//        // Sign out the current user
+//        if AuthenticationService.signOffUser() {
+//            // Return back to the LoginViewController by popping the other views
+//            _ = navigationController?.popToRootViewController(animated: true)
+//        }
+//    }
     
     @IBAction func addToDayTotal(_ sender: UIButton) {
         // Check if the selected product and the weight are not nil
@@ -75,6 +76,9 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
                 resetForm()
                 // Show an alert view when the consumed product is added to the dayTotal
                 showAlert(title: "Added to daytotal", message: "The consumed product was added to the dayTotal")
+                self.addProductButton.isEnabled = true
+                self.dayTotalButton.isEnabled = true
+                self.productTable.allowsSelection = true
             }else {
                 // DEBUG MESSAGE
                 print("No product was selected")
@@ -186,6 +190,9 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         // Add the select action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Select Product", style: .default, handler: { (action: UIAlertAction) in
             // The product is selected and stored inside the selectedProduct variable do nothing more
+            self.addProductButton.isEnabled = false
+            self.dayTotalButton.isEnabled = false
+            self.productTable.allowsSelection = false
             self.performSegue(withIdentifier: "AddWeight", sender: self)
 
         }))
@@ -279,7 +286,7 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 100
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -303,6 +310,7 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searching = false
         searchField.text = ""
+        searchField.resignFirstResponder()
         productTable.reloadData()
     }
     

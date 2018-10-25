@@ -20,6 +20,8 @@ class WeightViewController: UIViewController, UITextFieldDelegate {
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        weightTextfield.becomeFirstResponder()
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -39,7 +41,7 @@ class WeightViewController: UIViewController, UITextFieldDelegate {
             // Convert the validated value from string to double and store it inside the property
             weight = ConverterService.convertStringToDouble(string: weightTextfield.text!)
             // Display the converted value inside the textField with 2 decimals
-            weightTextfield.text = ConverterService.convertDoubleToString(double: weight)
+            weightTextfield.text = ConverterService.convertDoubleToString(double: weight)+"g"
             // If validation was succesfull enable the add weight button
             weightButton.isEnabled = true
             weightButton.setTitleColor(UIColor.white,for: UIControl.State.normal)

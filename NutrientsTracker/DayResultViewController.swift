@@ -19,12 +19,11 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
 
     //MARK: IBOutlets
     @IBOutlet weak var productTable: UITableView!
+    @IBOutlet weak var overViewButton: UIBarButtonItem!
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Sets the table delegate to the current ViewController
-        productTable.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,6 +38,7 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
             //DEBUG MESSAGE
             print("No products found in current dayTotal")
         }
+        checkAmountConsumedProducts()
     }
     
     //MARK: UITableView Delegates
@@ -58,6 +58,7 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
             self.products.remove(at: indexPath.row)
             // Delete the consumedProducts from the table with a fade animation
             self.productTable.deleteRows(at: [indexPath], with: .fade)
+            self.checkAmountConsumedProducts()
         }
     }
     
@@ -95,6 +96,14 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //MARK: Helper Functions
+    func checkAmountConsumedProducts(){
+        if products.count == 0 {
+            overViewButton.isEnabled = false
+        }else {
+            overViewButton.isEnabled = true
+        }
+    }
+    
     private func recalculateDayTotal(product:ConsumedProduct){
         currentDayTotal?.carbohydratesTotal = (currentDayTotal?.carbohydratesTotal)! - product.carbohydrates
         currentDayTotal?.fiberTotal = (currentDayTotal?.fiberTotal)! - product.fiber
@@ -121,6 +130,11 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         if selectedProduct != nil && segue.destination is ProductTableViewController {
             let productVc = segue.destination as? ProductTableViewController
             productVc?.viewConsumedProduct = selectedProduct
+        }
+        if segue.destination is OverViewTableViewController {
+            // Pass the currentDayTotal to the OverViewTableViewController
+            let dayOverviewtVc = segue.destination as? OverViewTableViewController
+            dayOverviewtVc?.currentDayTotal = currentDayTotal
         }
     }
 }

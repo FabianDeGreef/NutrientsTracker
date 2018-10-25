@@ -11,7 +11,6 @@ import UIKit
 class ProductTableViewCell: UITableViewCell {
     
     // MARK: IBOutlets
-    
     @IBOutlet weak var productImage: UIImageView!
     @IBOutlet weak var productNameLabel: UILabel!
     @IBOutlet weak var proteinLabel: UILabel!
@@ -28,5 +27,4 @@ class ProductTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-
 }

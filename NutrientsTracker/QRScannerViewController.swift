@@ -18,18 +18,35 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
     var qrString:String?
     
     //MARK: ViewController Functions
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if (captureSession?.isRunning == true){
+            // Stop video output
+            captureSession?.stopRunning()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if (captureSession?.isRunning == false){
+            // Start video input
+            captureSession?.startRunning()
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         // Find and access device back camera and set it media capture type to video
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera], mediaType: AVMediaType.video, position: .back)
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
         guard let captureDevice = deviceDiscoverySession.devices.first else {
             print("Error accesing device camera")
             return
+            
         }
         do {
             // Get instance from the AVCaptureDeviceInput
             let input = try AVCaptureDeviceInput(device: captureDevice)
             // Sets the device on the capture session
+            captureSession = AVCaptureSession()
             captureSession?.addInput(input)
             
             // Initialize AVCaptureMetaDataOutput and set it to the output device
@@ -44,12 +61,28 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             // Initialize video preview layer and add it as a sublayer to the video preview screen
             videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
             videoPreviewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-            videoPreviewLayer?.frame = view.layer.bounds
             view.layer.addSublayer(videoPreviewLayer!)
-            
-            // Start video input
-            captureSession?.startRunning()
-            
+            videoPreviewLayer?.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+
+            let videoOrientation: AVCaptureVideoOrientation
+            switch UIApplication.shared.statusBarOrientation {
+            case .portrait:
+                videoOrientation = .portrait
+            case .portraitUpsideDown:
+                videoOrientation = .portraitUpsideDown
+                
+            case .landscapeLeft:
+                videoOrientation = .landscapeLeft
+                
+            case .landscapeRight:
+                videoOrientation = .landscapeRight
+                
+            default:
+                videoOrientation = .portrait
+            }
+            videoPreviewLayer!.connection?.videoOrientation = videoOrientation
+
+
             // Highlight the QR code
             qrCodeFrameView = UIView()
             // Create and setup a UIView
@@ -69,6 +102,7 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             return
         }
     }
+    
     // MARK: AVCaptureMetaDataOutput Delegates
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         
@@ -91,8 +125,30 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             if metadataObj.stringValue != nil {
                 // Extract the stringvalue to a variable
                 qrString = metadataObj.stringValue
+                captureSession?.stopRunning()
             }
         }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        // Update camera orientation
+        let videoOrientation: AVCaptureVideoOrientation
+        switch UIDevice.current.orientation {
+        case .portrait:
+            videoOrientation = .portrait
+        case .portraitUpsideDown:
+            videoOrientation = .portraitUpsideDown
+        case .landscapeLeft:
+            videoOrientation = .landscapeRight
+        case .landscapeRight:
+            videoOrientation = .landscapeLeft
+        default:
+            videoOrientation = .portrait
+        }
+        videoPreviewLayer!.connection?.videoOrientation = videoOrientation
+        videoPreviewLayer?.frame = CGRect(x: 0, y: 0, width: self.view.frame.height, height: self.view.frame.width)
     }
     
     // MARK: Segue Prepare

@@ -15,6 +15,7 @@ class ConsumedProductTableViewCell: UITableViewCell {
     @IBOutlet weak var productWeightLabel: UILabel!
     @IBOutlet weak var productNameLabel: UILabel!
     @IBOutlet weak var productImage: UIImageView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }

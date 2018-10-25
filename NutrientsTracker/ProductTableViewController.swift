@@ -39,20 +39,26 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     //MARK: View Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.separatorStyle = .none
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Disable the save button when the view will appear
-        if nameValue.isEmpty{
-            saveButton.isEnabled = false
-        }
         // Check if the user wants to view a product or consumed product
         checkDisplayMode()
     }
     
     //MARK: IBActions
+    @IBAction func unwindToProductTable(_ sender:UIStoryboardSegue) {
+        guard let QRScannerVc = sender.source as? QRScannerViewController else { return }
+        qrStringProduct = QRScannerVc.qrString
+        if qrStringProduct != nil {
+            importProductFormQRCode()
+        }else {
+            qrStringProduct = "Curry/1,3/5,4/0/1,38/3,9/658"
+            importProductFormQRCode()
+        }
+    }
+    
     @IBAction func resetAction(_ sender: UIBarButtonItem) {
         // Resets the form
         resetForm()
@@ -121,52 +127,52 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
                 // Convert the validated value from string to double and store it inside the property
                 proteinValue = ConverterService.convertStringToDouble(string: proteinTextfield.text!)
                 // Display the converted value inside the textField with 2 decimals
-                proteinTextfield.text = ConverterService.convertDoubleToString(double: proteinValue)
+                proteinTextfield.text = ConverterService.convertDoubleToString(double: proteinValue)+"g"
                 
             }else {
                 // If validation was failed set the property and textField with a default value
                 proteinValue = 0.0
-                proteinTextfield.text = String("0,00")
+                proteinTextfield.text = String("0,00")+"g"
             }
         case fatTextfield:
             if ValidationService.decimalValidator(value: fatTextfield.text!){
                 fatValue = ConverterService.convertStringToDouble(string: fatTextfield.text!)
-                fatTextfield.text = ConverterService.convertDoubleToString(double: fatValue)
+                fatTextfield.text = ConverterService.convertDoubleToString(double: fatValue)+"g"
             }else {
                 fatValue = 0.0
-                fatTextfield.text = String("0,00")
+                fatTextfield.text = String("0,00")+"g"
             }
         case fiberTextfield:
             if ValidationService.decimalValidator(value: fiberTextfield.text!){
                 fiberValue = ConverterService.convertStringToDouble(string: fiberTextfield.text!)
-                fiberTextfield.text = ConverterService.convertDoubleToString(double: fiberValue)
+                fiberTextfield.text = ConverterService.convertDoubleToString(double: fiberValue)+"g"
             }else {
                 fiberValue = 0.0
-                fiberTextfield.text = String("0,00")
+                fiberTextfield.text = String("0,00")+"g"
             }
         case saltTextfield:
             if ValidationService.decimalValidator(value: saltTextfield.text!){
                 saltValue = ConverterService.convertStringToDouble(string: saltTextfield.text!)
-                saltTextfield.text = ConverterService.convertDoubleToString(double: saltValue)
+                saltTextfield.text = ConverterService.convertDoubleToString(double: saltValue)+"g"
             }else {
                 saltValue = 0.0
-                saltTextfield.text = String("0,00")
+                saltTextfield.text = String("0,00")+"g"
             }
         case carbohydratesTextfield:
             if ValidationService.decimalValidator(value: carbohydratesTextfield.text!){
                 carbohydratesValue = ConverterService.convertStringToDouble(string: carbohydratesTextfield.text!)
-                carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)
+                carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)+"g"
             }else {
                 carbohydratesValue = 0.0
-                carbohydratesTextfield.text = String("0,00")
+                carbohydratesTextfield.text = String("0,00")+"g"
             }
         case kilocalorieTextfield:
             if ValidationService.decimalValidator(value: kilocalorieTextfield.text!){
                 kilocalorieValue = ConverterService.convertStringToDouble(string: kilocalorieTextfield.text!)
-                kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: kilocalorieValue)
+                kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: kilocalorieValue)+"kcal"
             }else {
                 kilocalorieValue = 0.0
-                kilocalorieTextfield.text = String("0,00")
+                kilocalorieTextfield.text = String("0,00")+"kcal"
             }
         default:
             // Validate the user input
@@ -241,6 +247,29 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     }
     
     //MARK: Helper functions
+    func importProductFormQRCode(){
+        let productDetails = qrStringProduct?.split(separator: "/")
+        if productDetails?.count == 7 {
+            // Setup nutrient values
+            nameValue = String(productDetails![0])
+            proteinValue = ConverterService.convertStringToDouble(string: String(productDetails![1]))
+            fatValue = ConverterService.convertStringToDouble(string: String(productDetails![2]))
+            fiberValue = ConverterService.convertStringToDouble(string: String(productDetails![3]))
+            saltValue = ConverterService.convertStringToDouble(string: String(productDetails![4]))
+            carbohydratesValue = ConverterService.convertStringToDouble(string: String(productDetails![5]))
+            kilocalorieValue = ConverterService.convertStringToDouble(string: String(productDetails![6]))
+            // Setup nutrient textfields
+            nameTextfield.text = nameValue
+            proteinTextfield.text = ConverterService.convertDoubleToString(double: proteinValue)
+            fatTextfield.text = ConverterService.convertDoubleToString(double: fatValue)
+            fiberTextfield.text = ConverterService.convertDoubleToString(double: fiberValue)
+            saltTextfield.text = ConverterService.convertDoubleToString(double: saltValue)
+            carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)
+            kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: kilocalorieValue)
+            saveButton.isEnabled = true
+        }
+    }
+    
     func createProduct(){
         // Create a new product with the values form values
         let product = Product(context: PersistenceService.context)
@@ -257,10 +286,14 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     }
     
     private func checkDisplayMode() {
+        // Disable the save button
+        if nameValue.isEmpty{
+            saveButton.isEnabled = false
+        }
         // If the viewProduct is not nill prepare the view to display the product details
         if viewProduct != nil {
             displayTheViewProduct()
-            // If the viewConsumedProduct is not nill prepare the view to display the viewConsumedProduct details
+        // If the viewConsumedProduct is not nill prepare the view to display the viewConsumedProduct details
         } else if viewConsumedProduct != nil {
             displayTheViewConsumedProduct()
         }
@@ -277,14 +310,13 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     }
     
     private func displayTheViewProduct() {
-//        titleLabel.text = "Nutrient values for 100 gram"
         resetButton.isEnabled = false
-        proteinTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.protein ?? 0.00)
-        fatTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fat ?? 0.00)
-        fiberTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fiber ?? 0.00)
-        saltTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.salt ?? 0.00)
-        carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.carbohydrates ?? 0.00)
-        kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.kilocalories ?? 0.00)
+        proteinTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.protein ?? 0.00)+"g"
+        fatTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fat ?? 0.00)+"g"
+        fiberTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fiber ?? 0.00)+"g"
+        saltTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.salt ?? 0.00)+"g"
+        carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.carbohydrates ?? 0.00)+"g"
+        kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.kilocalories ?? 0.00)+"kcal"
         nameTextfield.text = viewProduct?.name
         if let img = viewProduct?.image as Data? {
             imageView.image = UIImage(data:img)
@@ -293,15 +325,13 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     }
     
     private func displayTheViewConsumedProduct() {
-//        let stringWeight = ConverterService.convertDoubleToString(double:viewConsumedProduct?.weight ?? 0.00)
-//        titleLabel.text = "Nutrient values for " + stringWeight + " gram"
         resetButton.isEnabled = false
-        proteinTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)
-        fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)
-        fiberTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)
-        saltTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.salt ?? 0.00)
-        carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.carbohydrates ?? 0.00)
-        kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.kilocalories ?? 0.00)
+        proteinTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)+"g"
+        fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)+"g"
+        fiberTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)+"g"
+        saltTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.salt ?? 0.00)+"g"
+        carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.carbohydrates ?? 0.00)+"g"
+        kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.kilocalories ?? 0.00)+"kcal"
         nameTextfield.text = viewConsumedProduct?.name
         if let img = viewConsumedProduct?.image as Data? {
             imageView.image = UIImage(data:img)

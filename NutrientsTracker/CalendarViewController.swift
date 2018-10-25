@@ -21,7 +21,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate {
     
     let dateFormatter: DateFormatter =  {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM dd yy"
+        dateFormatter.dateFormat = "dd-MM-yy"
         dateFormatter.timeZone = Calendar.current.timeZone
         dateFormatter.locale = Calendar.current.locale
         return dateFormatter
