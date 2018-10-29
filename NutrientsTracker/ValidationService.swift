@@ -10,6 +10,31 @@ import Foundation
 
 class ValidationService {
     
+    static func numberValidator(value:String) -> Bool{
+        // Check the string value if it is alphabetical and has more as one letter
+        var isTrue = true
+        // Check if the value is empty
+        if (!value.isEmpty) {
+            // Create a NSCharacterSet with decimalDigits
+            let charSet = NSCharacterSet.decimalDigits as NSCharacterSet
+            // Iterate through the characters and check if they match to the NSCharacterSet
+            for char in value.unicodeScalars {
+                // Checks if characters matches with the character set or is a comma
+                if  charSet.longCharacterIsMember(char.value){
+                    isTrue = true
+                }else {
+                    // If a character doesn't matches with the NSCharacterSet set the boolean to false
+                    isTrue = false
+                }
+            }
+        }else {
+            // Return false if the value is empty or smaller than 1 character
+            return false
+        }
+        // Return the result
+        return isTrue
+    }
+    
     static func decimalValidator(value:String) -> Bool{
         // Check the string value if it is alphabetical and has more as one letter
         var isTrue = true
@@ -71,6 +96,7 @@ class ValidationService {
     
    static func validateEmail(email:String) -> Bool {
         if !(email.isEmpty) && email.contains("@") && email.count > 3 {
+            // DEBUG MESSAGE
             print("Email is valid")
             return true
         }else {
@@ -80,6 +106,7 @@ class ValidationService {
     
     static func validatePassword(password:String) -> Bool {
         if !password.isEmpty && password.count > 3 {
+            // DEBUG MESSAGE
             print("Password is valid")
             return true
         }else {

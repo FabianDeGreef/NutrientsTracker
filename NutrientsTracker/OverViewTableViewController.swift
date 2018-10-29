@@ -21,8 +21,10 @@ class OverViewTableViewController: UITableViewController {
     var barChartData = [BarChartDataEntry]()
     var pieChartData = [PieChartDataEntry]()
     var barLegendEntries:[LegendEntry] = []
-    let barLabelValues = ["Protein","Fat","Fiber","Salt","Carb"]
-
+    var barLabelValues = ["Protein","Fat","Fiber","Salt","Carb"]
+    var barChartColors : [UIColor] = []
+    var overUse:Bool = false
+    
     //MARK: IBOutlets
     @IBOutlet weak var barChart: BarChartView!
     @IBOutlet weak var pieChart: PieChartView!
@@ -30,31 +32,61 @@ class OverViewTableViewController: UITableViewController {
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        overUse = false
         setupPieChart()
         setupBarChart()
     }
     
+    //MARK: Helper Functions
     func setupPieChart(){
         let kcalValue = currentDayTotal?.kilocaloriesTotal ?? 0.0
         let maxDayValue = 2225.0
-        let restDayValue = maxDayValue - kcalValue
+        var restDayValue = maxDayValue - kcalValue
+        var overUseKcal = 0.0
+        var overUseKcalData:PieChartDataEntry?
+        var kcalData:PieChartDataEntry?
+        var unusedKcalData:PieChartDataEntry?
         
-        let kcalData = PieChartDataEntry(value: kcalValue)
-        kcalData.label = "Kcal Used"
-        let unusedKcalData = PieChartDataEntry(value: restDayValue)
-        unusedKcalData.label = "Kcal Unused"
-        pieChartData = [kcalData,unusedKcalData]
+        if restDayValue < 0 {
+            overUseKcal = restDayValue*(-1)
+            restDayValue = 2225
+            if overUseKcal > maxDayValue {
+                overUseKcalData = PieChartDataEntry(value: overUseKcal)
+                overUseKcalData!.label = "Kcal Overuse"
+                
+                pieChartData = [overUseKcalData] as! [PieChartDataEntry]
+                barChartColors = [UIColor(named: "OverUseCollor")] as! [UIColor]
+            }else {
+            unusedKcalData = PieChartDataEntry(value: restDayValue)
+            unusedKcalData!.label = "Kcal Day Max"
+
+            overUse = true
+            overUseKcalData = PieChartDataEntry(value: overUseKcal)
+            overUseKcalData!.label = "Kcal Overuse: \(ConverterService.convertDoubleToString(double: overUseKcal))"
+                
+            pieChartData = [unusedKcalData,overUseKcalData] as! [PieChartDataEntry]
+            barChartColors = [UIColor(named: "KcalColor"),UIColor(named: "OverUseCollor")] as! [UIColor]
+            }
+        }else {
+            kcalData = PieChartDataEntry(value: kcalValue)
+            kcalData!.label = "Kcal Used"
+            
+            unusedKcalData = PieChartDataEntry(value: restDayValue)
+            unusedKcalData!.label = "Kcal Unused"
+            
+            pieChartData = [kcalData,unusedKcalData] as! [PieChartDataEntry]
+            barChartColors = [UIColor(named: "KcalColor"),UIColor(named: "FiberColor")] as! [UIColor]
+        }
         createPieChart()
     }
     
     func createPieChart(){
         let chartDataSet = PieChartDataSet(values: pieChartData, label: nil)
-        let colors = [
-            UIColor(named: "KcalColor"),
-            UIColor(named: "FiberColor")
-        ]
-        chartDataSet.colors = colors as! [NSUIColor]
+        chartDataSet.colors = barChartColors
         let chart = PieChartData(dataSet: chartDataSet)
+        if overUse {
+            chart.setDrawValues(false)
+        }
         chart.setValueFont(UIFont(name: "Verdana", size: 10)!)
         chart.setValueTextColor(UIColor.black)
         pieChart.holeColor = UIColor.clear
@@ -62,7 +94,6 @@ class OverViewTableViewController: UITableViewController {
         pieChart.animate(xAxisDuration: 1.5, easingOption: .easeInCirc)
     }
     
-    //MARK: Helper Functions
     func setupBarChart() {
         let proValue = currentDayTotal?.proteinTotal ?? 0.0
         let saltValue = currentDayTotal?.saltTotal ?? 0.0
@@ -92,6 +123,7 @@ class OverViewTableViewController: UITableViewController {
         ]
         // Set barchart colors
         chartDataSet.colors = colors as! [NSUIColor]
+        
         let chart = BarChartData(dataSet: chartDataSet)
         chart.barWidth = 0.95
         chart.setValueFont(UIFont(name: "Verdana", size: 10)!)
@@ -128,34 +160,7 @@ class OverViewTableViewController: UITableViewController {
         }
     }
     
-    // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    }
+//    // MARK: - Navigation
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//    }
 }
-
-//        let proLegend = LegendEntry()
-//        proLegend.label = "Protein"
-//        proLegend.form = .circle
-//        proLegend.formColor = UIColor.init(named: "ProteinColor")
-//
-//        let fatLegend = LegendEntry()
-//        fatLegend.label = "Fat"
-//        fatLegend.form = .circle
-//        fatLegend.formColor = UIColor.init(named: "FatColor")
-//
-//        let fiberLegend = LegendEntry()
-//        fiberLegend.label = "Fiber"
-//        fiberLegend.form = .circle
-//        fiberLegend.formColor = UIColor.init(named: "FiberColor")
-//
-//        let saltLegend = LegendEntry()
-//        saltLegend.label = "Salt"
-//        saltLegend.form = .circle
-//        saltLegend.formColor = UIColor.init(named: "SaltColor")
-//
-//        let carboLegend = LegendEntry()
-//        carboLegend.label = "Carbo"
-//        carboLegend.form = .circle
-//        carboLegend.formColor = UIColor.init(named: "CarbColor")
-//
-//        barChart.legend.setCustom(entries: [proLegend,fatLegend,fiberLegend,saltLegend,carboLegend])

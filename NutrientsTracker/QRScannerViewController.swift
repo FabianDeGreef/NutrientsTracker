@@ -29,16 +29,18 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if (captureSession?.isRunning == false){
-            // Start video input
+            // Start video output
             captureSession?.startRunning()
         }
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Find and access device back camera and set it media capture type to video
         let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
         guard let captureDevice = deviceDiscoverySession.devices.first else {
-            print("Error accesing device camera")
+            // DEBUG MESSAGE
+            print("Error accessing device back camera")
             return
             
         }
@@ -81,8 +83,7 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
                 videoOrientation = .portrait
             }
             videoPreviewLayer!.connection?.videoOrientation = videoOrientation
-
-
+            
             // Highlight the QR code
             qrCodeFrameView = UIView()
             // Create and setup a UIView
@@ -97,7 +98,7 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
                 view.bringSubviewToFront(qrCodeFrameView)
             }
         }catch {
-            // If errors occurs
+            // DEBUG MESSAGE
             print(error)
             return
         }
@@ -109,7 +110,8 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
         // Check if the metadata object array is empty
         if metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRect.zero
-            print("No qr code was scanned")
+            // DEBUG MESSAGE
+            print("No QR code was scanned")
             return
         }
         
@@ -126,6 +128,7 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
                 // Extract the stringvalue to a variable
                 qrString = metadataObj.stringValue
                 captureSession?.stopRunning()
+                self.performSegue(withIdentifier: "unwindToProductTable", sender: self)
             }
         }
     }

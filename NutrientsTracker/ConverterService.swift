@@ -39,4 +39,25 @@ class ConverterService {
         let stringDate = dateFormatter.string(from: dateValue)
         return stringDate
     }
+    
+    static func convertNSDayTotalsSetToDayTotalArray(dayTotalNSSet:NSSet)-> [DayTotal]{
+        // Convert NSSet object set to a DayTotal array
+        var dayTotalArray = dayTotalNSSet.allObjects as! [DayTotal]
+        // Sort the dayTotalArray by date descending
+        dayTotalArray.sort { (dayTotalOne, dayTotalTwo) -> Bool in
+            return dayTotalOne.date?.compare(dayTotalTwo.date!) == ComparisonResult.orderedDescending
+        }
+        // Return sorted DayTotal array
+        return dayTotalArray
+    }
+    
+    static func convertNSProductsSetToConsumedProductsArray(products:NSSet)-> [ConsumedProduct]{
+        // Store the CurrentUser DayTotals inside a NSSet variable
+        var consumedProductsArray = products.allObjects as! [ConsumedProduct]
+        // Sort the array by date descending
+        consumedProductsArray.sort { (productOne, productTwo) -> Bool in
+            return productOne.name!.compare(productTwo.name!) == ComparisonResult.orderedAscending
+        }
+        return consumedProductsArray
+    }
 }

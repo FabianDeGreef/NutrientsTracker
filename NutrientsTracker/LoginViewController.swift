@@ -26,14 +26,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Check if a user is already signed in
+        checkSignedInUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Check first if a user is already signed in
-        checkSignedInUser()
-        userEmail = ""
-        userPassword = ""
+        // Reset the values
+        resetForm()
     }
     
     //MARK: IBActions
@@ -50,34 +50,30 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func loginButtonPressed(_ sender: UIButton) {
         // Dismisses the keyboard
-        passwordTextfield.resignFirstResponder()
+        view.endEditing(true)
         // Check if userPassword and userEmail are not empty
-        if userPassword.count > 0 && userEmail.count > 0 {
-            // When login was selected
+        if !userPassword.isEmpty && !userEmail.isEmpty {
+            // When the login segment was selected
             if segmentIsLogin {
                 // Sign in an existing user
                 Auth.auth().signIn(withEmail: userEmail, password: userPassword) { (userData, error) in
                     // Check if the userData doesn't return nil
                     if (userData?.user) != nil {
-                        // Reset the textFields
-                        self.resetTextFields()
-                        // When signed in perfrom segue to the DateViewController
-                        self.performSegue(withIdentifier: "DateSelection", sender: self)
+                        // DEBUG MESSAGE
+                        print("Login Successful")
                     }else {
                         // Show alert message when login was failed
-                        self.showAlertAction(title: "No user found", message: "No user found matching with email or password")
+                        self.showAlertAction(title: "No user found", message: "No user found with matching email or password")
                     }
                 }
-                // When register was selected
+                // When register segement was selected
             }else{
                 // Create a new user
                 Auth.auth().createUser(withEmail: userEmail, password: userPassword) { (userData, error) in
                     // Check if the creaded userDate doesn't return nil
                     if (userData?.user) != nil {
-                        // Reset the textFields
-                        self.resetTextFields()
-                        // Show alert message when the registration was succesfull
-                        self.showAlertAction(title: "Registration complete", message: "Please enter  email and password to login")
+                        // DEBUG MESSAGE
+                        print("Registration Successful")
                     }else{
                         // Show alert message when registration failed
                         self.showAlertAction(title: "Could not register", message: "Please try again")
@@ -85,7 +81,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 }
             }
         }else {
-            showAlertAction(title: "Unvalid values", message: "Please enter a valid email and password")
+            showAlertAction(title: "Unvalid values", message: "Please enter a valid email or password")
         }
     }
     
@@ -115,7 +111,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         default:
             if ValidationService.validatePassword(password: passwordTextfield.text!){
                 userPassword = passwordTextfield.text!
-
             }else {
                 userPassword = ""
                 passwordTextfield.text = ""
@@ -126,52 +121,65 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: Helper Functions
-    private func checkSignedInUser(){
-    // Check if a user is still signed in if so go directly to the next view
-        if AuthenticationService.checkSingedInUser() {
-            // If the user is signed in perform segue to the DateViewController
-            self.performSegue(withIdentifier: "DateSelectionDirect", sender: self)
-
+    private func checkSignedInUser() {
+        // Check if a user is still signed in if so go directly to the next view
+        Auth.auth().addStateDidChangeListener { auth, user in
+            if user != nil {
+                self.performSegue(withIdentifier: "GoToDateSelection", sender: self)
+                print("User with email: \(user?.email ?? "") is signed in")
+            } else {
+                print("No user is signed in")
+            }
         }
     }
     
-    // Creates custom AlertAction to alert the user
+    // Creates custom AlertActions
     func showAlertAction(title: String, message: String){
-        // Create the UIAlertController with the incoming parameters
+        // Create the UIAlertController with the incoming values
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         // Create the UIAlertAction to display an OK button and dismisses the alert after it is pressed
         let action = UIAlertAction(title: "Ok", style: .default) { (UIAlertAction) in
         }
         // Adding the UIAlertAction to the UIAlertController
         alert.addAction(action)
-        // Displaying the Alert
+        // Displaying the alert message
         present(alert, animated: true, completion: nil)
     }
     
-    // Reset UI to registration form
+    // Set UI to registration
     private func resetUIToRegister() {
         loginLabel.text = "Please Register"
-        resetProperties()
+        resetForm()
     }
     
-    // Reset UI to login form
+    // Set UI to login
     private func resetUIToLogin() {
         loginLabel.text = "Please Login"
-        resetProperties()
+        resetForm()
     }
     
-    // Reset the textfields to empty string
-    private func resetTextFields() {
-        emailTextfield.text = ""
-        passwordTextfield.text = ""
-    }
-    
-    private func resetProperties() {
+    // Reset form valuses
+    private func resetForm() {
         userPassword = ""
         userEmail = ""
+        passwordTextfield.text = ""
+        emailTextfield.text = ""
     }
 
     //MARK: Segue Prepare
-    //override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //}
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+    }
 }
+
+
+//    private func checkSignedInUser(){
+//    // Check if a user is still signed in if so go directly to the next view
+//        if AuthenticationService.checkSignedInUser() {
+//            // If the user is signed in perform segue to the DateViewController
+//            self.performSegue(withIdentifier: "DateSelectionDirect", sender: self)
+//        }
+//    }
+
+//        passwordTextfield.resignFirstResponder()
+//        emailTextfield.resignFirstResponder()

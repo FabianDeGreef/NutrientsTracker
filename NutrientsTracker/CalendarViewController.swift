@@ -12,13 +12,13 @@ import JTAppleCalendar
 class CalendarViewController: UIViewController, UICollectionViewDelegate {
 
     // MARK: Properties
-    var currentDate:Date?
-    var selectedDate:Date?
     var currentUser:User?
+    var selectedDayTotal:DayTotal?
     var dayTotals:[DayTotal] = []
     var dates:[String] = []
-    var selectedDayTotal:DayTotal?
-    
+    var currentDate:Date?
+    var selectedDate:Date?
+
     let dateFormatter: DateFormatter =  {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yy"
@@ -47,7 +47,8 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate {
         setupCalendar()
         // Convert the dayTotal dates to a string array dates
         convertDatesToStringArray()
-        print(dates.count)
+        // DEBUG MESSAGE
+        print("Total dates in use: \(dates.count)")
     }
     
     // MARK: IBAction
@@ -70,6 +71,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate {
             }
         }
     }
+    
     // MARK: Helper Functions
     func convertDatesToStringArray(){
         // Clear the array every time
@@ -166,14 +168,15 @@ extension CalendarViewController: JTAppleCalendarViewDelegate, JTAppleCalendarVi
         configureCell(cell: cell, cellState: cellState)
         selectedDate = date
         checkForAvailableDates()
-        print(ConverterService.formatDateToString(dateValue: selectedDate ?? Date() ))
+        // DEBUG MESSAGE
+        print("Selected date: \(ConverterService.formatDateToString(dateValue: selectedDate ?? Date() ))")
     }
     
     func calendar(_ calendar: JTAppleCalendarView, didDeselectDate date: Date, cell: JTAppleCell?, cellState: CellState) {
         configureCell(cell: cell, cellState: cellState)
     }
     
-    // Display the cell
+    // Cell display
     func calendar(_ calendar: JTAppleCalendarView, cellForItemAt date: Date, cellState: CellState, indexPath: IndexPath) -> JTAppleCell {
         let cell = calendar.dequeueReusableJTAppleCell(withReuseIdentifier: "CustomCell", for: indexPath) as! CustomCell
         cell.dateLabel.text = cellState.text
@@ -181,7 +184,7 @@ extension CalendarViewController: JTAppleCalendarViewDelegate, JTAppleCalendarVi
         return cell
     }
     
-    // Data source
+    // Cell datasource
     func configureCalendar(_ calendar: JTAppleCalendarView) -> ConfigurationParameters {
         let startDate = dateFormatter.date(from: "01 01 2018")
         let endDate = dateFormatter.date(from: "01 01 2020")
@@ -189,7 +192,7 @@ extension CalendarViewController: JTAppleCalendarViewDelegate, JTAppleCalendarVi
         return parameters
     }
     
-    // When scrolling through months
+    // Scrolling through months
     func calendar(_ calendar: JTAppleCalendarView, didScrollToDateSegmentWith visibleDates: DateSegmentInfo) {
         setupCalendarView(from: visibleDates)
     }

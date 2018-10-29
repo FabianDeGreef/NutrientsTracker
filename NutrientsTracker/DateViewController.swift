@@ -14,6 +14,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     //MARK: IBOutlet
     @IBOutlet weak var entryTable: UITableView!
+    @IBOutlet weak var pastDaysOverview: UIBarButtonItem!
     
     //MARK: Properties
     var emailFromUser:String = ""
@@ -24,6 +25,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        entryTable.rowHeight = 45;
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,78 +41,62 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     //MARK: IBActions
     @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) {}
     
-//    @IBAction func signOffUser(_ sender: UIBarButtonItem) {
-//        // Sign out the current user
-//        if AuthenticationService.signOffUser() {
-//            // Return back to the LoginViewController by popping the other views
-//            _ = navigationController?.popToRootViewController(animated: true)
-//        }
-//    }
-    
     //MARK: Helper Functions
-    private func checkForExistingUserDayTotals() {
-        // Check if the current user has DayTotals
-        if currentUser != nil && currentUser?.dayTotals?.count != 0 {
-            // Covert the NSSet DayTotals to an array with DayTotals
-            convertNSDayTotalsSetToDayTotalArray()
-        }else{
-            print("No dayTotals found in current user")
-        }
+    func deleteDayTotal(dayTotalToDelete:DayTotal,index:IndexPath) {
+        // Delete the selected product inside the context
+        PersistenceService.context.delete(dayTotalToDelete)
+        // Save context changes
+        PersistenceService.saveContext()
+        // Delete the selected product from the products array
+        self.dayTotals.remove(at: index.row)
+        // Delete the prouct from the table with a fade animation
+        self.entryTable.deleteRows(at: [index], with: .fade)
+        checkForExistingUserDayTotals()
     }
     
-    private func convertNSDayTotalsSetToDayTotalArray(){
-        // Store the CurrentUser DayTotals inside a NSSet variable
-        let nsSet:NSSet = (currentUser?.dayTotals)!
-        // Convert the NSSet objects to a DayTotal array
-        dayTotals = nsSet.allObjects as! [DayTotal]
-        // Sort the array by date descending
-        dayTotals.sort { (dayTotalOne, dayTotalTwo) -> Bool in
-            return dayTotalOne.date?.compare(dayTotalTwo.date!) == ComparisonResult.orderedDescending
+    private func checkForExistingUserDayTotals() {
+        // Check if the current user has DayTotals
+        if currentUser != nil {
+            // Covert the NSSet DayTotals to an array with DayTotals
+            dayTotals = ConverterService.convertNSDayTotalsSetToDayTotalArray(dayTotalNSSet:(currentUser?.dayTotals)!)
+            // Reload the date table
+            entryTable.reloadData()
         }
-        // Reload the table
-        entryTable.reloadData()
-
+        if dayTotals.count > 0 {
+            // DEBUG MESSAGE
+            print("Day totals found: \(dayTotals.count)")
+            for dayTotal in dayTotals {
+                if dayTotal.produtcs?.count ?? 0 > 0 {
+                    pastDaysOverview.isEnabled = true
+                    return
+                }
+            }
+        }else{
+            // DEBUG MESSAGE
+            print("No day totals found for current user")
+            pastDaysOverview.isEnabled = false
+        }
     }
     
     private func checkSingedInUser(){
         // Check if there is already a signed in user
-        if Auth.auth().currentUser != nil {
-            if let user =  Auth.auth().currentUser?.email{
+        if AuthenticationService.checkSignedInUser() {
+            let userMail = AuthenticationService.getSignedInUserEmail()
+            if userMail != "" {
                 // When a signed in user is found store the user email inside a variable
-                self.emailFromUser = user
-                print("User \(emailFromUser) is singed in")
+                emailFromUser = userMail
+                // DEBUG MESSAGE
+                // print("User \(emailFromUser) is singed in")
             }
         }else {
-            print("No users are singed in now ")
+            // DEBUG MESSAGE
+            // print("No users are singed in now ")
         }
     }
+    
     private func checkDatabaseForUser() {
         // Create a fetchRequest to find a matching user with the signed in email
-        let userFetch = NSFetchRequest<User>(entityName: "User")
-        // Initialize a predicate email must match with user email
-        userFetch.predicate = NSPredicate(format:"email == %@", emailFromUser)
-        do {
-            // Access the database and retrieve the matching user
-            if let matchingUser = try (PersistenceService.context.fetch(userFetch).first){
-                currentUser = matchingUser
-                // DEBUG MESSAGE
-                print("User found with email: \(currentUser?.email ?? "")")
-                print("User has \(currentUser?.dayTotals?.count ?? 0) daytotals")
-            }else {
-                // When no match was found add the new user to the database
-                let newUser = User(context: PersistenceService.context)
-                // Add the signed in email to the new user object
-                newUser.email = emailFromUser
-                // Save context changes
-                PersistenceService.saveContext()
-                // Store the new user value inside the currentUser property
-                currentUser = newUser
-                // DEBUG MESSAGE
-                print("Added new user with email \(emailFromUser)")
-            }
-        }catch{
-            print("Could not fetch \(error)")
-        }
+        currentUser = UserRepository.fetchUserByEmail(email: emailFromUser)
     }
     
     //MARK: UITableView Delegates
@@ -120,14 +106,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         if editingStyle == .delete {
             // Select the dayTotal with the row index from the table
             let selection = dayTotals[indexPath.row]
-            // Delete the selected dayTotal inside the context
-            PersistenceService.context.delete(selection)
-            // Save context changes
-            PersistenceService.saveContext()
-            // Delete the selected dayTotal from the dayTotals array
-            self.dayTotals.remove(at: indexPath.row)
-            // Delete the dayTotal from the table with a fade animation
-            self.entryTable.deleteRows(at: [indexPath], with: .fade)
+            deleteDayTotal(dayTotalToDelete: selection, index: indexPath)
         }
     }
     
@@ -161,7 +140,6 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
             let daySetupVc = segue.destination as? DaySetupViewController
             daySetupVc?.currentDayTotal = selectedDayTotal
         }
-        
         // If the segue destination is the ProductViewController
         if currentUser != nil && segue.destination is CalendarViewController{
             // Pass the selectedProduct to the ProductViewController
@@ -171,3 +149,67 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
 }
+
+//    private func convertNSDayTotalsSetToDayTotalArray(){
+//        // Store the CurrentUser DayTotals inside a NSSet variable
+//        let nsSet:NSSet = (currentUser?.dayTotals)!
+//        // Convert the NSSet objects to a DayTotal array
+//        dayTotals = nsSet.allObjects as! [DayTotal]
+//        // Sort the array by date descending
+//        dayTotals.sort { (dayTotalOne, dayTotalTwo) -> Bool in
+//            return dayTotalOne.date?.compare(dayTotalTwo.date!) == ComparisonResult.orderedDescending
+//        }
+//        // Reload the table
+//        entryTable.reloadData()
+//    }
+
+//    private func checkSingedInUser(){
+//        // Check if there is already a signed in user
+//        if Auth.auth().currentUser != nil {
+//            if let user =  Auth.auth().currentUser?.email{
+//                // When a signed in user is found store the user email inside a variable
+//                self.emailFromUser = user
+//                print("User \(emailFromUser) is singed in")
+//            }
+//        }else {
+//            print("No users are singed in now ")
+//        }
+//    }
+
+//            // Delete the selected dayTotal inside the context
+//            PersistenceService.context.delete(selection)
+//            // Save context changes
+//            PersistenceService.saveContext()
+//            // Delete the selected dayTotal from the dayTotals array
+//            self.dayTotals.remove(at: indexPath.row)
+//            // Delete the dayTotal from the table with a fade animation
+//            self.entryTable.deleteRows(at: [indexPath], with: .fade)
+
+//    private func checkDatabaseForUser() {
+//        // Create a fetchRequest to find a matching user with the signed in email
+//        let userFetch = NSFetchRequest<User>(entityName: "User")
+//        // Initialize a predicate email must match with user email
+//        userFetch.predicate = NSPredicate(format:"email == %@", emailFromUser)
+//        do {
+//            // Access the database and retrieve the matching user
+//            if let matchingUser = try (PersistenceService.context.fetch(userFetch).first){
+//                currentUser = matchingUser
+//                // DEBUG MESSAGE
+//                print("User found with email: \(currentUser?.email ?? "")")
+//                print("User has \(currentUser?.dayTotals?.count ?? 0) daytotals")
+//            }else {
+//                // When no match was found add the new user to the database
+//                let newUser = User(context: PersistenceService.context)
+//                // Add the signed in email to the new user object
+//                newUser.email = emailFromUser
+//                // Save context changes
+//                PersistenceService.saveContext()
+//                // Store the new user value inside the currentUser property
+//                currentUser = newUser
+//                // DEBUG MESSAGE
+//                print("Added new user with email \(emailFromUser)")
+//            }
+//        }catch{
+//            print("Could not fetch \(error)")
+//        }
+//    }

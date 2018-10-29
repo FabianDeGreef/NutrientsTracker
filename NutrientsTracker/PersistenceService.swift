@@ -13,7 +13,6 @@ class PersistenceService {
     
     // Initialize the PersistenceService
     private init(){
-        
     }
     
     // Accesable static context variable to return the presisentContainer
@@ -44,6 +43,21 @@ class PersistenceService {
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
+        }
+    }
+    
+    static func deleteDataByEntity(entity:String){
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        fetchRequest.returnsObjectsAsFaults = false
+        do {
+            let results = try PersistenceService.context.fetch(fetchRequest)
+            for object in results {
+                guard let objectData = object as? NSManagedObject else {continue}
+                PersistenceService.context.delete(objectData)
+            }
+        }catch {
+            // DEBUG MESSAGE
+            print("Error deleting entitys")
         }
     }
 }

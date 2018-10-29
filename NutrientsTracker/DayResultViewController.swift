@@ -10,7 +10,6 @@ import UIKit
 
 class DayResultViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-
     //MARK: Properties
     var userId:String?
     var products:[ConsumedProduct] = []
@@ -28,17 +27,7 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Check if the currentDayTotal has any consumed products
-        if currentDayTotal?.produtcs?.count != 0 {
-            // Covert the NSSet products to an array with products
-            convertNSProductSetToProductArray()
-            //DEBUG MESSAGE
-            print("Products found inside current dayTotal: \(currentDayTotal?.produtcs?.count ?? 0)")
-        }else{
-            //DEBUG MESSAGE
-            print("No products found in current dayTotal")
-        }
-        checkAmountConsumedProducts()
+        setupConsumedProducts()
     }
     
     //MARK: UITableView Delegates
@@ -48,17 +37,10 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         if editingStyle == .delete {
             // Select the prodcut with the row index from the table
             let selection = products[indexPath.row]
-            // Recalculate the dayTotal by subtracting the removed product nutrient values from the current dayTotal
+            //Recalculate the dayTotal by subtracting the removed product nutrient values from the current dayTotal
             recalculateDayTotal(product: selection)
-            // Delete the selected consumedProduct inside the context
-            PersistenceService.context.delete(selection)
-            // Save context changes
-            PersistenceService.saveContext()
-            // Delete the selected consumedProduct from the products array
-            self.products.remove(at: indexPath.row)
-            // Delete the consumedProducts from the table with a fade animation
-            self.productTable.deleteRows(at: [indexPath], with: .fade)
-            self.checkAmountConsumedProducts()
+            // Delete the selected product
+            deleteProduct(productToDelete: selection,index:indexPath)
         }
     }
     
@@ -92,10 +74,35 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         selectedProduct = products[indexPath.row]
         // Display the ProductViewController using the ViewConsumedProduct segue identifier
         self.performSegue(withIdentifier: "ViewConsumedProduct", sender: self)
-
     }
     
     //MARK: Helper Functions
+    func deleteProduct(productToDelete:ConsumedProduct,index:IndexPath) {
+        // Delete the selected product inside the context
+        PersistenceService.context.delete(productToDelete)
+        // Save context changes
+        PersistenceService.saveContext()
+        // Delete the selected product from the products array
+        self.products.remove(at: index.row)
+        // Delete the prouct from the table with a fade animation
+        self.productTable.deleteRows(at: [index], with: .fade)
+    }
+    
+    func setupConsumedProducts() {
+        // Check if the currentDayTotal has any consumed products
+        if currentDayTotal?.produtcs?.count != 0 {
+            // Covert the NSSet products to an array with ConsumedProducts
+            products = ConverterService.convertNSProductsSetToConsumedProductsArray(products: (currentDayTotal?.produtcs)!)
+            productTable.reloadData()
+            //DEBUG MESSAGE
+            print("Products found inside current dayTotal: \(currentDayTotal?.produtcs?.count ?? 0)")
+        }else{
+            //DEBUG MESSAGE
+            print("No products found in current dayTotal")
+        }
+        checkAmountConsumedProducts()
+    }
+    
     func checkAmountConsumedProducts(){
         if products.count == 0 {
             overViewButton.isEnabled = false
@@ -112,18 +119,6 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         currentDayTotal?.kilocaloriesTotal = (currentDayTotal?.kilocaloriesTotal)! - product.kilocalories
         currentDayTotal?.saltTotal = (currentDayTotal?.saltTotal)! - product.salt
     }
-    private func convertNSProductSetToProductArray(){
-        // Store the CurrentUser DayTotals inside a NSSet variable
-        let nsSet:NSSet = (currentDayTotal?.produtcs)!
-        // Convert the NSSet objects to a DayTotal array
-        products = nsSet.allObjects as! [ConsumedProduct]
-        // Sort the array by date descending
-        products.sort { (productOne, productTwo) -> Bool in
-            return productOne.name!.compare(productTwo.name!) == ComparisonResult.orderedAscending
-        }
-        // Reload the table
-        productTable.reloadData()
-    }
     
     // MARK: Prepare Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -138,3 +133,17 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
 }
+
+//            // Select the prodcut with the row index from the table
+//            let selection = products[indexPath.row]
+//            // Recalculate the dayTotal by subtracting the removed product nutrient values from the current dayTotal
+//            recalculateDayTotal(product: selection)
+//            // Delete the selected consumedProduct inside the context
+//            PersistenceService.context.delete(selection)
+//            // Save context changes
+//            PersistenceService.saveContext()
+//            // Delete the selected consumedProduct from the products array
+//            self.products.remove(at: indexPath.row)
+//            // Delete the consumedProducts from the table with a fade animation
+//            self.productTable.deleteRows(at: [indexPath], with: .fade)
+//            self.checkAmountConsumedProducts()
