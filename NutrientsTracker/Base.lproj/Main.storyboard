@@ -451,8 +451,8 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="dateLabel" destination="nsa-xd-hzq" id="dwm-op-01J"/>
-                                            <outlet property="dayTotalCountLabel" destination="eLq-Ts-Ocq" id="b94-ol-KUz"/>
+                                            <outlet property="dayTotalConsumedProductsLabel" destination="eLq-Ts-Ocq" id="b94-ol-KUz"/>
+                                            <outlet property="dayTotalDateLabel" destination="nsa-xd-hzq" id="dwm-op-01J"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -493,7 +493,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="entryTable" destination="LsB-9I-liX" id="6Ox-kv-ixP"/>
+                        <outlet property="dayTotalTable" destination="LsB-9I-liX" id="6Ox-kv-ixP"/>
                         <outlet property="pastDaysOverview" destination="VxM-Cv-rCc" id="b5G-70-gke"/>
                         <segue destination="wDW-xq-LSz" kind="show" identifier="DayTotalSetup" id="3BH-WD-YJ1"/>
                     </connections>
@@ -1115,7 +1115,7 @@
         <!--Day Total Past Days-->
         <scene sceneID="OlK-h2-lg3">
             <objects>
-                <tableViewController id="wcd-tE-sPt" customClass="OverViewLastDayTotalsTableViewController" sceneMemberID="viewController">
+                <tableViewController id="wcd-tE-sPt" customClass="OverViewLastPastDayTotalsTableViewController" customModule="NutrientsTracker" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="Yft-Rz-rij">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1629,7 +1629,9 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="App Settings" id="8K1-7t-sDa"/>
                     <connections>
+                        <outlet property="exportButton" destination="gtC-Ri-uLy" id="nns-MI-jVD"/>
                         <outlet property="exportTotalLabel" destination="d4u-KL-rDk" id="s4D-5r-yF0"/>
+                        <outlet property="importButton" destination="mtw-kI-4e3" id="15f-8E-tkh"/>
                         <outlet property="importTotalLabel" destination="NdP-Qc-Bxn" id="P48-Wd-1Zp"/>
                         <outlet property="kcalLimitTextfield" destination="Dv4-X4-gNC" id="3mJ-7w-mWl"/>
                     </connections>

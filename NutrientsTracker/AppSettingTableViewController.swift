@@ -15,6 +15,8 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     
     //MARK: IBOutlets
     @IBOutlet weak var importTotalLabel: UILabel!
+    @IBOutlet weak var importButton: UIButton!
+    @IBOutlet weak var exportButton: UIButton!
     @IBOutlet weak var exportTotalLabel: UILabel!
     @IBOutlet weak var kcalLimitTextfield: UITextField!
     
@@ -25,39 +27,40 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     //MARK: View Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Check for product changes local and in the cloud
         checkForCloudAndLocalProductsChanges()
-        checkUserSettings()
-    }
-    
-    func checkUserSettings() {
-        let userDefaults = UserDefaults.standard
-        let value = userDefaults.integer(forKey: "kcalValue")
-        kcalValue = value
-        kcalLimitTextfield.text = String(value)
+        // Get the stored kilocalorie value
+        kcalValue = UserDefaultsSettings.getKilocalorieLimitValue()
+        kcalLimitTextfield.text = String(UserDefaultsSettings.getKilocalorieLimitValue())
     }
     
     //MARK: IBActions
     @IBAction func signOutAction(_ sender: UIButton) {
+        // Sign out the user
         signOutUser()
     }
     
     @IBAction func uploadAction(_ sender: UIButton) {
+        // Upload local products to the cloud
         cloudProductRepo.exportLocalProductsToCloud()
         showAlertAction(title: "Exporting products", message: "local products exported to cloud database")
     }
     
     @IBAction func importAction(_ sender: UIButton) {
+        // Import cloud products local
         cloudProductRepo.importCloudProducts()
         showAlertAction(title: "Importing products", message: "Cloud products imported to local database")
     }
     
     @IBAction func resetAction(_ sender: UIButton) {
+        // Delete all local products
         PersistenceService.deleteDataByEntity(entity: "Product")
         saveContext()
         showAlertAction(title: "Removing local products", message: "The local products are removed")
     }
     
     @IBAction func cleanAppAction(_ sender: UIButton) {
+        // Delete all app settings
         showAlertAction(title: "Removing all settings", message: "All app data wil be deleted")
         PersistenceService.deleteDataByEntity(entity: "Product")
         PersistenceService.deleteDataByEntity(entity: "ConsumedProduct")
@@ -68,8 +71,8 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func cleanUserDayTotals(_ sender: UIButton) {
-        let userEmail = AuthenticationService.getSignedInUserEmail()
-        let dayTotals = DayTotalRepository.fetchDayTotalsToDelete(email: userEmail)
+        // Deletes all DayTotals for the current user
+        let dayTotals = DayTotalRepository.fetchDayTotalsToDelete(email: UserDefaultsSettings.getUserEmail())
         for dayTotal in dayTotals {
             PersistenceService.context.delete(dayTotal as! NSManagedObject)
         }
@@ -78,15 +81,15 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func saveKcalLimit(_ sender: UIButton) {
+        // Dismisses the keyboard
         kcalLimitTextfield.resignFirstResponder()
-        // Accessing user defaults
-        let userDefaults = UserDefaults.standard
-        // Setting user value
-        userDefaults.set(kcalValue, forKey: "kcalValue")
+        // Sets the kilicalorie user value
+        UserDefaultsSettings.setKilocalorieLimitValue(valueLimit: kcalValue)
         showAlertAction(title: "Saving kcal limit", message: "The new kcal limit wil be saved")
     }
     
     @IBAction func deleteConsumedProducts(_ sender: UIButton) {
+        // Delete all the consumed products
         PersistenceService.deleteDataByEntity(entity: "ConsumedProduct")
         saveContext()
         showAlertAction(title: "Removing consumed produtcs", message: "All consumed products wil be deleted")
@@ -98,13 +101,24 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
             importExportTotal in
             self.importTotalLabel.text = "\(importExportTotal[1])"
             self.exportTotalLabel.text = "\(importExportTotal[0])"
+            if (importExportTotal[1]) == 0 {
+                self.importButton.isEnabled = false
+            }else {
+                self.importButton.isEnabled = true
+            }
+                
+            if (importExportTotal[0]) == 0 {
+                self.exportButton.isEnabled = false
+            }else {
+                self.exportButton.isEnabled = true
+            }
         }
     }
     
     func signOutUser() {
         // Sign out the current user
         if AuthenticationService.signOffUser() {
-            // Return back to the LoginViewController by popping the other views
+            // Return to the LoginViewController
             _ = navigationController?.popToRootViewController(animated: true)
         }
     }
@@ -147,7 +161,6 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // Use the return keyboard button to jump between textfields
-
         switch textField {
         case kcalLimitTextfield:
             // Dismisses the keyboard
@@ -341,3 +354,15 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
 //        }
 //    }
 
+//    checkUserSettings()
+//    func checkUserSettings() {
+//        let userDefaults = UserDefaults.standard
+//        let value = userDefaults.integer(forKey: "kcalValue")
+//        kcalValue = value
+//        kcalLimitTextfield.text = String(value)
+//    }
+
+//         // Accessing user defaults
+//        let userDefaults = UserDefaults.standard
+//        // Setting user value
+//        userDefaults.set(kcalValue, forKey: "kcalValue")

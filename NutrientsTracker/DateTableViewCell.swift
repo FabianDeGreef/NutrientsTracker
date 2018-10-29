@@ -11,8 +11,8 @@ import UIKit
 class DateTableViewCell: UITableViewCell {
     
     // MARK: IBOutlets
-    @IBOutlet weak var dayTotalCountLabel: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var dayTotalConsumedProductsLabel: UILabel!
+    @IBOutlet weak var dayTotalDateLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

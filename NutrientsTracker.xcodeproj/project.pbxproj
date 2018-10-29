@@ -34,6 +34,7 @@
 		1FDF6310217CDE0800AEB884 /* DateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */; };
 		1FDF6312217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */; };
 		1FEC3035217CC65600B0DEB5 /* ProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */; };
+		1FF1AE95218736F2001D5998 /* UserDefaultsSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF1AE94218736F2001D5998 /* UserDefaultsSettings.swift */; };
 		1FFF4FBC21660CD20083E731 /* DateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBB21660CD20083E731 /* DateViewController.swift */; };
 		1FFF4FBE216613330083E731 /* DaySetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBD216613330083E731 /* DaySetupViewController.swift */; };
 		1FFF4FC021661DD20083E731 /* DayResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */; };
@@ -84,6 +85,7 @@
 		1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTableViewCell.swift; sourceTree = "<group>"; };
 		1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumedProductTableViewCell.swift; sourceTree = "<group>"; };
 		1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTableViewCell.swift; sourceTree = "<group>"; };
+		1FF1AE94218736F2001D5998 /* UserDefaultsSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSettings.swift; sourceTree = "<group>"; };
 		1FFF4FBB21660CD20083E731 /* DateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
 		1FFF4FBD216613330083E731 /* DaySetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySetupViewController.swift; sourceTree = "<group>"; };
 		1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResultViewController.swift; sourceTree = "<group>"; };
@@ -161,13 +163,14 @@
 				1F264F85217A1E2900A2B9A7 /* WeightViewController.swift */,
 				1FFF4FBD216613330083E731 /* DaySetupViewController.swift */,
 				1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */,
-				1F4DC4BC21721AEC00B6F481 /* CalendarViewController.swift */,
-				1F4DC4BE21721BAE00B6F481 /* CustomCell.swift */,
 				1F3AAF20217F312A00942346 /* AppSettingTableViewController.swift */,
+				1F4DC4BE21721BAE00B6F481 /* CustomCell.swift */,
+				1F4DC4BC21721AEC00B6F481 /* CalendarViewController.swift */,
 				1FFF4FBB21660CD20083E731 /* DateViewController.swift */,
 				1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */,
 				1FD7FC7F21642F3E00025767 /* LoginViewController.swift */,
 				1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */,
+				1FF1AE94218736F2001D5998 /* UserDefaultsSettings.swift */,
 				1F9D271A2183CA8D0024F075 /* ProductRepository.swift */,
 				1F9D271C21846DE80024F075 /* CloudProductRepository.swift */,
 				1F9D271621837B010024F075 /* DayTotalRepository.swift */,
@@ -432,6 +435,7 @@
 				1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */,
 				1F9D27192183B9F50024F075 /* UserRepository.swift in Sources */,
 				1FEC3035217CC65600B0DEB5 /* ProductTableViewCell.swift in Sources */,
+				1FF1AE95218736F2001D5998 /* UserDefaultsSettings.swift in Sources */,
 				1F353E8B216E2A60002184F5 /* ValidationService.swift in Sources */,
 				1F9D271721837B010024F075 /* DayTotalRepository.swift in Sources */,
 				1F5DBFDB2169149A009F0D6C /* PersistenceService.swift in Sources */,

@@ -66,12 +66,15 @@ class OverViewLastPastDayTotalsTableViewController: UITableViewController {
         barChart.xAxis.drawGridLinesEnabled = false
         barChart.highlighter = nil
         barChart.scaleXEnabled = false
-        // Accessing user defaults
-        let userDefaults = UserDefaults.standard
-        // Setting user value
-        let limit = userDefaults.integer(forKey: "kcalValue")
+        barChart.leftAxis.axisMinimum = 0.0
+        
+        // Get stored user limit value
+        let limit = UserDefaultsSettings.getKilocalorieLimitValue()
+        // Set the limot value
         let limitLine = ChartLimitLine(limit: Double(limit) , label: "Kcal Limit: \(limit)")
+        // Add the limitline to the leftAxis
         barChart.leftAxis.addLimitLine(limitLine)
+        
         // Create custom barchart labels
         createBarLegendEntries()
         // Set custom barchart labels

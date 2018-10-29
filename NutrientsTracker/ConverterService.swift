@@ -34,10 +34,22 @@ class ConverterService {
         let dateFormatter = DateFormatter()
         // Setting the dateformat
         dateFormatter.dateFormat = "dd MMM yyyy"
-        //dateFormatter.dateStyle = .short
         // Convert the DayTotal dates to a string value using the datefromatter
         let stringDate = dateFormatter.string(from: dateValue)
         return stringDate
+    }
+    
+    static func convertDayTotalArrayToDateStringArray(dayTotals:[DayTotal]) -> [String]{
+        // Create a datefromatter
+        let dateFormatter = DateFormatter()
+        // Setting the dateformat
+        dateFormatter.dateFormat = "dd MMM yyyy"
+        var stringDateArray:[String] = []
+        // Convert the DayTotal dates to a string value using the datefromatter
+        for day in dayTotals {
+            stringDateArray.append(dateFormatter.string(from: day.date!))
+        }
+        return stringDateArray
     }
     
     static func convertNSDayTotalsSetToDayTotalArray(dayTotalNSSet:NSSet)-> [DayTotal]{

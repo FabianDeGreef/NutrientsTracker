@@ -38,24 +38,24 @@ class CloudProductRepository {
     
     func fetchCloudProducts(completionHandler: @escaping (_ importExportTotal: [Int]) -> ()){
         databaseRef = Database.database().reference()
-        databaseRef?.child("Products").observe(.value, with: { (data) in
+        databaseRef?.child("\(UserDefaultsSettings.getUserUID())").child("Products").observeSingleEvent(of: DataEventType.value, with: { (data) in
             if data.exists(){
                 guard let products = data.value as? NSDictionary else {return}
                 for product in products {
                     guard let productData = product.value as? NSDictionary else {return}
-                    self.exsistingCloudProductsNames.append(productData["ProductName"] as? String ?? "")
+                    self.exsistingCloudProductsNames.append((productData["ProductName"] as? String ?? "").lowercased())
                 }
             }
             self.exsistingLocalProducts = ProductRepository.fetchLocalProducts()
             self.exsistingLocalProductNames = ProductRepository.fetchLocalProductNames()
             for product in self.exsistingLocalProducts{
-                if !self.exsistingCloudProductsNames.contains(product.name!){
+                if !self.exsistingCloudProductsNames.contains(product.name!.lowercased()){
                     self.exportToCloudProducts.append(product)
                 }
             }
             for productNames in self.exsistingCloudProductsNames{
-                if !self.exsistingLocalProductNames.contains(productNames){
-                    self.importFromCloudProducts.append(productNames)
+                if !self.exsistingLocalProductNames.contains(productNames.lowercased()){
+                    self.importFromCloudProducts.append(productNames.lowercased())
                 }
             }
             // DEBUG MESSAGE
@@ -69,7 +69,7 @@ class CloudProductRepository {
     
     func importCloudProducts() {
         databaseRef = Database.database().reference()
-        databaseRef?.child("Products").observe(.value, with: { (data) in
+        databaseRef?.child("\(UserDefaultsSettings.getUserUID())").child("Products").observeSingleEvent(of: DataEventType.value, with: { (data) in
             if data.exists(){
                 guard let products = data.value as? NSDictionary else {return}
                 for product in products {
@@ -77,7 +77,7 @@ class CloudProductRepository {
                     self.productName = productData["ProductName"] as? String ?? ""
                     // DEBUG MESSAGE
                     print("Cloud product name: \(self.productName)")
-                    if !self.exsistingLocalProductNames.contains(self.productName){
+                    if !self.exsistingLocalProductNames.contains(self.productName.lowercased()){
                         
                         self.kiloCalorieValue
                             = ConverterService.convertStringToDouble(string: productData["Kilocalorie"] as? String ?? "0,0")
@@ -104,36 +104,40 @@ class CloudProductRepository {
         })
     }
     
-    func createNewLocalProduct(){
-        // Create the imported product
-        let product = Product(context: PersistenceService.context)
-        product.name = productName
-        product.kilocalories = kiloCalorieValue
-        product.carbohydrates = carbohydrateValue
-        product.protein = proteinValue
-        product.fat = fatValue
-        product.salt = saltValue
-        product.fiber = fiberValue
-        importToLocalProducts.append(product)
-    }
-    
-    func downloadCloudProductImages(product:Product, index:Int) {
-        storageRef = Storage.storage().reference()
-        storage = Storage.storage()
-        let imageDownload  = storage?.reference(forURL: imageUrlString[index])
-        imageDownload?.getData(maxSize: 1 * 4092 * 4092, completion: { (data, error) in
-            if data != nil {
-                product.image = data!
-                PersistenceService.saveContext()
-            }else {
-                // DEBUG MESSAGE
-                print("Error could not load image form cloud")
+    func importStarterProducts() {
+        databaseRef = Database.database().reference()
+        databaseRef?.child("Products").observeSingleEvent(of: DataEventType.value, with: { (data) in
+            if data.exists(){
+                guard let products = data.value as? NSDictionary else {return}
+                for product in products {
+                    guard let productData = product.value as? NSDictionary else {return}
+                    self.productName = productData["ProductName"] as? String ?? ""
+                    self.kiloCalorieValue
+                        = ConverterService.convertStringToDouble(string: productData["Kilocalorie"] as? String ?? "0,0")
+                    self.carbohydrateValue
+                        = ConverterService.convertStringToDouble(string: productData["Carbohydrate"] as? String ?? "0,0")
+                    self.proteinValue
+                        = ConverterService.convertStringToDouble(string: productData["Protein"] as? String ?? "0,0")
+                    self.fatValue
+                        = ConverterService.convertStringToDouble(string: productData["Fat"] as? String ?? "0,0")
+                    self.saltValue
+                        = ConverterService.convertStringToDouble(string: productData["Salt"] as? String ?? "0,0")
+                    self.fiberValue
+                        = ConverterService.convertStringToDouble(string: productData["Fiber"] as? String ?? "0,0")
+                    self.imageUrlString.append(productData["ImageUrl"] as? String ?? "")
+                    self.createNewLocalProduct()
+                }
+            }
+            var count = 0
+            for product in self.importToLocalProducts {
+                self.downloadCloudProductImages(product: product, index: count)
+                count = count + 1
             }
         })
     }
     
     func exportLocalProductsToCloud(){
-        storageRef = Storage.storage().reference()
+        storageRef = Storage.storage().reference().child("\(UserDefaultsSettings.getUserUID())")
         var count = exsistingCloudProductsNames.count
         for product in exportToCloudProducts {
             let fileName = "ProductImages/\(product.name!).png"
@@ -161,11 +165,157 @@ class CloudProductRepository {
                         let stringValue:String = "Product\(count)"
                         // DEBUG MESSAGE
                         print("Database entry name: \(stringValue)")
-                        self.databaseRef?.child("Products").child(stringValue).setValue(data)
+                        self.databaseRef?.child("\(UserDefaultsSettings.getUserUID())").child("Products").child(stringValue).setValue(data)
                     }
                 }
             }
         }
     }
+    
+    func createNewLocalProduct(){
+        // Create the imported product
+        let product = Product(context: PersistenceService.context)
+        product.name = productName
+        product.kilocalories = kiloCalorieValue
+        product.carbohydrates = carbohydrateValue
+        product.protein = proteinValue
+        product.fat = fatValue
+        product.salt = saltValue
+        product.fiber = fiberValue
+        importToLocalProducts.append(product)
+    }
+    
+    func downloadCloudProductImages(product:Product, index:Int) {
+        storageRef = Storage.storage().reference()
+        storage = Storage.storage()
+        let imageDownload  = storage?.reference(forURL: imageUrlString[index])
+        imageDownload?.getData(maxSize: 1 * 5012 * 5012, completion: { (data, error) in
+            if data != nil {
+                product.image = data!
+                PersistenceService.saveContext()
+            }else {
+                // DEBUG MESSAGE
+                print("Error could not load image form cloud")
+            }
+        })
+    }
 }
 
+//    func fetchCloudProducts(completionHandler: @escaping (_ importExportTotal: [Int]) -> ()){
+//        databaseRef = Database.database().reference()
+//        databaseRef?.child("Products").observe(.value, with: { (data) in
+//            if data.exists(){
+//                guard let products = data.value as? NSDictionary else {return}
+//                for product in products {
+//                    guard let productData = product.value as? NSDictionary else {return}
+//                    self.exsistingCloudProductsNames.append(productData["ProductName"] as? String ?? "")
+//                }
+//            }
+//            self.exsistingLocalProducts = ProductRepository.fetchLocalProducts()
+//            self.exsistingLocalProductNames = ProductRepository.fetchLocalProductNames()
+//            for product in self.exsistingLocalProducts{
+//                if !self.exsistingCloudProductsNames.contains(product.name!){
+//                    self.exportToCloudProducts.append(product)
+//                }
+//            }
+//            for productNames in self.exsistingCloudProductsNames{
+//                if !self.exsistingLocalProductNames.contains(productNames){
+//                    self.importFromCloudProducts.append(productNames)
+//                }
+//            }
+//            // DEBUG MESSAGE
+//            print("Products to export: \(self.exportToCloudProducts.count)")
+//            // DEBUG MESSAGE
+//            print("Products to import: \(self.importFromCloudProducts.count)")
+//            // Sends export and import count inside assync operation
+//            completionHandler([self.exportToCloudProducts.count,self.importFromCloudProducts.count])
+//        })
+//    }
+
+//    func exportLocalProductsToCloud(){
+//        storageRef = Storage.storage().reference()
+//        var count = exsistingCloudProductsNames.count
+//        for product in exportToCloudProducts {
+//            let fileName = "ProductImages/\(product.name!).png"
+//            let fileUpload = storageRef?.child(fileName)
+//            fileUpload!.putData(product.image!, metadata: nil) { (metadata, error) in
+//                if error != nil {
+//                    return
+//                }
+//                fileUpload!.downloadURL { (url, error) in
+//                    if url != nil {
+//                        let stringUrl:String = (url?.absoluteString)!
+//                        // DEBUG MESSAGE
+//                        print("Image URL: \(stringUrl)")
+//                        let data = [
+//                            "ProductName" : product.name!,
+//                            "Protein" : ConverterService.convertDoubleToString(double: product.protein) ,
+//                            "Carbohydrate" : ConverterService.convertDoubleToString(double: product.carbohydrates),
+//                            "Kilocalorie" : ConverterService.convertDoubleToString(double: product.kilocalories),
+//                            "Salt" : ConverterService.convertDoubleToString(double: product.salt),
+//                            "Fat" : ConverterService.convertDoubleToString(double:  product.fat),
+//                            "Fiber" : ConverterService.convertDoubleToString(double: product.fiber),
+//                            "ImageUrl" : stringUrl
+//                            ] as [String: Any]
+//                        count = count + 1
+//                        let stringValue:String = "Product\(count)"
+//                        // DEBUG MESSAGE
+//                        print("Database entry name: \(stringValue)")
+//                        self.databaseRef?.child("Products").child(stringValue).setValue(data)
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+//    func importCloudProducts() {
+//        databaseRef = Database.database().reference()
+//        databaseRef?.child("Products").observe(.value, with: { (data) in
+//            if data.exists(){
+//                guard let products = data.value as? NSDictionary else {return}
+//                for product in products {
+//                    guard let productData = product.value as? NSDictionary else {return}
+//                    self.productName = productData["ProductName"] as? String ?? ""
+//                    // DEBUG MESSAGE
+//                    print("Cloud product name: \(self.productName)")
+//                    if !self.exsistingLocalProductNames.contains(self.productName){
+//
+//                        self.kiloCalorieValue
+//                            = ConverterService.convertStringToDouble(string: productData["Kilocalorie"] as? String ?? "0,0")
+//                        self.carbohydrateValue
+//                            = ConverterService.convertStringToDouble(string: productData["Carbohydrate"] as? String ?? "0,0")
+//                        self.proteinValue
+//                            = ConverterService.convertStringToDouble(string: productData["Protein"] as? String ?? "0,0")
+//                        self.fatValue
+//                            = ConverterService.convertStringToDouble(string: productData["Fat"] as? String ?? "0,0")
+//                        self.saltValue
+//                            = ConverterService.convertStringToDouble(string: productData["Salt"] as? String ?? "0,0")
+//                        self.fiberValue
+//                            = ConverterService.convertStringToDouble(string: productData["Fiber"] as? String ?? "0,0")
+//                        self.imageUrlString.append(productData["ImageUrl"] as? String ?? "")
+//                        self.createNewLocalProduct()
+//                    }
+//                }
+//            }
+//            var count = 0
+//            for product in self.importToLocalProducts {
+//                self.downloadCloudProductImages(product: product, index: count)
+//                count = count + 1
+//            }
+//        })
+//    }
+
+//    func downloadCloudProductImages(product:Product, index:Int) {
+//        storageRef = Storage.storage().reference()
+//        storage = Storage.storage()
+//        let imageDownload  = storage?.reference(forURL: imageUrlString[index])
+//        imageDownload?.getData(maxSize: 1 * 4092 * 4092, completion: { (data, error) in
+//            if data != nil {
+//                product.image = data!
+//                PersistenceService.saveContext()
+//            }else {
+//                // DEBUG MESSAGE
+//                print("Error could not load image form cloud")
+//            }
+//        })
+//    }

@@ -77,7 +77,6 @@ class ValidationService {
             // Create a NSCharacterSet with letters
             let letters = NSCharacterSet.letters as NSCharacterSet
             let space = NSCharacterSet.whitespaces as NSCharacterSet
-
             // Iterate through the characters and check if they match to the NSCharacterSet
             for char in value.unicodeScalars {
                 // If a character matches with the NSCharacterSet do nothing

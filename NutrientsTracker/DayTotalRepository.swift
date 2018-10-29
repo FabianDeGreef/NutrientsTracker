@@ -31,9 +31,25 @@ class DayTotalRepository {
         return fixedSizeDayTotals
     }
     
+    static func createNewDayTotal(dayTotalDate:Date) -> DayTotal {
+        // Create new DayTotal object
+        let newDayTotal = DayTotal(context: PersistenceService.context)
+        // Sets the new DayTotal date value with the property value
+        newDayTotal.date = dayTotalDate
+        // Get online user email
+        let userEmail = UserDefaultsSettings.getUserEmail()
+        // Get matching local user
+        let user = UserRepository.fetchUserByEmail(email: userEmail)
+        // Add the new DayTotal to the user
+        user.addToDayTotals(newDayTotal)
+        // Save context changes
+        PersistenceService.saveContext()
+        return newDayTotal
+    }
+    
     static func updateDayTotal(consumedProduct:ConsumedProduct, currentDayTotal:DayTotal){
         // DEBUG MESSAGE
-        print("Carbohydrate total first: " + String(format: "%.2f" ,currentDayTotal.carbohydratesTotal ))
+        print("Carbohydrate total before consuming: " + String(format: "%.2f" ,currentDayTotal.carbohydratesTotal ))
         // Calculate the nutrient values for the dayTotal by adding the nutrient values from the new consumedProduct to the dayTotal
         currentDayTotal.carbohydratesTotal = (currentDayTotal.carbohydratesTotal) + consumedProduct.carbohydrates
         currentDayTotal.fiberTotal = (currentDayTotal.fiberTotal) + consumedProduct.fiber
@@ -42,6 +58,6 @@ class DayTotalRepository {
         currentDayTotal.fatTotal = (currentDayTotal.fatTotal) + consumedProduct.fat
         currentDayTotal.kilocaloriesTotal = (currentDayTotal.kilocaloriesTotal) + consumedProduct.kilocalories
         // DEBUG MESSAGE
-        print("Carbohydrate total leter: " + String(format: "%.2f" ,currentDayTotal.carbohydratesTotal))
+        print("Carbohydrate total after consuming: " + String(format: "%.2f" ,currentDayTotal.carbohydratesTotal))
     }
 }

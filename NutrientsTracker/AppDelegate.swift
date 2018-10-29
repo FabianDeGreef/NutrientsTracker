@@ -24,7 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Configure IQKeyboardManager API
         IQKeyboardManager.shared.enable = true
         // Turn off the IQKeyboardManager toolbar
-        IQKeyboardManager.shared.enableAutoToolbar = false 
+        IQKeyboardManager.shared.enableAutoToolbar = false
+        // Setup Userdefaults settings
+        _ = UserDefaultsSettings.init()
         return true
     }
 

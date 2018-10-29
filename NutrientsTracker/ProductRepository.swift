@@ -42,7 +42,7 @@ class ProductRepository {
             let products = try PersistenceService.context.fetch(fetchRequest)
             for productData in products {
                 guard let product = productData as? Product else {continue}
-                localProductNames.append(product.name!)
+                localProductNames.append(product.name!.lowercased())
             }
         }catch {
             // DEBUG MESSAGE

@@ -13,105 +13,89 @@ import CoreData
 class DateViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     //MARK: IBOutlet
-    @IBOutlet weak var entryTable: UITableView!
+    @IBOutlet weak var dayTotalTable: UITableView!
     @IBOutlet weak var pastDaysOverview: UIBarButtonItem!
     
     //MARK: Properties
-    var emailFromUser:String = ""
-    var currentUser:User?
+    var localUser:User?
     var dayTotals:[DayTotal] = []
     var selectedDayTotal:DayTotal?
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        entryTable.rowHeight = 45;
+        // Set the table row height
+        dayTotalTable.rowHeight = 45;
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Check if there is a signed in user
-        checkSingedInUser()
-        // Check if the signed in user was found inside the database
-        checkDatabaseForUser()
-        // Check if the signed in user has DayTotal objects
-        checkForExistingUserDayTotals()
+        // Setup local user DayTotal
+        setupUserDayTotals()
     }
     
     //MARK: IBActions
-    @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) {}
+    @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) { }
     
     //MARK: Helper Functions
-    func deleteDayTotal(dayTotalToDelete:DayTotal,index:IndexPath) {
-        // Delete the selected product inside the context
+    private func deleteDayTotal(dayTotalToDelete:DayTotal,index:IndexPath) {
+        // Delete the selected DayTotal inside the context
         PersistenceService.context.delete(dayTotalToDelete)
         // Save context changes
         PersistenceService.saveContext()
-        // Delete the selected product from the products array
+        // Delete the selected DayTotal from the DayTotals array
         self.dayTotals.remove(at: index.row)
-        // Delete the prouct from the table with a fade animation
-        self.entryTable.deleteRows(at: [index], with: .fade)
-        checkForExistingUserDayTotals()
+        // Delete the DayTotal from the table with fade animation
+        self.dayTotalTable.deleteRows(at: [index], with: .fade)
+        // Check for existing DayTotals
+        checkCurrentDayTotals()
     }
     
-    private func checkForExistingUserDayTotals() {
-        // Check if the current user has DayTotals
-        if currentUser != nil {
-            // Covert the NSSet DayTotals to an array with DayTotals
-            dayTotals = ConverterService.convertNSDayTotalsSetToDayTotalArray(dayTotalNSSet:(currentUser?.dayTotals)!)
-            // Reload the date table
-            entryTable.reloadData()
+    private func setupUserDayTotals() {
+        if localUser != nil {
+            // Covert NSSet DayTotal to DayTotal array
+            dayTotals = ConverterService.convertNSDayTotalsSetToDayTotalArray(dayTotalNSSet:(localUser?.dayTotals)!)
+            // Reload the tableview
+            dayTotalTable.reloadData()
+            // Check for existing DayTotals
+            checkCurrentDayTotals()
         }
+    }
+    
+    private func checkCurrentDayTotals() {
         if dayTotals.count > 0 {
             // DEBUG MESSAGE
             print("Day totals found: \(dayTotals.count)")
+            // Check if one of the DayTotals contains a ConsumedProduct
             for dayTotal in dayTotals {
-                if dayTotal.produtcs?.count ?? 0 > 0 {
+                if dayTotal.produtcs?.count ?? 0 > 1 {
+                    // When a ConsumedProduct was found enable the pastDayOverview button
                     pastDaysOverview.isEnabled = true
+                    // Exit the loop
                     return
                 }
             }
         }else{
             // DEBUG MESSAGE
             print("No day totals found for current user")
+            // When no DayTotals are found disable the pastDayOverview button
             pastDaysOverview.isEnabled = false
         }
     }
     
-    private func checkSingedInUser(){
-        // Check if there is already a signed in user
-        if AuthenticationService.checkSignedInUser() {
-            let userMail = AuthenticationService.getSignedInUserEmail()
-            if userMail != "" {
-                // When a signed in user is found store the user email inside a variable
-                emailFromUser = userMail
-                // DEBUG MESSAGE
-                // print("User \(emailFromUser) is singed in")
-            }
-        }else {
-            // DEBUG MESSAGE
-            // print("No users are singed in now ")
-        }
-    }
-    
-    private func checkDatabaseForUser() {
-        // Create a fetchRequest to find a matching user with the signed in email
-        currentUser = UserRepository.fetchUserByEmail(email: emailFromUser)
-    }
-    
     //MARK: UITableView Delegates
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        // Add an editing style function to the table
-        // When delete gesture is made call delete style
+        // When a delete gesture is made call the delete style
         if editingStyle == .delete {
-            // Select the dayTotal with the row index from the table
+            // Select the DayTotal with the row index from the table
             let selection = dayTotals[indexPath.row]
+            // Delete the selected DayTotal
             deleteDayTotal(dayTotalToDelete: selection, index: indexPath)
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Returns the DayTotals array size to calculate the numbers of rows needed
+        // Return the DayTotals array size to calculate the numbers of rows needed
         return dayTotals.count
     }
     
@@ -119,32 +103,35 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Take the DayTotal from every index value inside the DayTotals array
         let dayTotal = dayTotals[indexPath.row]
         // Create a cell that is reusable with the identified cell name
-        guard let cell = entryTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath) as? DateTableViewCell else { return UITableViewCell() }
-        // Add the date string value to the cell label
-        cell.dateLabel.text = ConverterService.formatDateToString(dateValue: dayTotal.date!)
-        cell.dayTotalCountLabel.text = "\(dayTotal.produtcs?.count ?? 0)"
-        // returning the cell
+        guard let cell = dayTotalTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath)
+            as? DateTableViewCell else { return UITableViewCell() }
+        // Add the date value to the cell label
+        cell.dayTotalDateLabel.text = ConverterService.formatDateToString(dateValue: dayTotal.date!)
+        // Add the consumed product total to the count label
+        cell.dayTotalConsumedProductsLabel.text = String(dayTotal.produtcs?.count ?? 0)
+        // return the cell
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //  set the selectedDayTotal variable to the selected value form the table
+        // Set the selected DayTotal variable to the selected value form the table
         selectedDayTotal = dayTotals[indexPath.row]
+        // Perform segue to the DaySetupViewController
         performSegue(withIdentifier: "DayTotalSetup", sender: self)
     }
     
     //MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Pass the currentDayTotal to the DaySetupViewController
+        // If the segue destination is the DaySetupViewController
         if segue.destination is DaySetupViewController {
             let daySetupVc = segue.destination as? DaySetupViewController
+            // Set the DaySetupViewController currentDayTotal with the selected DayTotal
             daySetupVc?.currentDayTotal = selectedDayTotal
         }
-        // If the segue destination is the ProductViewController
-        if currentUser != nil && segue.destination is CalendarViewController{
-            // Pass the selectedProduct to the ProductViewController
+        // If the segue destination is the CalendarViewController
+        if segue.destination is CalendarViewController{
             let calendarVc = segue.destination as? CalendarViewController
-            calendarVc?.currentUser = currentUser
+            // Set the CalendarViewController dayTotals with the dayTotals value
             calendarVc?.dayTotals = dayTotals
         }
     }
@@ -213,3 +200,29 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
 //            print("Could not fetch \(error)")
 //        }
 //    }
+
+//    private func checkSingedInUser(){
+//        // Check if there is already a signed in user
+//        if AuthenticationService.checkSignedInUser() {
+//            let userMail = AuthenticationService.getSignedInUserEmail()
+//            if userMail != "" {
+//                // When a signed in user is found store the user email inside a variable
+//                emailFromUser = userMail
+//                // DEBUG MESSAGE
+//                // print("User \(emailFromUser) is singed in")
+//            }
+//        }else {
+//            // DEBUG MESSAGE
+//            // print("No users are singed in now ")
+//        }
+//    }
+
+//    private func checkDatabaseForUser() {
+//        // Create a fetchRequest to find a matching user with the signed in email
+//        currentUser = UserRepository.fetchUserByEmail(email: emailFromUser)
+//    }
+
+// Check if there is a signed in user
+//        checkSingedInUser()
+// Check if the signed in user was found inside the database
+//        checkDatabaseForUser()

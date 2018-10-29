@@ -110,7 +110,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         // End current editing mode
         view.endEditing(true)
         localProductNames = ProductRepository.fetchLocalProductNames()
-        if !localProductNames.contains(nameValue){
+        if !localProductNames.contains(nameValue.lowercased()){
             // Creates and save the new product
             createProduct()
             // Save context changes
@@ -370,7 +370,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         kilocalorieTextfield.text = ""
         nameTextfield.text = ""
         // Set default image
-        imageView.image = UIImage(named: "DefaultImage2")
+        imageView.image = UIImage(named: "DefaultImage")
         // Disable the save button
         saveButton.isEnabled = false
     }
