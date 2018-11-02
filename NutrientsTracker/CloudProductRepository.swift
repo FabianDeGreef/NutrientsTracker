@@ -37,48 +37,71 @@ class CloudProductRepository {
     var imageUrlString:[String] = []
     
     func fetchCloudProducts(completionHandler: @escaping (_ importExportTotal: [Int]) -> ()){
+        // Create database reference
         databaseRef = Database.database().reference()
+        // Get database path and create an observer for one single event
         databaseRef?.child("\(UserDefaultsSettings.getUserUID())").child("Products").observeSingleEvent(of: DataEventType.value, with: { (data) in
+            // Check if the data exists
             if data.exists(){
+                // Retrieve and store the data as a NSDictionary
                 guard let products = data.value as? NSDictionary else {return}
+                // Loop through the NSDictionary
                 for product in products {
+                    // For every value inside the NSDictionary create a new NSDictionary
                     guard let productData = product.value as? NSDictionary else {return}
+                    // Check if the array contains one of the ProductName values inside every NSDictionary
                     self.exsistingCloudProductsNames.append((productData["ProductName"] as? String ?? "").lowercased())
                 }
             }
+            // Retrieve and store the local products
             self.exsistingLocalProducts = ProductRepository.fetchLocalProducts()
+            // Retrieve and store the local product names
             self.exsistingLocalProductNames = ProductRepository.fetchLocalProductNames()
+            // Loop through the exsistingLocalProducts array
             for product in self.exsistingLocalProducts{
+                // Check if the exsistingCloudProductsNames array contains the product name from the exsistingLocalProducts array
                 if !self.exsistingCloudProductsNames.contains(product.name!.lowercased()){
+                    // If not add the product to the exportToCloudProducts array
                     self.exportToCloudProducts.append(product)
                 }
             }
-            for productNames in self.exsistingCloudProductsNames{
-                if !self.exsistingLocalProductNames.contains(productNames.lowercased()){
-                    self.importFromCloudProducts.append(productNames.lowercased())
+            // Loop through the exsistingCloudProductsNames array
+            for productName in self.exsistingCloudProductsNames{
+                // Check if the exsistingLocalProductNames array contains the product name from the exsistingCloudProductsNames array
+                if !self.exsistingLocalProductNames.contains(productName.lowercased()){
+                    // If not add the productName to the importFromCloudProducts array
+                    self.importFromCloudProducts.append(productName.lowercased())
                 }
             }
             // DEBUG MESSAGE
             print("Products to export: \(self.exportToCloudProducts.count)")
             // DEBUG MESSAGE
             print("Products to import: \(self.importFromCloudProducts.count)")
-            // Sends export and import count inside assync operation
+            // Use the completionHandler to escape the assync operation and return the export and import count to the AppSetingsTableViewController
             completionHandler([self.exportToCloudProducts.count,self.importFromCloudProducts.count])
         })
     }
     
     func importCloudProducts() {
+        // Create database reference
         databaseRef = Database.database().reference()
+        // Get database path and create an observer for one single event
         databaseRef?.child("\(UserDefaultsSettings.getUserUID())").child("Products").observeSingleEvent(of: DataEventType.value, with: { (data) in
+            // Check if the data exists
             if data.exists(){
+                // Retrieve and store the data as a NSDictionary
                 guard let products = data.value as? NSDictionary else {return}
+                // Loop through the NSDictionary
                 for product in products {
+                    // For every value inside the NSDictionary create a new NSDictionary
                     guard let productData = product.value as? NSDictionary else {return}
+                    // Store the productName from the data inside the productName variable
                     self.productName = productData["ProductName"] as? String ?? ""
-                    // DEBUG MESSAGE
-                    print("Cloud product name: \(self.productName)")
+                    // Check if the exsistingLocalProductNames array contains the productName
                     if !self.exsistingLocalProductNames.contains(self.productName.lowercased()){
-                        
+                        // DEBUG MESSAGE
+                        print("Cloud product to import: \(self.productName)")
+                        // If not store all values inside there variable
                         self.kiloCalorieValue
                             = ConverterService.convertStringToDouble(string: productData["Kilocalorie"] as? String ?? "0,0")
                         self.carbohydrateValue
@@ -91,27 +114,41 @@ class CloudProductRepository {
                             = ConverterService.convertStringToDouble(string: productData["Salt"] as? String ?? "0,0")
                         self.fiberValue
                             = ConverterService.convertStringToDouble(string: productData["Fiber"] as? String ?? "0,0")
+                        // Add the imageUrl to the imageUrlString array
                         self.imageUrlString.append(productData["ImageUrl"] as? String ?? "")
+                        // When all values are stored create a new local product with the values from the variable
                         self.createNewLocalProduct()
                     }
                 }
             }
+            // Create a counter with zero as starting value
             var count = 0
+            // Loop through the importToLocalProducts array
             for product in self.importToLocalProducts {
+                // Create a downloadCloudProductImages task with the product and counter value
                 self.downloadCloudProductImages(product: product, index: count)
+                // Add one to the counter value
                 count = count + 1
             }
         })
     }
     
     func importStarterProducts() {
+        // Create database reference
         databaseRef = Database.database().reference()
+        // Get database path and create an observer for one single event
         databaseRef?.child("Products").observeSingleEvent(of: DataEventType.value, with: { (data) in
+            // Check if the data exists
             if data.exists(){
+                // Retrieve and store the data as a NSDictionary
                 guard let products = data.value as? NSDictionary else {return}
+                // Loop through the NSDictionary
                 for product in products {
+                    // For every value inside the NSDictionary create a new NSDictionary
                     guard let productData = product.value as? NSDictionary else {return}
-                    self.productName = productData["ProductName"] as? String ?? ""
+                    // Store all values inside there variable
+                    self.productName
+                        = productData["ProductName"] as? String ?? ""
                     self.kiloCalorieValue
                         = ConverterService.convertStringToDouble(string: productData["Kilocalorie"] as? String ?? "0,0")
                     self.carbohydrateValue
@@ -124,33 +161,48 @@ class CloudProductRepository {
                         = ConverterService.convertStringToDouble(string: productData["Salt"] as? String ?? "0,0")
                     self.fiberValue
                         = ConverterService.convertStringToDouble(string: productData["Fiber"] as? String ?? "0,0")
+                    // Add the imageUrl to the imageUrlString array
                     self.imageUrlString.append(productData["ImageUrl"] as? String ?? "")
+                    // When all values are stored create a new local product with the values from the variable
                     self.createNewLocalProduct()
                 }
             }
+            // Create a counter with zero as starting value
             var count = 0
+            // Loop through the importToLocalProducts array
             for product in self.importToLocalProducts {
+                // Create a downloadCloudProductImages task with the product and counter value
                 self.downloadCloudProductImages(product: product, index: count)
+                // Add one to the counter value
                 count = count + 1
             }
         })
     }
     
     func exportLocalProductsToCloud(){
+        // Create database reference
         storageRef = Storage.storage().reference().child("\(UserDefaultsSettings.getUserUID())")
+        // Store the exsistingCloudProductsNames array count size
         var count = exsistingCloudProductsNames.count
+        // Loop through the exportToCloudProducts array
         for product in exportToCloudProducts {
+            // For every product create a file path by the folder name and the productName
             let fileName = "ProductImages/\(product.name!).png"
+            // Create a storage upload reference with the file path
             let fileUpload = storageRef?.child(fileName)
+            // Upload the product image data
             fileUpload!.putData(product.image!, metadata: nil) { (metadata, error) in
                 if error != nil {
                     return
                 }
+                // Retrieve the upload downloadURL rerference
                 fileUpload!.downloadURL { (url, error) in
                     if url != nil {
+                        // If the downloadURL is valid convert it to a string value
                         let stringUrl:String = (url?.absoluteString)!
                         // DEBUG MESSAGE
                         print("Image URL: \(stringUrl)")
+                        // Create an array with all the product values inclusief the stringURL with the image address stored
                         let data = [
                             "ProductName" : product.name!,
                             "Protein" : ConverterService.convertDoubleToString(double: product.protein) ,
@@ -161,10 +213,13 @@ class CloudProductRepository {
                             "Fiber" : ConverterService.convertDoubleToString(double: product.fiber),
                             "ImageUrl" : stringUrl
                             ] as [String: Any]
+                        // Add one to the counter value
                         count = count + 1
+                        // Create the product database entry name with the productname and the counter value
                         let stringValue:String = "Product\(count)"
                         // DEBUG MESSAGE
                         print("Database entry name: \(stringValue)")
+                        // Create the new reference for the product to upload by the product database entry name
                         self.databaseRef?.child("\(UserDefaultsSettings.getUserUID())").child("Products").child(stringValue).setValue(data)
                     }
                 }
@@ -173,7 +228,7 @@ class CloudProductRepository {
     }
     
     func createNewLocalProduct(){
-        // Create the imported product
+        // Create a new product using the stored values
         let product = Product(context: PersistenceService.context)
         product.name = productName
         product.kilocalories = kiloCalorieValue
@@ -182,16 +237,23 @@ class CloudProductRepository {
         product.fat = fatValue
         product.salt = saltValue
         product.fiber = fiberValue
+        // Add the new prouct to the importToLocalProducts array
         importToLocalProducts.append(product)
     }
     
     func downloadCloudProductImages(product:Product, index:Int) {
+        // Create database reference
         storageRef = Storage.storage().reference()
+        // Initialize the storage object
         storage = Storage.storage()
+        // Create a download task pointing to the stringURL
         let imageDownload  = storage?.reference(forURL: imageUrlString[index])
+        // Setup max download size and download the images from the URL
         imageDownload?.getData(maxSize: 1 * 5012 * 5012, completion: { (data, error) in
             if data != nil {
+                // If the data is valid add the image data to the product
                 product.image = data!
+                // Save the context changes
                 PersistenceService.saveContext()
             }else {
                 // DEBUG MESSAGE

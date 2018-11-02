@@ -10,7 +10,7 @@ import UIKit
 
 class ProductTableViewCell: UITableViewCell {
     
-    // MARK: IBOutlets
+    //MARK: IBOutlets
     @IBOutlet weak var productImage: UIImageView!
     @IBOutlet weak var productNameLabel: UILabel!
     @IBOutlet weak var proteinLabel: UILabel!
@@ -20,6 +20,7 @@ class ProductTableViewCell: UITableViewCell {
     @IBOutlet weak var carbohydratesLabel: UILabel!
     @IBOutlet weak var kilocalorieLabel: UILabel!
     
+    //MARK: ViewController Functions
     override func awakeFromNib() {
         super.awakeFromNib()
     }

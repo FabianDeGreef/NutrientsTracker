@@ -20,57 +20,67 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     var searching:Bool = false
     var weight:Double = 0.0
 
-    
-    //MARK: ViewController Functions
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        // Reset the form and varibales to default when the view will appear
-        resetForm()
-        // Setup the local products fetched from the database
-        setupLocalProducts()
-        // DEBUG MESSAGE
-        print("Consumed products in Daysetup: \(currentDayTotal?.produtcs?.count ?? 0)")
-    }
-    
     //MARK: IBOutlets
     @IBOutlet weak var productTable: UITableView!
     @IBOutlet weak var searchField: UISearchBar!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var weightLabel: UILabel!
-    @IBOutlet weak var productCountLabel: UILabel!    
+    @IBOutlet weak var productCountLabel: UILabel!
     @IBOutlet weak var dayTotalButton: UIBarButtonItem!
     @IBOutlet weak var addProductButton: UIBarButtonItem!
+
+    
+    //MARK: ViewController Functions
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Reset to default when the view will appear
+        resetForm()
+        // Setup the local products
+        setupLocalProducts()
+        // DEBUG MESSAGE
+        print("Consumed products in Daysetup: \(currentDayTotal?.produtcs?.count ?? 0)")
+        // Check the dayTotal product count
+        checkDayTotalProductCount()
+    }
     
     //MARK: IBActions
     @IBAction func unwindToDaySetup(_ sender:UIStoryboardSegue) {
         guard let weightVc = sender.source as? WeightViewController else { return }
         weight = weightVc.weight
+        // If returning weight is greater than 0.0
         if weight > 0.0 {
+            // Enable the addButton
             addButton.isEnabled = true
+            // Set the addButton title color from black to white
             addButton.setTitleColor(UIColor.white,for: UIControl.State.normal)
+            // Display the weight inside the weightLabel
             weightLabel.text = "Weight: \(ConverterService.convertDoubleToString(double: weight))g"
         }
     }
     
     @IBAction func addToDayTotal(_ sender: UIButton) {
-        // Check if the selected product and the weight are not nil
-        if weight > 0 {
+        // Check if the weight is greather than 0.0
+        if weight > 0.0 {
+            // Check if the selectedProduct isn't nil
             if selectedProduct != nil {
-                // Create a new ConsumedProduct and calculate the DayTotal result
+                // Create a new ConsumedProduct and calculate the dayTotal result
                 createConsumedProduct()
                 // Save context changes
                 PersistenceService.saveContext()
-                // Reset UI and variables to default after completion
+                // Reset UI and variables to default
                 resetForm()
                 // Show an alert view when the ConsumedProduct is added to the DayTotal
                 showAlert(title: "Consumed product added", message: "The consumed product was added to your dayTotal")
+                // Enable the addButton
                 addProductButton.isEnabled = true
-                dayTotalButton.isEnabled = true
+                // Enable tabel selection
                 productTable.allowsSelection = true
+                // Check the dayTotal product count
+                checkDayTotalProductCount()
             }
         }else {
             // DEBUG MESSAGE
@@ -81,11 +91,22 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @IBAction func addNewProduct(_ sender: UIBarButtonItem) {
-        // Display the ProductViewController using the AddProduct segue identifier
+        // Perform Segue to the ProductTableViewController
         performSegue(withIdentifier: "AddProduct", sender: self)
     }
     
     //MARK: Helper Functions
+    private func checkDayTotalProductCount(){
+        // Check the currentDayTotal products count greater than 0
+        if (currentDayTotal?.produtcs?.count)! > 0 {
+            // If greater enable the dayTotalButton
+            dayTotalButton.isEnabled = true
+        }else {
+            // If not greater disabele the dayTotalButton
+            dayTotalButton.isEnabled = false
+        }
+    }
+    
     func showAlert(title: String, message: String){
         // Create the UIAlertController with the incoming parameters
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -112,6 +133,7 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     private func resetForm() {
+        // Reset the labels and values to there default
         weightLabel.text = "Weight: 0.00g"
         searchField.text = ""
         weight = 0.0
@@ -128,8 +150,11 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         // DEBUG MESSAGE
         print("Choosen weight: \(weight)")
         if let product = selectedProduct {
+            // Create a consumedProduct from the selected product
             let newConsumedProduct = ProductRepository.createConsumedProduct(selectedProduct: product, weight: weight)
+            // Add the consumedProduct to the current dayTotal
             currentDayTotal?.addToProdutcs(newConsumedProduct)
+            // Update the dayTotal values
             if let dayTotal = currentDayTotal {
                 DayTotalRepository.updateDayTotal(consumedProduct: newConsumedProduct, currentDayTotal: dayTotal)
             }
@@ -139,10 +164,11 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     func setupLocalProducts(){
         // Clear product array
         products.removeAll()
-        // Store the fetched local products inside the products array
+        // Store the local products inside the products array
         products = ProductRepository.fetchLocalProducts()
-        // Display the total amount products
+        // Display the total count products
         productCountLabel.text = "Products: \(products.count)"
+        // Check if the products array is empty
         if products.count == 0 {
             // Show an alert view when there are no local products found
             showAlert(title: "No product found", message: "No local products stored")
@@ -157,18 +183,21 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         let actionSheet = UIAlertController(title: "Choose an option", message: "Select, View or Remove product", preferredStyle: .actionSheet)
         // Add the select action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Select Product", style: .default, handler: { (action: UIAlertAction) in
-            // The product is selected and stored inside the selectedProduct variable do nothing more
+            // Disable the addProductButton
             self.addProductButton.isEnabled = false
+            // Disable the DayTotalButton
             self.dayTotalButton.isEnabled = false
+            // Disable table selection
             self.productTable.allowsSelection = false
+            // Perform Segue to the WeightViewController
             self.performSegue(withIdentifier: "AddWeight", sender: self)
 
         }))
         // Add the detail view action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "View Product", style: .default, handler: { (UIAlertAction) in
-            // Display the ProductViewController using the ViewProduct segue identifier
-            // When option view is choosen store the selectedProduct value inside the viewProduct
+            // When view is choosen store the selectedProduct value inside the viewProduct variable
             self.viewProduct = self.selectedProduct
+            // Perform Segue to the ProductTableViewController
             self.performSegue(withIdentifier: "ViewProduct", sender: self)
 
         }))
@@ -182,8 +211,15 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         }))
         // Add the cancel action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        // Dismisses the UIAlertController
-        present(actionSheet,animated: true, completion: nil)
+        // Set actionSheet sourve view
+        actionSheet.popoverPresentationController?.sourceView = self.view
+        // Let actionSheet popover view
+        actionSheet.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection()
+        // Position the actionSheet on screen
+        actionSheet.popoverPresentationController?.sourceRect =
+            CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+        // Present the actionSheet
+        self.present(actionSheet, animated: true, completion: nil)
     }
     
     //MARK: UITableView Delegates
@@ -201,30 +237,36 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Returns the Products array size to calculate the numbers of rows needed
         if searching {
+            // Return the searchlist array size when searching with the searchbar
             return productsSearchList.count
         }else {
+            // Return the products array size when viewing the table normal
             return products.count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Take the Prodcut from every index value inside the Products array
+        // Get the Prodcut from every index value inside the Products array
         var product: Product
         if searching {
+            // When searching with the searchbar use the searchlist array
             product = productsSearchList[indexPath.row]
         }else {
+            // When not searching with the searchbar use the products array
             product = products[indexPath.row]
         }
         // Create a cell that is reusable with the identified cell name
         guard let cell = productTable.dequeueReusableCell(withIdentifier: "ProductCell", for: indexPath) as? ProductTableViewCell else { return UITableViewCell() }
-        // Sets the cell textLabel value with the product name
+        // Display the product name inside the productName label
         cell.productNameLabel.text = product.name!
+        // Display the nutrient values inside there label
         cell.carbohydratesLabel.text = ConverterService.convertDoubleToString(double: product.carbohydrates)
         cell.fatLabel.text = ConverterService.convertDoubleToString(double: product.fat)
         cell.saltLabel.text = ConverterService.convertDoubleToString(double: product.salt)
         cell.kilocalorieLabel.text = ConverterService.convertDoubleToString(double: product.kilocalories)
         cell.fiberLabel.text = ConverterService.convertDoubleToString(double: product.fiber)
         cell.proteinLabel.text = ConverterService.convertDoubleToString(double: product.protein)
+        // Display the product image
         if let img = product.image as Data? {
             cell.productImage.image = UIImage(data:img)
         }else {
@@ -236,14 +278,17 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        // Setup and return table row height
         return 100
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Store the selected item from the table inside a variable
+        // Check if searching
         if searching {
+            // Store the value found matching the index from the productsSearchList array inside the selectedProduct
             selectedProduct = productsSearchList[indexPath.row]
         }else {
+            // Store the value found matching the index from the products array inside the selectedProduct
             selectedProduct = products[indexPath.row]
         }
         // Show the UIAlert selection menu
@@ -252,23 +297,32 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     
     //MARK: UISearchBar Delegates
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // Update and filter the productsSearchList by typing inside the searchbar
         productsSearchList = products.filter({($0.name?.prefix(searchText.count))! == searchText })
+        // When using the searchbar set searching to true
         searching = true
+        // Reload the product table for every searchbar change to display the products
         productTable.reloadData()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        // When pressing the cancel button indie the searchbar
+        // Set searching to false
         searching = false
+        // Empty the searchbar textfield value
         searchField.text = ""
+        // Dismisses the keyboard
         searchField.resignFirstResponder()
+        // Reload the product table
         productTable.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // When the searchbar search button is pressed dismisses the keyboard
         searchField.resignFirstResponder()
     }
     
-    // MARK: Segue Prepare
+    //MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // If the segue destination is the ProductViewController
         if viewProduct != nil && segue.destination is ProductTableViewController{

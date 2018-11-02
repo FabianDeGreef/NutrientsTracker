@@ -11,47 +11,39 @@ import FirebaseAuth
 
 class AuthenticationService{
     
-    // Sign out the current user and return true or false
     static func signOffUser() -> Bool {
+        // Sign out the user
         do {
             try Auth.auth().signOut()
+            // Return true if the user is signed out
             return true
         }catch{
             // DEBUG MESSAGE
             print("Sign Out Error")
+            // Return false if the user isn't signed out
             return false
         }
     }
     
-    // Check if user is singed in and return true or false
     static func checkSignedInUser() -> Bool{
+        // Check if the user is signed in
         if Auth.auth().currentUser != nil {
+            // Return true if the user is signed in
             return true
         }else {
+            // Return false if the user isn't signed in
             return false
         }
     }
     
-    // Get signed in user email
     static func getSignedInUserEmail() -> String {
+        // Get the signed in user email
         if let userEmail = Auth.auth().currentUser?.email{
+            // Return the user email
             return userEmail
         }else {
+            // Return empty string when no email was found
             return ""
         }
     }
 }
-
-//    static func checkUserState() -> Bool {
-//        var validState:Bool?
-//        Auth.auth().addStateDidChangeListener { auth, user in
-//            if user != nil {
-//                validState = true
-//                print("A user is signed in")
-//            } else {
-//                validState = false
-//                print("No user is signed in")
-//            }
-//        }
-//        return validState!
-//    }

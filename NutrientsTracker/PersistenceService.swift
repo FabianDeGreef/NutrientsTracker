@@ -12,16 +12,14 @@ import CoreData
 class PersistenceService {
     
     // Initialize the PersistenceService
-    private init(){
-    }
+    private init(){}
     
-    // Accesable static context variable to return the presisentContainer
     static var context: NSManagedObjectContext {
         // Return the persistentContainer.viewContext
         return persistentContainer.viewContext
     }
     
-    //MARK: Core Data stack
+    // Core data stack
     static var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "NutrientsTracker")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
@@ -29,35 +27,44 @@ class PersistenceService {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        // Return core data container
         return container
     }()
     
-    //MARK: Core Data Saving support
+    // Core data saving function
     static func saveContext () {
+        // Create context object
         let context = persistentContainer.viewContext
+        // When the context has changes
         if context.hasChanges {
-            // Save when context has changes
+            // Save if the context has changes
             do {
+                // Try to save
                 try context.save()
             } catch {
+                // Catch errors during context save operation
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }
     
+    // Core data delete by entity name function
     static func deleteDataByEntity(entity:String){
+        // Create new fetchRequest by entity name
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        // Turn off returnObjectsAsFaults
         fetchRequest.returnsObjectsAsFaults = false
         do {
             let results = try PersistenceService.context.fetch(fetchRequest)
             for object in results {
                 guard let objectData = object as? NSManagedObject else {continue}
+                // Delete object inside the context stack
                 PersistenceService.context.delete(objectData)
             }
         }catch {
             // DEBUG MESSAGE
-            print("Error deleting entitys")
+            print("Error deleting one or more entitys")
         }
     }
 }

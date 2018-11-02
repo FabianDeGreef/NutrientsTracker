@@ -12,14 +12,14 @@ import CoreData
 
 class DateViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    //MARK: IBOutlet
-    @IBOutlet weak var dayTotalTable: UITableView!
-    @IBOutlet weak var pastDaysOverview: UIBarButtonItem!
-    
     //MARK: Properties
     var localUser:User?
     var dayTotals:[DayTotal] = []
     var selectedDayTotal:DayTotal?
+
+    //MARK: IBOutlets
+    @IBOutlet weak var dayTotalTable: UITableView!
+    @IBOutlet weak var pastDaysOverview: UIBarButtonItem!
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
@@ -30,7 +30,7 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Setup local user DayTotal
+        // Setup local user DayTotals
         setupUserDayTotals()
     }
     
@@ -63,16 +63,20 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     private func checkCurrentDayTotals() {
+        // Check if dayTotals count is higher than 0
         if dayTotals.count > 0 {
             // DEBUG MESSAGE
             print("Day totals found: \(dayTotals.count)")
-            // Check if one of the DayTotals contains a ConsumedProduct
+            // Check if one of the DayTotals contains atleast one ConsumedProduct
             for dayTotal in dayTotals {
-                if dayTotal.produtcs?.count ?? 0 > 1 {
-                    // When a ConsumedProduct was found enable the pastDayOverview button
+                // Check if the products count is higher than O
+                if dayTotal.produtcs?.count ?? 0 > 0 {
+                    // When one ConsumedProduct was found enable the pastDayOverview button
                     pastDaysOverview.isEnabled = true
                     // Exit the loop
                     return
+                }else {
+                    pastDaysOverview.isEnabled = false
                 }
             }
         }else{
@@ -100,14 +104,14 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Take the DayTotal from every index value inside the DayTotals array
+        // Get the DayTotal from every index value inside the DayTotals array
         let dayTotal = dayTotals[indexPath.row]
         // Create a cell that is reusable with the identified cell name
         guard let cell = dayTotalTable.dequeueReusableCell(withIdentifier: "DateCell", for: indexPath)
             as? DateTableViewCell else { return UITableViewCell() }
-        // Add the date value to the cell label
+        // Add the date value to the date label
         cell.dayTotalDateLabel.text = ConverterService.formatDateToString(dateValue: dayTotal.date!)
-        // Add the consumed product total to the count label
+        // Add the consumedProduct total to the count label
         cell.dayTotalConsumedProductsLabel.text = String(dayTotal.produtcs?.count ?? 0)
         // return the cell
         return cell

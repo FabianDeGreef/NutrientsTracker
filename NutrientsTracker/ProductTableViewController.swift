@@ -37,22 +37,26 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     @IBOutlet weak var kilocalorieTextfield: UITextField!
     @IBOutlet weak var imageView: UIImageView!
     
-    //MARK: View Functions
+    //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Check if the user wants to view a product or consumed product
+        // Check the triggered product display mode
         checkDisplayMode()
     }
     
     //MARK: IBActions
     @IBAction func unwindToProductTable(_ sender:UIStoryboardSegue) {
+        // Check if the sender source is valid
         guard let QRScannerVc = sender.source as? QRScannerViewController else { return }
+        // Store the qrString value inside a variable
         qrStringProduct = QRScannerVc.qrString
+        // Check if the qrString value isn't nil
         if qrStringProduct != nil {
+            // Import the product by the qrString value
             importProductFormQRCode()
         }else {
             // DEBUG MESSAGE
@@ -107,11 +111,13 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     }
     
     @IBAction func saveAction(_ sender: UIBarButtonItem) {
-        // End current editing mode
+        // End current editing mode and dismisses the keyboard
         view.endEditing(true)
+        // Retrieve and store the local product names inside the localProductNames array
         localProductNames = ProductRepository.fetchLocalProductNames()
+        // Check if the localProductNames array contains the new product name
         if !localProductNames.contains(nameValue.lowercased()){
-            // Creates and save the new product
+            // If not creates the new product
             createProduct()
             // Save context changes
             PersistenceService.saveContext()
@@ -131,13 +137,13 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         case proteinTextfield:
             // Validate the user input
             if ValidationService.decimalValidator(value: proteinTextfield.text!){
-                // Convert the validated value from string to double and store it inside the property
+                // Convert and store the validated value from string to double and store it inside a variable
                 proteinValue = ConverterService.convertStringToDouble(string: proteinTextfield.text!)
                 // Display the converted value inside the textField with 2 decimals
                 proteinTextfield.text = ConverterService.convertDoubleToString(double: proteinValue)
                 
             }else {
-                // If validation was failed set the property and textField with a default value
+                // If validation was failed set the variable and textfield values with a default value
                 proteinValue = 0.0
                 proteinTextfield.text = String("0,00")
             }
@@ -184,11 +190,11 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         default:
             // Validate the user input
             if ValidationService.alphabeticalValidator(value: nameTextfield.text ?? ""){
-                // Set the property with the value
+                // Store value inside a variable
                 nameValue = nameTextfield.text!
                 // Dismisses the keyboard
                 nameTextfield.resignFirstResponder()
-                // Enable the save button
+                // Enable the saveButton
                 saveButton.isEnabled = true
             }else {
                 // Show UIAlert message when name validation failed
@@ -200,20 +206,20 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
                 alert.addAction(action)
                 // Display the UIAlert message
                 present(alert, animated: true, completion: nil)
-                // Disable the save button
+                // Disable the saveButton
                 saveButton.isEnabled = false
-                // Sets the nameTextField value to default
+                // Clear the nameTextField value
                 nameTextfield.text = ""
-                // Set placeholder
+                // Set the nameTextfield placeholder
                 nameTextfield.placeholder = "No valid value"
-                // Reopen the keyboard
+                // Reassign the keyboard
                 nameTextfield.becomeFirstResponder()
             }
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Use the return keyboard button to jump between textfields
+        // Switch between textfields
         switch textField {
         case nameTextfield:
             nameTextfield.resignFirstResponder()
@@ -241,9 +247,9 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
     
     //MARK: UIImagePickerController Delegates
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        // take the original image value from the info when the image picker did finish
+        // When the image picker finishes retrieve the original image value from the infoKey
         if let image = info[UIImagePickerController.InfoKey.originalImage] {
-            // Store the orginal image inside the imageView
+            // Display the image inside the imageView
             imageView.image = image as? UIImage
             // Convert image to NSData to store inside the database
             imageData = (image as! UIImage).pngData() as NSData?
@@ -252,11 +258,13 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         }
     }
     
-    //MARK: Helper functions
+    //MARK: Helper Functions
     func importProductFormQRCode(){
+        // Store and seperate the qrStringProduct by the given seperator
         let productDetails = qrStringProduct?.split(separator: "/")
+        // Check if the value contains 7 seperated parts
         if productDetails?.count == 7 {
-            // Setup nutrient values
+            // Setup all nutrient values with the 7 parts
             nameValue = String(productDetails![0])
             proteinValue = ConverterService.convertStringToDouble(string: String(productDetails![1]))
             fatValue = ConverterService.convertStringToDouble(string: String(productDetails![2]))
@@ -264,7 +272,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
             saltValue = ConverterService.convertStringToDouble(string: String(productDetails![4]))
             carbohydratesValue = ConverterService.convertStringToDouble(string: String(productDetails![5]))
             kilocalorieValue = ConverterService.convertStringToDouble(string: String(productDetails![6]))
-            // Setup nutrient textfields
+            // Setup all the textfields with there values
             nameTextfield.text = nameValue
             proteinTextfield.text = ConverterService.convertDoubleToString(double: proteinValue)
             fatTextfield.text = ConverterService.convertDoubleToString(double: fatValue)
@@ -272,12 +280,13 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
             saltTextfield.text = ConverterService.convertDoubleToString(double: saltValue)
             carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)
             kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: kilocalorieValue)
+            // Enable the saveButton
             saveButton.isEnabled = true
         }
     }
     
     func createProduct(){
-        // Create a new product with the values form values
+        // Create a new product with the stored values
         let product = Product(context: PersistenceService.context)
         product.name = nameValue
         product.kilocalories = kilocalorieValue
@@ -286,43 +295,54 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         product.fat = fatValue
         product.salt = saltValue
         product.fiber = fiberValue
+        // Check if the imageData isn't nil
         if imageData != nil {
+            // If not nil convert image to Data value
             product.image = imageData! as Data
         }else {
-            if let img = UIImage(named: "DefaultImage2") {
+            // If nil load the defaultImage and convert it to Data value
+            if let img = UIImage(named: "DefaultImage") {
                 product.image = img.pngData()
             }
         }
     }
     
     private func checkDisplayMode() {
-        // Disable the save button
+        // Check if the nameValue is empty
         if nameValue.isEmpty{
+            // Disable the saveButton
             saveButton.isEnabled = false
         }
-        // If the viewProduct is not nill prepare the view to display the product details
+        // Check if the viewProduct is nil
         if viewProduct != nil {
+            // If not display the viewProduct
             displayTheViewProduct()
+            // Disable the scanButton
             scanButton.isEnabled = false
-        // If the viewConsumedProduct is not nill prepare the view to display the viewConsumedProduct details
+        // Check if the viewConsumedProduct is nil
         } else if viewConsumedProduct != nil {
+            // If not display the viewConsumedProduct
             displayTheViewConsumedProduct()
+            // Disable the scanButton
             scanButton.isEnabled = false
         }
     }
     
     private func disableTextfields() {
-        proteinTextfield.isEnabled = false
-        fatTextfield.isEnabled = false
-        fiberTextfield.isEnabled = false
-        saltTextfield.isEnabled = false
-        carbohydratesTextfield.isEnabled = false
-        kilocalorieTextfield.isEnabled = false
-        nameTextfield.isEnabled = false
+        // Disable all the textfields
+        proteinTextfield.isEnabled          = false
+        fatTextfield.isEnabled              = false
+        fiberTextfield.isEnabled            = false
+        saltTextfield.isEnabled             = false
+        carbohydratesTextfield.isEnabled    = false
+        kilocalorieTextfield.isEnabled      = false
+        nameTextfield.isEnabled             = false
     }
     
     private func displayTheViewProduct() {
+        // Disable the resetButton
         resetButton.isEnabled = false
+        // Display the viewProduct values inside the textfields
         proteinTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.protein ?? 0.00)+"g"
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fat ?? 0.00)+"g"
         fiberTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.fiber ?? 0.00)+"g"
@@ -330,14 +350,19 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.carbohydrates ?? 0.00)+"g"
         kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewProduct?.kilocalories ?? 0.00)+"kcal"
         nameTextfield.text = viewProduct?.name
+        // Check if the viewProduct has a valid image
         if let img = viewProduct?.image as Data? {
+            // Convert the data value to image and display it inside the imageView
             imageView.image = UIImage(data:img)
         }
+        // Disable the textfields
         disableTextfields()
     }
     
     private func displayTheViewConsumedProduct() {
+        // Disable the resetButton
         resetButton.isEnabled = false
+        // Display the viewConsumedProduct values inside the textfields
         proteinTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.protein ?? 0.00)+"g"
         fatTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fat ?? 0.00)+"g"
         fiberTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.fiber ?? 0.00)+"g"
@@ -345,14 +370,17 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.carbohydrates ?? 0.00)+"g"
         kilocalorieTextfield.text = ConverterService.convertDoubleToString(double: viewConsumedProduct?.kilocalories ?? 0.00)+"kcal"
         nameTextfield.text = viewConsumedProduct?.name
+        // Check if the viewConsumedProduct has a valid image
         if let img = viewConsumedProduct?.image as Data? {
+            // Convert the data value to image and display it inside the imageView
             imageView.image = UIImage(data:img)
         }
+        // Disable the textfields
         disableTextfields()
     }
     
     func resetForm() {
-        // Clear the variable
+        // Clear all nutrient variables
         proteinValue = 0.0
         fatValue = 0.0
         fiberValue = 0.0
@@ -361,7 +389,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         kilocalorieValue = 0.0
         nameValue = ""
         imageData = nil 
-        // Clear button to clear all the textfields with empty strings
+        // Clear all the textfields with empty strings
         proteinTextfield.text = ""
         fatTextfield.text = ""
         fiberTextfield.text = ""
@@ -369,13 +397,9 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         saltTextfield.text = ""
         kilocalorieTextfield.text = ""
         nameTextfield.text = ""
-        // Set default image
+        // Load the default image
         imageView.image = UIImage(named: "DefaultImage")
-        // Disable the save button
+        // Disable the saveButton
         saveButton.isEnabled = false
     }
-    
-    // MARK: Segue Prepare
-    //override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //}
 }

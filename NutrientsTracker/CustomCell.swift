@@ -10,6 +10,8 @@ import UIKit
 import JTAppleCalendar
 
 class CustomCell: JTAppleCell {
+    
+    //MARK: IBOutlets
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var selectedView: UIView!
     @IBOutlet weak var redDot: UIImageView!    

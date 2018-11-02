@@ -13,24 +13,29 @@ import Firebase
 
 class AppSettingTableViewController: UITableViewController, UITextFieldDelegate {
     
+    //MARK: Properties
+    var cloudProductRepo = CloudProductRepository()
+    var kcalValue:Int = 0
+
     //MARK: IBOutlets
     @IBOutlet weak var importTotalLabel: UILabel!
     @IBOutlet weak var importButton: UIButton!
     @IBOutlet weak var exportButton: UIButton!
     @IBOutlet weak var exportTotalLabel: UILabel!
     @IBOutlet weak var kcalLimitTextfield: UITextField!
+    @IBOutlet weak var currentUserLabel: UILabel!
+
     
-    //MARK: Properties
-    var cloudProductRepo = CloudProductRepository()
-    var kcalValue:Int = 0
-    
-    //MARK: View Functions
+    //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Check for product changes local and in the cloud
+        // Display the current user
+        currentUserLabel.text = "Current User: " + UserDefaultsSettings.getUserEmail()
+        // Check for local and online product changes
         checkForCloudAndLocalProductsChanges()
-        // Get the stored kilocalorie value
+        // Access the stored kilocalorie limit value from the UserDefaults
         kcalValue = UserDefaultsSettings.getKilocalorieLimitValue()
+        // Set the kilocalorie limit label text with the found value
         kcalLimitTextfield.text = String(UserDefaultsSettings.getKilocalorieLimitValue())
     }
     
@@ -47,31 +52,35 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func importAction(_ sender: UIButton) {
-        // Import cloud products local
+        // Import online cloud products to the local database
         cloudProductRepo.importCloudProducts()
         showAlertAction(title: "Importing products", message: "Cloud products imported to local database")
     }
     
     @IBAction func resetAction(_ sender: UIButton) {
-        // Delete all local products
+        // Delete all the local products
         PersistenceService.deleteDataByEntity(entity: "Product")
         saveContext()
         showAlertAction(title: "Removing local products", message: "The local products are removed")
     }
     
     @IBAction func cleanAppAction(_ sender: UIButton) {
-        // Delete all app settings
-        showAlertAction(title: "Removing all settings", message: "All app data wil be deleted")
+        // Delete all the products, consumedProducts, users and dayTotals
+        //showAlertAction(title: "Removing all settings", message: "All app data wil be deleted")
         PersistenceService.deleteDataByEntity(entity: "Product")
         PersistenceService.deleteDataByEntity(entity: "ConsumedProduct")
         PersistenceService.deleteDataByEntity(entity: "DayTotal")
         PersistenceService.deleteDataByEntity(entity: "User")
+        // Save the context changes
         saveContext()
+        // Re enable the firstTimeSetup
+        UserDefaultsSettings.reEnableFirstTimeSetup()
+        // Sign out the user
         signOutUser()
     }
     
     @IBAction func cleanUserDayTotals(_ sender: UIButton) {
-        // Deletes all DayTotals for the current user
+        // Deletes current user dayTotals
         let dayTotals = DayTotalRepository.fetchDayTotalsToDelete(email: UserDefaultsSettings.getUserEmail())
         for dayTotal in dayTotals {
             PersistenceService.context.delete(dayTotal as! NSManagedObject)
@@ -83,30 +92,47 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     @IBAction func saveKcalLimit(_ sender: UIButton) {
         // Dismisses the keyboard
         kcalLimitTextfield.resignFirstResponder()
-        // Sets the kilicalorie user value
+        // Sets the kilicalorie limit user value
         UserDefaultsSettings.setKilocalorieLimitValue(valueLimit: kcalValue)
         showAlertAction(title: "Saving kcal limit", message: "The new kcal limit wil be saved")
     }
     
     @IBAction func deleteConsumedProducts(_ sender: UIButton) {
-        // Delete all the consumed products
-        PersistenceService.deleteDataByEntity(entity: "ConsumedProduct")
+        // Delete user consumedProducts
+        let dayTotals = DayTotalRepository.fetchDayTotalsByUserEmail(email: UserDefaultsSettings.getUserEmail())
+        for dayTotal in dayTotals {
+            dayTotal.fatTotal = 0
+            dayTotal.fiberTotal = 0
+            dayTotal.kilocaloriesTotal = 0
+            dayTotal.proteinTotal = 0
+            dayTotal.saltTotal = 0
+            dayTotal.carbohydratesTotal = 0
+            if let products = dayTotal.produtcs {
+                for product in products {
+                    PersistenceService.context.delete(product as! NSManagedObject)
+                }
+            }
+        }
+        // Save context changes
         saveContext()
-        showAlertAction(title: "Removing consumed produtcs", message: "All consumed products wil be deleted")
+        showAlertAction(title: "Removing consumed produtcs", message: "User consumed products wil be deleted")
     }
     
-    // MARK: Helper Functions
+    //MARK: Helper Functions
     func checkForCloudAndLocalProductsChanges() {
         cloudProductRepo.fetchCloudProducts{
+            // Check for cloud and local product count changes
             importExportTotal in
+            // Set the import and export label with the values
             self.importTotalLabel.text = "\(importExportTotal[1])"
             self.exportTotalLabel.text = "\(importExportTotal[0])"
+            // Disable or enable import button when products changes are found or not
             if (importExportTotal[1]) == 0 {
                 self.importButton.isEnabled = false
             }else {
                 self.importButton.isEnabled = true
             }
-                
+            // Disable or enable export button when products changes are found or not
             if (importExportTotal[0]) == 0 {
                 self.exportButton.isEnabled = false
             }else {
@@ -144,6 +170,7 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     
     // MARK: UITextfield Delegates
     func textFieldDidEndEditing(_ textField: UITextField) {
+        // Check which textfield was end editing
         switch textField {
         case kcalLimitTextfield:
             // Validate the user input
@@ -160,7 +187,7 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Use the return keyboard button to jump between textfields
+        // Switch between textfields when using the return button
         switch textField {
         case kcalLimitTextfield:
             // Dismisses the keyboard
@@ -169,11 +196,6 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
         }
         return true
     }
-
-    
-    //    // MARK: - Navigation
-    //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    //    }
 }
     
     //    //MARK: Properties

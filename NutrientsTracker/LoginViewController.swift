@@ -11,6 +11,12 @@ import FirebaseAuth
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
 
+    //MARK: Properties
+    var segmentIsLogin:Bool = true
+    var userEmail:String = ""
+    var userPassword:String = ""
+    var localUser:User?
+
     //MARK: IBOutlets
     @IBOutlet weak var loginLabel: UILabel!
     @IBOutlet weak var loginButton: UIButton!
@@ -18,28 +24,24 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var emailTextfield: UITextField!
     @IBOutlet weak var passwordTextfield: UITextField!
     
-    //MARK: Properties
-    var segmentIsLogin:Bool = true
-    var userEmail:String = ""
-    var userPassword:String = ""
-    var localUser:User?
-    
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Check if a user is already signed in
+        // Check for signed in users
         checkSignedInUser()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Setup Userdefaults settings
+        _ = UserDefaultsSettings.init()
         // Reset the textfields and variables
         resetForm()
     }
     
     //MARK: IBActions
     @IBAction func segmentControlChanged(_ sender: UISegmentedControl) {
-        // When segmentControl is changed switch property values
+        // When the segmentControl is changed switch property values
         segmentIsLogin = !segmentIsLogin
         // When property values are changed reset the UI to the correct display mode
         if segmentIsLogin {
@@ -58,7 +60,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         if !userPassword.isEmpty && !userEmail.isEmpty {
             // When the login segment was selected
             if segmentIsLogin {
-                // Sign in an existing user
+                // Sign in user
                 Auth.auth().signIn(withEmail: userEmail, password: userPassword) { (userData, error) in
                     // Check if the userData doesn't return nil
                     if (userData?.user) != nil {
@@ -69,7 +71,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         self.showAlertAction(title: "No user found", message: "No user found with matching email or password")
                     }
                 }
-                // When register segement was selected
+                // When the register segement was selected
             }else{
                 // Create a new user
                 Auth.auth().createUser(withEmail: userEmail, password: userPassword) { (userData, error) in
@@ -91,7 +93,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: UITextfield Delegates
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        // Jump from the email textField to the password textField when pressing return button
+        // switch email textField to password textField with the return button
         switch textField {
         case emailTextfield:
             passwordTextfield.becomeFirstResponder()
@@ -132,31 +134,37 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         Auth.auth().addStateDidChangeListener { auth, user in
             // When the Authentication server returns a valid session
             if user != nil {
-                // Check if the online user matches with the local user or create one
+                // Check if the online user matches with the local user if not create one
                 self.localUser = UserRepository.fetchUserByEmail(email: (user?.email)!)
-                // Save current user email to the userDefaults
+                // Get stored user email from the userDefaults
                 let storedUserEmail = UserDefaultsSettings.getUserEmail()
+                // Get stored user UID from the userDefaults
                 let storedUserUID = UserDefaultsSettings.getUserUID()
+                // Check if the online user email and UID matches with the stored values
                 if storedUserEmail != user?.email  && storedUserUID != user?.uid  {
+                    // Save the new user email to the userDefaults
                     UserDefaultsSettings.setUserEmail(userEmail: (user?.email)!)
+                    // Save the new user UID to the userDefaults
                     UserDefaultsSettings.setUserUID(userUID:(user?.uid)!)
                     // DEBUG MESSAGE
                     print("Changing user local information")
                 }
                 print("UserUID: \(user?.uid ?? "")")
+                // Check if the getStarterProductsCondition is true
                 if UserDefaultsSettings.getStarterProductsCondition() {
+                    // If true run the starterProducts setup
                     let setupStarterProducts = CloudProductRepository()
                     setupStarterProducts.importStarterProducts()
+                    // Turn Off the StarterProducts after the setup
                     UserDefaultsSettings.turnOfStarterProducts()
                     // DEBUG MESSAGE
                     print("Importing starter products")
                 }
-                // Perform segue to the DateViewController when the local user was found or created
+                // Perform segue to the DateViewController
                 self.performSegue(withIdentifier: "GoToDateSelection", sender: self)
                 // DEBUG MESSAGE
                 print("User with email: \(user?.email ?? "") is signed in")
             } else {
-                // When the Authentication server returns no valid session
                 // DEBUG MESSAGE
                 print("No user is signed in")
             }
@@ -176,20 +184,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         present(alert, animated: true, completion: nil)
     }
     
-    // Set UI to registration
     private func resetUIToRegister() {
+        // Set UI to registration
         loginLabel.text = "Please Register"
         resetForm()
     }
     
-    // Set UI to login
     private func resetUIToLogin() {
+        // Set UI to login
         loginLabel.text = "Please Login"
         resetForm()
     }
     
-    // Reset the form
     private func resetForm() {
+        // Reset the form
         userPassword = ""
         userEmail = ""
         passwordTextfield.text = ""
@@ -206,15 +214,3 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
 }
-
-
-//    private func checkSignedInUser(){
-//    // Check if a user is still signed in if so go directly to the next view
-//        if AuthenticationService.checkSignedInUser() {
-//            // If the user is signed in perform segue to the DateViewController
-//            self.performSegue(withIdentifier: "DateSelectionDirect", sender: self)
-//        }
-//    }
-
-//        passwordTextfield.resignFirstResponder()
-//        emailTextfield.resignFirstResponder()

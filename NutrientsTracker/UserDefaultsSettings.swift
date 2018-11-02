@@ -14,18 +14,21 @@ class UserDefaultsSettings {
 
     // Initialize UserDefaultsSettings
     init() {
+        // Access and store the userDefaults standard
         let userDefaults = UserDefaults.standard
-        // Check if the app setup runs the first time
+        // Check if the app runs for the first time
         if userDefaults.value(forKey: "FirstTimeSetup") == nil {
             // Set the app first time setup to false
             userDefaults.set(false, forKey: "FirstTimeSetup")
-            // Set a default kcal limit value
+            // Set a default kilocalorie limit value
             userDefaults.set(200, forKey: "KilocalorieLimitValue")
+            // Set the default userEmail to empty
             userDefaults.set("", forKey: "UserEmail")
+            // Set the default userUID to empty
             userDefaults.set("", forKey: "UserUID")
+            // Set the ImportStarterProducts to true
             userDefaults.set(true, forKey: "ImportStarterProducts")
-
-            // Sign off if a user is signed in
+            // Sign off user if signed in
             if AuthenticationService.signOffUser() {
                 print("Signing out user")
             }else {
@@ -36,43 +39,53 @@ class UserDefaultsSettings {
         }
     }
     
-    // Set kilocalorie value
+    static func reEnableFirstTimeSetup() {
+        // Set FirstTimeSetup value nil
+        userDefaults.set(nil, forKey: "FirstTimeSetup")
+    }
+    
+    static func GetFirstTimeSetupState() -> UserDefaults {
+        // Return FirstTimeSetupState
+        return userDefaults.value(forKey: "FirstTimeSetup") as! UserDefaults
+    }
+    
     static func setKilocalorieLimitValue(valueLimit:Int) {
+        // Set kilocalorie value
         userDefaults.set(valueLimit, forKey: "KilocalorieLimitValue")
     }
     
-    // Get kilocalorie value
     static func getKilocalorieLimitValue() -> Int {
+        // Return kilocalorie value
         return userDefaults.value(forKey: "KilocalorieLimitValue") as! Int
     }
     
-    // Set user email
     static func setUserEmail(userEmail:String) {
+        // Set user email
         userDefaults.set(userEmail, forKey: "UserEmail")
     }
     
-    // Get user email
     static func getUserEmail() -> String {
+        // Return user email
         return userDefaults.value(forKey: "UserEmail") as! String
     }
     
-    // Set user UID
     static func setUserUID(userUID:String) {
+        // Set user UID
         userDefaults.set(userUID, forKey: "UserUID")
     }
     
-    // Get user UID
     static func getUserUID() -> String {
+        // Return user UID
         return userDefaults.value(forKey: "UserUID") as! String
     }
     
-    // Get user StarterProducts condition
     static func getStarterProductsCondition() -> Bool  {
+        // Return user StarterProducts condition
         return userDefaults.value(forKey: "ImportStarterProducts") as! Bool
     }
     
-    // Turn of starterProducts
     static func turnOfStarterProducts() {
+        // Turn of starterProducts
         userDefaults.set(false, forKey: "ImportStarterProducts")
     }
 }

@@ -17,11 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        // Configure Firebase API
+        // Configure Firebase loging
         FirebaseConfiguration.shared.setLoggerLevel(.error)
+        // Configure Firebase
         FirebaseApp.configure()
-        // Configure IQKeyboardManager API
+        // Configure IQKeyboardManager
         IQKeyboardManager.shared.enable = true
         // Turn off the IQKeyboardManager toolbar
         IQKeyboardManager.shared.enableAutoToolbar = false
@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // Save context changed when app will terminate
         PersistenceService.saveContext()
     }
 }

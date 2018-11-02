@@ -11,7 +11,7 @@ import AVFoundation
 
 class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
 
-    //MARK Properties
+    //MARK: Properties
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
     var qrCodeFrameView:UIView?
@@ -20,24 +20,27 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
     //MARK: ViewController Functions
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // Check if the captureSession is running
         if (captureSession?.isRunning == true){
-            // Stop video output
+            // If true stop video captureSession
             captureSession?.stopRunning()
         }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // Check if the captureSession is running
         if (captureSession?.isRunning == false){
-            // Start video output
+            // If false start video captureSession
             captureSession?.startRunning()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Find and access device back camera and set it media capture type to video
+        // Find and access device back camera, set it's media capture type to video
         let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
+        // Check if the device session is valid
         guard let captureDevice = deviceDiscoverySession.devices.first else {
             // DEBUG MESSAGE
             print("Error accessing device back camera")
@@ -45,9 +48,9 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             
         }
         do {
-            // Get instance from the AVCaptureDeviceInput
+            // Get an instance from the AVCaptureDeviceInput
             let input = try AVCaptureDeviceInput(device: captureDevice)
-            // Sets the device on the capture session
+            // Setup the device capture session
             captureSession = AVCaptureSession()
             captureSession?.addInput(input)
             
@@ -57,15 +60,18 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             
             // Set delegate and use the default dispatch queue to execute the call back
             captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-            // Sets the metaDataObject type to QR output
+            // Sets the metaDataObject type to type QR
             captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
             
-            // Initialize video preview layer and add it as a sublayer to the video preview screen
+            // Initialize video preview layer and add it as a sublayer to the videoPreview screen
             videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+            // Make the videoPreviewLayer fill the screen
             videoPreviewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+            // Add the videoPreviewLayer to the sublayer
             view.layer.addSublayer(videoPreviewLayer!)
+            // Setup the videoPreviewLayer height and width values
             videoPreviewLayer?.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
-
+            // Check the current video orientation mode
             let videoOrientation: AVCaptureVideoOrientation
             switch UIApplication.shared.statusBarOrientation {
             case .portrait:
@@ -82,31 +88,31 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             default:
                 videoOrientation = .portrait
             }
+            // Set the video orientation value
             videoPreviewLayer!.connection?.videoOrientation = videoOrientation
             
-            // Highlight the QR code
+            // Create a new UIView
             qrCodeFrameView = UIView()
-            // Create and setup a UIView
+            // Setup the UIView
             if let qrCodeFrameView = qrCodeFrameView {
-                // Give the UIView a border color
+                // Setup UIView border color
                 qrCodeFrameView.layer.borderColor = UIColor.blue.cgColor
-                // Give the UIView a borderwidth
+                // Setup UIView borderwidth
                 qrCodeFrameView.layer.borderWidth = 1.5
-                // Add the UIView to the main view
+                // Add the UIView to the mainView
                 view.addSubview(qrCodeFrameView)
-                // Bring the subview to the front
+                // Bring the subview to the frontView
                 view.bringSubviewToFront(qrCodeFrameView)
             }
         }catch {
             // DEBUG MESSAGE
-            print(error)
+            print("Error while initializing AVCaptureDeviceInput")
             return
         }
     }
     
-    // MARK: AVCaptureMetaDataOutput Delegates
+    //MARK: AVCaptureMetaDataOutput Delegates
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        
         // Check if the metadata object array is empty
         if metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRect.zero
@@ -115,19 +121,23 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
             return
         }
         
-        // When the metadata object array contains a value get it's metadata Object
+        // When the metadata object array contains a value get it's metadataObject
         let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
         
+        // Check if the metadataObject type is equal to objectType qr
         if metadataObj.type == AVMetadataObject.ObjectType.qr{
-            // Check the found metadata if it is equal to the QR code metadata
+            // Store the  metadata if it is from type qr
             let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
+            // Display the Custom UIView covering the QR code on the screen
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
-            // If the found metadata has a stringvalue that is not nil
+            // Check the metadata stringvalue for nil
             if metadataObj.stringValue != nil {
-                // Extract the stringvalue to a variable
+                // If not nil extract the stringvalue to a variable
                 qrString = metadataObj.stringValue
+                // Turn off the captureSession
                 captureSession?.stopRunning()
+                // Perform Segue to the ProductTableViewController
                 self.performSegue(withIdentifier: "unwindToProductTable", sender: self)
             }
         }
@@ -150,14 +160,17 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
         default:
             videoOrientation = .portrait
         }
+        // Set the camera orientation value
         videoPreviewLayer!.connection?.videoOrientation = videoOrientation
+        // Setup the videoPreviewLayer width and height values
         videoPreviewLayer?.frame = CGRect(x: 0, y: 0, width: self.view.frame.height, height: self.view.frame.width)
     }
     
-    // MARK: Segue Prepare
+    //MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Sends the qr string data to the productTableViewController 
+        // Check if the qrString is nil
         if qrString != nil{
+            // Pass the qrString to the DayResultViewController
             let productTableVc = segue.destination as! ProductTableViewController
             productTableVc.qrStringProduct = qrString
         }
