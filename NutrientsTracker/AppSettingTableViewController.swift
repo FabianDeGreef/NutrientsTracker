@@ -41,23 +41,31 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     
     //MARK: IBActions
     @IBAction func signOutAction(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Sign out the user
         signOutUser()
     }
     
     @IBAction func uploadAction(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Upload local products to the cloud
         cloudProductRepo.exportLocalProductsToCloud()
         showAlertAction(title: "Exporting products", message: "local products exported to cloud database")
     }
     
     @IBAction func importAction(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Import online cloud products to the local database
         cloudProductRepo.importCloudProducts()
         showAlertAction(title: "Importing products", message: "Cloud products imported to local database")
     }
     
     @IBAction func resetAction(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Delete all the local products
         PersistenceService.deleteDataByEntity(entity: "Product")
         saveContext()
@@ -65,6 +73,8 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func cleanAppAction(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Delete all the products, consumedProducts, users and dayTotals
         //showAlertAction(title: "Removing all settings", message: "All app data wil be deleted")
         PersistenceService.deleteDataByEntity(entity: "Product")
@@ -80,6 +90,8 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func cleanUserDayTotals(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Deletes current user dayTotals
         let dayTotals = DayTotalRepository.fetchDayTotalsToDelete(email: UserDefaultsSettings.getUserEmail())
         for dayTotal in dayTotals {
@@ -90,6 +102,8 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func saveKcalLimit(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Dismisses the keyboard
         kcalLimitTextfield.resignFirstResponder()
         // Sets the kilicalorie limit user value
@@ -98,6 +112,8 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     @IBAction func deleteConsumedProducts(_ sender: UIButton) {
+        //Start animation
+        buttonAnimation(button: sender)
         // Delete user consumedProducts
         let dayTotals = DayTotalRepository.fetchDayTotalsByUserEmail(email: UserDefaultsSettings.getUserEmail())
         for dayTotal in dayTotals {
@@ -119,6 +135,16 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
     }
     
     //MARK: Helper Functions
+    func buttonAnimation(button:UIButton) {
+        // Start button animation
+        button.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+        UIView.animate(withDuration: 2.0,
+                       delay: 0,
+                       usingSpringWithDamping: CGFloat(0.20),
+                       initialSpringVelocity: CGFloat(6.0),
+                       options: UIView.AnimationOptions.allowUserInteraction,
+                       animations: { button.transform = CGAffineTransform.identity }, completion: nil )
+    }
     func checkForCloudAndLocalProductsChanges() {
         cloudProductRepo.fetchCloudProducts{
             // Check for cloud and local product count changes

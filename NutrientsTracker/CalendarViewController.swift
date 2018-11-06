@@ -53,15 +53,30 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate {
     
     //MARK: IBActions
     @IBAction func useDateAction(_ sender: UIButton) {
+        // Start button animation
+        buttonAnimation(button: sender)
         // Create the new DayTotal with the selected date
         let dayTotal = DayTotalRepository.createNewDayTotal(dayTotalDate: selectedDate!)
         // Store the created DayTotal inside the selectedDayTotal variable
         selectedDayTotal = dayTotal
-        // Perform Segue to the DaySetupViewController
-        performSegue(withIdentifier: "DaySetup", sender: self)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+            // Perform Segue to the DaySetupViewController
+            self.performSegue(withIdentifier: "DaySetup", sender: self)
+        }
     }
     
     //MARK: Helper Functions
+    func buttonAnimation(button:UIButton) {
+        // Start button animation
+        button.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+        UIView.animate(withDuration: 2.0,
+                       delay: 0,
+                       usingSpringWithDamping: CGFloat(0.20),
+                       initialSpringVelocity: CGFloat(6.0),
+                       options: UIView.AnimationOptions.allowUserInteraction,
+                       animations: { button.transform = CGAffineTransform.identity }, completion: nil )
+    }
+    
     func getExistingDates(){
         // Clear the dates array
         dates.removeAll()

@@ -110,25 +110,35 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             if ValidationService.validateEmail(email: emailTextfield.text!){
                 userEmail = emailTextfield.text!
             }else {
+                animateWrongValue(viewToShake: emailTextfield)
                 userEmail = ""
                 emailTextfield.text = ""
                 emailTextfield.placeholder = "Enter valid email"
-                showAlertAction(title: "Unvalid email", message: "Please enter a valid email")
             }
         default:
             // Validate entered password
             if ValidationService.validatePassword(password: passwordTextfield.text!){
                 userPassword = passwordTextfield.text!
             }else {
+                animateWrongValue(viewToShake: passwordTextfield)
                 userPassword = ""
                 passwordTextfield.text = ""
                 passwordTextfield.placeholder = "Enter valid password"
-                showAlertAction(title: "Unvalid password", message: "Please enter a valid password")
             }
         }
     }
     
     //MARK: Helper Functions
+    func animateWrongValue(viewToShake:UITextField){
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.duration = 0.07
+        animation.repeatCount = 4
+        animation.autoreverses = true
+        animation.fromValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x - 10, y: viewToShake.center.y))
+        animation.toValue = NSValue(cgPoint: CGPoint(x: viewToShake.center.x + 10, y: viewToShake.center.y))
+        viewToShake.layer.add(animation, forKey: "position")
+    }
+    
     private func checkSignedInUser() {
         // Authentication listener that handels all authentication changes
         Auth.auth().addStateDidChangeListener { auth, user in

@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import ARKit
 
 class DaySetupViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
@@ -28,11 +29,17 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var productCountLabel: UILabel!
     @IBOutlet weak var dayTotalButton: UIBarButtonItem!
     @IBOutlet weak var addProductButton: UIBarButtonItem!
+    @IBOutlet weak var ArButton: UIBarButtonItem!
 
     
     //MARK: ViewController Functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        if ARConfiguration.isSupported {
+            ArButton.isEnabled = true
+        }else {
+            ArButton.isEnabled = false
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -45,6 +52,8 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         print("Consumed products in Daysetup: \(currentDayTotal?.produtcs?.count ?? 0)")
         // Check the dayTotal product count
         checkDayTotalProductCount()
+        // Start the product table animation
+        animateProductTable()
     }
     
     //MARK: IBActions
@@ -57,8 +66,11 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
             addButton.isEnabled = true
             // Set the addButton title color from black to white
             addButton.setTitleColor(UIColor.white,for: UIControl.State.normal)
+            // Change button background color
+            addButton.backgroundColor = UIColor.init(named: "FiberColor")
             // Display the weight inside the weightLabel
             weightLabel.text = "Weight: \(ConverterService.convertDoubleToString(double: weight))g"
+            pulseAddButtonAnimation()
         }
     }
     
@@ -81,6 +93,10 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
                 productTable.allowsSelection = true
                 // Check the dayTotal product count
                 checkDayTotalProductCount()
+                // Start button animation
+                startAddButtonAnimation(button: sender)
+                // Change button background color
+                addButton.backgroundColor = UIColor.init(named: "KcalColor")
             }
         }else {
             // DEBUG MESSAGE
@@ -96,6 +112,59 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     //MARK: Helper Functions
+    func pulseAddButtonAnimation(){
+        let pulse = CASpringAnimation(keyPath: "transform.scale")
+        // Set the pulse speed
+        pulse.duration = 0.3
+        // Set the pulse starting value
+        pulse.fromValue = 0.95
+        // Set the pulse ending value
+        pulse.toValue = 1.0
+        // Set the pulse autoreverse to true
+        pulse.autoreverses = true
+        // Set animation repeats
+        pulse.repeatCount = 2
+        pulse.initialVelocity = 0.9
+        pulse.damping = 1.0
+        // Add animation to the button
+        addButton.layer.add(pulse, forKey: nil)
+    }
+    
+    func startAddButtonAnimation(button:UIButton) {
+        // Start button animation
+        button.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+        UIView.animate(withDuration: 2.0,
+                       delay: 0,
+                       usingSpringWithDamping: CGFloat(0.20),
+                       initialSpringVelocity: CGFloat(6.0),
+                       options: UIView.AnimationOptions.allowUserInteraction,
+                       animations: { button.transform = CGAffineTransform.identity }, completion: nil )
+    }
+    
+    func animateProductTable() {
+        // Store the table cells
+        let cells = productTable.visibleCells
+        // Store the table height
+        let tableViewHeight = productTable.bounds.size.height
+        // Loop through the cells
+        for cell in cells {
+            // Transform the cell y position
+            cell.transform = CGAffineTransform(translationX: 0 , y: tableViewHeight)
+        }
+        // Create a counter
+        var counter = 0
+        // Loop through the cells
+        for cell in cells {
+            // Animate for 1.75 seconds every cell with the curveEaseInOut animation
+            UIView.animate(withDuration: 1.75, delay: Double(counter)*0.05, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
+                // Transform the cell to it's normal position
+                cell.transform = CGAffineTransform.identity
+            },completion: nil)
+            // add one to the counter total
+            counter += 1
+        }
+    }
+    
     private func checkDayTotalProductCount(){
         // Check the currentDayTotal products count greater than 0
         if (currentDayTotal?.produtcs?.count)! > 0 {

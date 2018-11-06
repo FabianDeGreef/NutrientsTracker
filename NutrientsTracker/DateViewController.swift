@@ -32,12 +32,38 @@ class DateViewController: UIViewController, UITableViewDelegate, UITableViewData
         super.viewWillAppear(animated)
         // Setup local user DayTotals
         setupUserDayTotals()
+        // Start the table animation
+        animateDayTotalTable()
     }
     
     //MARK: IBActions
     @IBAction func unwindToDateSelection(_ sender:UIStoryboardSegue) { }
     
     //MARK: Helper Functions
+    func animateDayTotalTable() {
+        // Store the table cells
+        let cells = dayTotalTable.visibleCells
+        // Store the table height
+        let tableViewHeight = dayTotalTable.bounds.size.height
+        // Loop through the cells
+        for cell in cells {
+            // Transform the cell y position
+            cell.transform = CGAffineTransform(translationX: 0 , y: tableViewHeight)
+        }
+        // Create a counter
+        var counter = 0
+        // Loop through the cells
+        for cell in cells {
+            // Animate for 1.75 seconds every cell with the curveEaseInOut animation
+            UIView.animate(withDuration: 1.50, delay: Double(counter)*0.03, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
+                // Transform the cell to it's normal position
+                cell.transform = CGAffineTransform.identity
+            },completion: nil)
+            // add one to the counter total
+            counter += 1
+        }
+    }
+    
     private func deleteDayTotal(dayTotalToDelete:DayTotal,index:IndexPath) {
         // Delete the selected DayTotal inside the context
         PersistenceService.context.delete(dayTotalToDelete)

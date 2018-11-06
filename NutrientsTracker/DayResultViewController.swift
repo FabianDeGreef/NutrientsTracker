@@ -31,6 +31,8 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
         setupConsumedProducts()
         // Check the dayTotal consumedProduct count
         checkDayTotalConsumedProductCount()
+        // Start consumedProduct table animation
+        animateConsumedProductTable()
     }
     
     //MARK: UITableView Delegates
@@ -85,6 +87,30 @@ class DayResultViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //MARK: Helper Functions
+    func animateConsumedProductTable() {
+        // Store the table cells
+        let cells = productTable.visibleCells
+        // Store the table height
+        let tableViewHeight = productTable.bounds.size.height
+        // Loop through the cells
+        for cell in cells {
+            // Transform the cell y position
+            cell.transform = CGAffineTransform(translationX: 0 , y: tableViewHeight)
+        }
+        // Create a counter
+        var counter = 0
+        // Loop through the cells
+        for cell in cells {
+            // Animate for 1.75 seconds every cell with the curveEaseInOut animation
+            UIView.animate(withDuration: 1.80, delay: Double(counter)*0.05, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
+                // Transform the cell to it's normal position
+                cell.transform = CGAffineTransform.identity
+            },completion: nil)
+            // add one to the counter total
+            counter += 1
+        }
+    }
+    
     private func checkDayTotalConsumedProductCount(){
         // Check if the currentDayTotal Consumedproducts count greater than 0
         if (currentDayTotal?.produtcs?.count)! > 0 {

@@ -174,7 +174,7 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         case carbohydratesTextfield:
             if ValidationService.decimalValidator(value: carbohydratesTextfield.text!){
                 carbohydratesValue = ConverterService.convertStringToDouble(string: carbohydratesTextfield.text!)
-                carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)+"g"
+                carbohydratesTextfield.text = ConverterService.convertDoubleToString(double: carbohydratesValue)
             }else {
                 carbohydratesValue = 0.0
                 carbohydratesTextfield.text = String("0,00")

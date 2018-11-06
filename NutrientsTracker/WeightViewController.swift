@@ -35,8 +35,13 @@ class WeightViewController: UIViewController, UITextFieldDelegate {
         weightTextfield.resignFirstResponder()
         // Check if the weight is higher than 0.0
         if weight > 0.0 {
-            // Perform Segue to the DaySetupViewController
-            performSegue(withIdentifier: "ReturnDaySetup", sender: self)
+            // Start button animation
+            startWeightButtonAnimation()
+            // Wait 2 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                // Perform Segue to the DaySetupViewController
+                self.performSegue(withIdentifier: "ReturnDaySetup", sender: self)
+            }
         }else {
             // DEBUG MESSAGE
             print("Weight was invalid")
@@ -55,7 +60,10 @@ class WeightViewController: UIViewController, UITextFieldDelegate {
             weightButton.isEnabled = true
             // Set the weightButton title text color from black to white
             weightButton.setTitleColor(UIColor.white,for: UIControl.State.normal)
-
+            // Change button background color
+            weightButton.backgroundColor = UIColor.init(named: "FiberColor")
+            // Start button animation
+            pulseButtonAnimation()
         }else {
             // If validation was failed set the variable and textField with a default value
             weight = 0.0
@@ -74,6 +82,36 @@ class WeightViewController: UIViewController, UITextFieldDelegate {
         return true
     }
     
+    //MARK: Helper Functions
+    func startWeightButtonAnimation() {
+        // Start button animation
+        weightButton.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+        UIView.animate(withDuration: 2.0,
+                       delay: 0,
+                       usingSpringWithDamping: CGFloat(0.20),
+                       initialSpringVelocity: CGFloat(6.0),
+                       options: UIView.AnimationOptions.allowUserInteraction,
+                       animations: { self.weightButton.transform = CGAffineTransform.identity }, completion: nil )
+    }
+    
+    func pulseButtonAnimation() {
+        let pulse = CASpringAnimation(keyPath: "transform.scale")
+        // Set the pulse speed
+        pulse.duration = 0.3
+        // Set the pulse starting value
+        pulse.fromValue = 0.95
+        // Set the pulse ending value
+        pulse.toValue = 1.0
+        // Set the pulse autoreverse to true
+        pulse.autoreverses = true
+        // Set animation repeats
+        pulse.repeatCount = 2
+        pulse.initialVelocity = 0.9
+        pulse.damping = 1.0
+        // Add animation to the button
+        weightButton.layer.add(pulse, forKey: nil)
+    }
+        
     //MARK: Segue Prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Pass the weight to the DaySetupViewController
