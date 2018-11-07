@@ -166,6 +166,7 @@
 				1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */,
 				1F88E9412175131E00D0A0C7 /* QRScannerViewController.swift */,
 				1F13EC0B2175FD6600EB27AD /* ProductTableViewController.swift */,
+				1FE5127B2190A40000EBC1E5 /* ARViewController.swift */,
 				1F264F85217A1E2900A2B9A7 /* WeightViewController.swift */,
 				1FFF4FBD216613330083E731 /* DaySetupViewController.swift */,
 				1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */,
@@ -176,6 +177,7 @@
 				1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */,
 				1FD7FC7F21642F3E00025767 /* LoginViewController.swift */,
 				1FAC41E9216624B000123C86 /* NutrientsTracker.xcdatamodeld */,
+				1FFC4C9F219334880096712C /* Reachability.swift */,
 				1FF1AE94218736F2001D5998 /* UserDefaultsSettings.swift */,
 				1F9D271A2183CA8D0024F075 /* ProductRepository.swift */,
 				1F9D271C21846DE80024F075 /* CloudProductRepository.swift */,
@@ -185,9 +187,7 @@
 				1F5DBFDC21691501009F0D6C /* AuthenticationService.swift */,
 				1F353E8A216E2A60002184F5 /* ValidationService.swift */,
 				1F353E8C216E2A7B002184F5 /* ConverterService.swift */,
-				1FE5127B2190A40000EBC1E5 /* ARViewController.swift */,
 				1FEDEF4D2190C7FB00F4BA30 /* ProductInfo.sks */,
-				1FFC4C9F219334880096712C /* Reachability.swift */,
 			);
 			path = NutrientsTracker;
 			sourceTree = "<group>";
