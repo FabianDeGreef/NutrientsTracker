@@ -392,7 +392,7 @@
             </objects>
             <point key="canvasLocation" x="2600" y="38"/>
         </scene>
-        <!--View Controller-->
+        <!--AR Product Info Display-->
         <scene sceneID="KrY-Lx-Kap">
             <objects>
                 <viewController id="Ttp-WJ-JsJ" customClass="ARViewController" customModule="NutrientsTracker" customModuleProvider="target" sceneMemberID="viewController">
@@ -403,6 +403,7 @@
                             <outlet property="delegate" destination="Ttp-WJ-JsJ" id="BdD-p9-fnS"/>
                         </connections>
                     </arscnView>
+                    <navigationItem key="navigationItem" title="AR Product Info Display" id="OBs-Bw-PKG"/>
                     <connections>
                         <outlet property="arSceneView" destination="3A1-3u-vFf" id="6NP-Id-n1d"/>
                     </connections>

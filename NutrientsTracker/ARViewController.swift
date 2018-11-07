@@ -9,6 +9,8 @@
 import UIKit
 import SceneKit
 import ARKit
+import AVFoundation
+import AudioToolbox
 
 class ARViewController: UIViewController, ARSCNViewDelegate {
     
@@ -21,17 +23,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         // Show statistics such as fps and timing information
         arSceneView.showsStatistics = true
-        // Create a new scene
-        let scene = SCNScene(named: "ARScene.scn")!
-        // Set the scene to the view
-        arSceneView.scene = scene
         products = ProductRepository.fetchLocalProducts()
         productNames = ProductRepository.fetchLocalProductNames()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        arSceneView.session.pause()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -53,6 +46,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             for product in products {
                 if name == product.name{
                     foundProduct = product
+                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                 }
             }
             if let objectAnchor = anchor as? ARObjectAnchor {
@@ -81,7 +75,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 let fiber = (spriteKitScene?.childNode(withName: "FiberLabel"))! as! SKLabelNode
                 fiber.text = ConverterService.convertDoubleToString(double: foundProduct.fiber)+"g"
 
-                
                 let productImage = (spriteKitScene?.childNode(withName: "ProductImage"))! as! SKSpriteNode
                 productImage.size = CGSize(width: 50.0, height: 50.0)
                 productImage.texture = SKTexture(image: UIImage(data:foundProduct.image!)!)

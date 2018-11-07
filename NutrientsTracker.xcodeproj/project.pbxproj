@@ -34,10 +34,10 @@
 		1FDF6310217CDE0800AEB884 /* DateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */; };
 		1FDF6312217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */; };
 		1FE5127C2190A40000EBC1E5 /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE5127B2190A40000EBC1E5 /* ARViewController.swift */; };
-		1FE512812190A7D700EBC1E5 /* ARScene.scn in Resources */ = {isa = PBXBuildFile; fileRef = 1FE512802190A7D700EBC1E5 /* ARScene.scn */; };
 		1FEC3035217CC65600B0DEB5 /* ProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */; };
 		1FEDEF4E2190C7FB00F4BA30 /* ProductInfo.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1FEDEF4D2190C7FB00F4BA30 /* ProductInfo.sks */; };
 		1FF1AE95218736F2001D5998 /* UserDefaultsSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF1AE94218736F2001D5998 /* UserDefaultsSettings.swift */; };
+		1FFC4CA0219334880096712C /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFC4C9F219334880096712C /* Reachability.swift */; };
 		1FFF4FBC21660CD20083E731 /* DateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBB21660CD20083E731 /* DateViewController.swift */; };
 		1FFF4FBE216613330083E731 /* DaySetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBD216613330083E731 /* DaySetupViewController.swift */; };
 		1FFF4FC021661DD20083E731 /* DayResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */; };
@@ -88,10 +88,10 @@
 		1FDF630F217CDE0800AEB884 /* DateTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTableViewCell.swift; sourceTree = "<group>"; };
 		1FDF6311217D2EDB00AEB884 /* ConsumedProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumedProductTableViewCell.swift; sourceTree = "<group>"; };
 		1FE5127B2190A40000EBC1E5 /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
-		1FE512802190A7D700EBC1E5 /* ARScene.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = ARScene.scn; sourceTree = "<group>"; };
 		1FEC3034217CC65600B0DEB5 /* ProductTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTableViewCell.swift; sourceTree = "<group>"; };
 		1FEDEF4D2190C7FB00F4BA30 /* ProductInfo.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ProductInfo.sks; sourceTree = "<group>"; };
 		1FF1AE94218736F2001D5998 /* UserDefaultsSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSettings.swift; sourceTree = "<group>"; };
+		1FFC4C9F219334880096712C /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		1FFF4FBB21660CD20083E731 /* DateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
 		1FFF4FBD216613330083E731 /* DaySetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySetupViewController.swift; sourceTree = "<group>"; };
 		1FFF4FBF21661DD20083E731 /* DayResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayResultViewController.swift; sourceTree = "<group>"; };
@@ -186,8 +186,8 @@
 				1F353E8A216E2A60002184F5 /* ValidationService.swift */,
 				1F353E8C216E2A7B002184F5 /* ConverterService.swift */,
 				1FE5127B2190A40000EBC1E5 /* ARViewController.swift */,
-				1FE512802190A7D700EBC1E5 /* ARScene.scn */,
 				1FEDEF4D2190C7FB00F4BA30 /* ProductInfo.sks */,
+				1FFC4C9F219334880096712C /* Reachability.swift */,
 			);
 			path = NutrientsTracker;
 			sourceTree = "<group>";
@@ -302,7 +302,6 @@
 				1FD7FC82216432EB00025767 /* GoogleService-Info.plist in Resources */,
 				1F1C9F72215A80FB0026D14A /* Assets.xcassets in Resources */,
 				1F1C9F70215A80FA0026D14A /* Main.storyboard in Resources */,
-				1FE512812190A7D700EBC1E5 /* ARScene.scn in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +442,7 @@
 				1F88E9422175131E00D0A0C7 /* QRScannerViewController.swift in Sources */,
 				1FE5127C2190A40000EBC1E5 /* ARViewController.swift in Sources */,
 				1F9D271B2183CA8D0024F075 /* ProductRepository.swift in Sources */,
+				1FFC4CA0219334880096712C /* Reachability.swift in Sources */,
 				1F3AAF21217F312A00942346 /* AppSettingTableViewController.swift in Sources */,
 				1F1C9F6B215A80FA0026D14A /* AppDelegate.swift in Sources */,
 				1F9D27192183B9F50024F075 /* UserRepository.swift in Sources */,

@@ -37,6 +37,15 @@ class AppSettingTableViewController: UITableViewController, UITextFieldDelegate 
         kcalValue = UserDefaultsSettings.getKilocalorieLimitValue()
         // Set the kilocalorie limit label text with the found value
         kcalLimitTextfield.text = String(UserDefaultsSettings.getKilocalorieLimitValue())
+        // Check internet connection
+        if Reachability.isConnectedToNetwork() {
+            print("Internet connection available")
+        }
+        else {
+            print("No internet connection available")
+            importButton.isEnabled = false
+            exportButton.isEnabled = false
+        }
     }
     
     //MARK: IBActions
