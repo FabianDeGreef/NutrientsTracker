@@ -280,11 +280,11 @@ class DaySetupViewController: UIViewController, UITableViewDelegate, UITableView
         }))
         // Add the cancel action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        // Set actionSheet sourve view
+        // Set actionSheet source view
         actionSheet.popoverPresentationController?.sourceView = self.view
-        // Let actionSheet popover view
+        // Set actionSheet popover view
         actionSheet.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection()
-        // Position the actionSheet on screen
+        // Position the actionSheet centered on the screen
         actionSheet.popoverPresentationController?.sourceRect =
             CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
         // Present the actionSheet

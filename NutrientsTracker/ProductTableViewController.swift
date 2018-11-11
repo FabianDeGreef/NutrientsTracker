@@ -106,8 +106,15 @@ class ProductTableViewController: UITableViewController, UITextFieldDelegate, UI
         }))
         // Add the cancel action to the actionSheet
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        // Dismisses the UIAlertController view
-        present(actionSheet,animated: true, completion: nil)
+        // Set actionSheet source view
+        actionSheet.popoverPresentationController?.sourceView = self.view
+        // Set actionSheet popover view
+        actionSheet.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection()
+        // Position the actionSheet on centered on the screen
+        actionSheet.popoverPresentationController?.sourceRect =
+            CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+        // Present the actionSheet
+        self.present(actionSheet, animated: true, completion: nil)
     }
     
     @IBAction func saveAction(_ sender: UIBarButtonItem) {
